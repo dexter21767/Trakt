@@ -74,32 +74,51 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 	var ids = req.params.configuration.split('|')[1].split('=')[1].split(',');
 	var access_token = 0;
 	if (req.params.configuration.split('|')[2]) {
-		access_token = req.params.configuration.split('|')[1].split('=')[1];
+		access_token = req.params.configuration.split('|')[2].split('=')[1];
 	}
 	console.log(lists, ids, access_token);
 
 	var c = 0;
 
 	if (lists) {
-
 		for (let i = 0; i < lists.length; i++) {
-			manifest.catalogs[c] = {
-				"type": "movie",
+			if (((lists[i] == 'trakt_watchlist' || lists[i] == 'trakt_rec'))) {
+				if (access_token) {
+					manifest.catalogs[c] = {
+						"type": "movie",
 
-				"id": + "_movies",
+						"id": lists[i] + "_movies",
 
-				"name": lists_array[lists[i]] + " movies"
-			};
-			c++;
-			manifest.catalogs[c] = {
-				"type": "series",
+						"name": lists_array[lists[i]] + " movies"
+					};
+					c++;
+					manifest.catalogs[c] = {
+						"type": "series",
 
-				"id": lists[i] + "_series",
+						"id": lists[i] + "_series",
 
-				"name": lists_array[lists[i]] + " series"
-			};
-			c++;
+						"name": lists_array[lists[i]] + " series"
+					};
+					c++;
+				}
+			} else if (lists[i] == 'trakt_trending' || lists[i] == 'trakt_popular') {
+				manifest.catalogs[c] = {
+					"type": "movie",
 
+					"id": lists[i] + "_movies",
+
+					"name": lists_array[lists[i]] + " movies"
+				};
+				c++;
+				manifest.catalogs[c] = {
+					"type": "series",
+
+					"id": lists[i] + "_series",
+
+					"name": lists_array[lists[i]] + " series"
+				};
+				c++;
+			}
 		}
 	}
 	if (ids) {
@@ -156,26 +175,28 @@ app.get('/:configuration?/:resource/:type/:id/', (req, res) => {
 	} else if (id.match(/trakt_[a-z]*_[a-z]*/i)) {
 		list_id = id.split('_')[1];
 		console.log(list_id);
-		if (list_id == "rec") {
-			recomendations(type, trakt_type, access_token).then(promises => {
-				Promise.all(promises).then(metas => {
-					metas = metas.filter(function (element) {
-						return element !== undefined;
-					});
-					res.send(JSON.stringify({ metas: metas }));
-					res.end();
+		if (access_token) {
+			if (list_id == "rec") {
+				recomendations(type, trakt_type, access_token).then(promises => {
+					Promise.all(promises).then(metas => {
+						metas = metas.filter(function (element) {
+							return element !== undefined;
+						});
+						res.send(JSON.stringify({ metas: metas }));
+						res.end();
+					})
 				})
-			})
-		} else if (list_id == "watchlist") {
-			watchlist(type, trakt_type, access_token).then(promises => {
-				Promise.all(promises).then(metas => {
-					metas = metas.filter(function (element) {
-						return element !== undefined;
-					});
-					res.send(JSON.stringify({ metas: metas }));
-					res.end();
+			} else if (list_id == "watchlist") {
+				watchlist(type, trakt_type, access_token).then(promises => {
+					Promise.all(promises).then(metas => {
+						metas = metas.filter(function (element) {
+							return element !== undefined;
+						});
+						res.send(JSON.stringify({ metas: metas }));
+						res.end();
+					})
 				})
-			})
+			}
 		}
 		else if (list_id == "trending") {
 			trending(type, trakt_type).then(promises => {
