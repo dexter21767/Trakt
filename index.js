@@ -83,7 +83,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 	if (lists) {
 
 		for (let i = 0; i < lists.length; i++) {
-			if (((lists[i] = ("trakt_watchlist" || "trakt_rec")) && access_token) || (lists[i] = ("trakt_trending" || "trakt_popular"))) {
+			if (((lists[i] == ("trakt_watchlist" || "trakt_rec")) && access_token) || (lists[i] == ("trakt_trending" || "trakt_popular"))) {
 				manifest.catalogs[c] = {
 					"type": "movie",
 
