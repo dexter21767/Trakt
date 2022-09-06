@@ -2,7 +2,7 @@ const axios = require('axios').default;
 
 const cinemeta = require('./cinemeta');
 const host = "https://api.trakt.tv";
-const myurl = "http://127.0.0.1:7515/";
+const myurl = "https://2ecbbd610840-trakt.baby-beamup.club/";
 client = axios.create({
             headers: {
 				"Content-type": "application/json",
@@ -185,14 +185,7 @@ async function getToken(code){ //working
 	})
 }
 
-const userdata = {
-  access_token: '2dd98df87f431cc5a117fdebd2f023e29dd5c0bb86a3ca08147473730a4b85b3',
-  token_type: 'Bearer',
-  expires_in: 7889237,
-  refresh_token: 'aadad7c14f3a1bbb0e9ed4f17f1a2a7609e7c981e98267498fa04cd5949288a8',
-  scope: 'public',
-  created_at: 1662301232
-}
+
 
 
 module.exports = {getToken,watchlist,recomendations,list,list_catalog,popular,trending,request};
