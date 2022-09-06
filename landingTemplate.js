@@ -240,7 +240,7 @@ const stylizedTypes = manifest.types.map(t => t[0].toUpperCase() + t.slice(1) + 
 		  <div class="separator"></div>
 		 
 		  <label class="label" for="trakt_lists">trakt public lists ids:</label>
-		  <h3 class="gives">please separate ids with commas or spaces only (example: 35,52,14 or 35 52 14)</h3>
+		  <h3 class="gives">please separate ids with commas or spaces only and the id for user lists is written as user_slug:list_slug (example: 35,justin:imdb-top-rated-tv-shows,52,donxy:marvel-cinematic-universe,14,giladg:latest-releases or justin:imdb-top-rated-tv-shows 35 52 14 donxy:marvel-cinematic-universe giladg:latest-releases)</h3>
 		 <br>
 			<input type="text" id="trakt_lists">
 		 <div class="separator"></div>
