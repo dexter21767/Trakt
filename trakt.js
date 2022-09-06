@@ -105,7 +105,7 @@ function watchlist(type, trakt_type, access_token) { //working
 
 	var url = `${host}/sync/watchlist/${trakt_type}s/`;
 	console.log(url);
-	return request(url, header).then(data=>{ return getMeta(data.data, type, trakt_type);})
+	return request(url, header).then(data => { return getMeta(data.data, type, trakt_type); })
 };
 
 async function list_catalog(type, trakt_type, id) {
@@ -134,7 +134,7 @@ function getMeta(items, type, trakt_type) {
 
 }
 
-function recomendations(type, trakt_type, access_token) {  
+function recomendations(type, trakt_type, access_token) {
 
 	var header = {
 		headers: {
@@ -144,7 +144,7 @@ function recomendations(type, trakt_type, access_token) {
 
 	var url = `${host}/sync/recommendations/${trakt_type}s/`;
 
-	return request(url, header).then(data=>{ return getMeta(data.data, type, trakt_type);})
+	return request(url, header).then(data => { return getMeta(data.data, type, trakt_type); })
 }
 
 async function getToken(code) { //working
@@ -167,4 +167,4 @@ async function getToken(code) { //working
 
 
 
-module.exports = { getToken, watchlist, recomendations, list, list_catalog, popular, trending, request, client};
+module.exports = { getToken, watchlist, recomendations, list, list_catalog, popular, trending, request, client };

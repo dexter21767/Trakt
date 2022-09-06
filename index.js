@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 
-const { getToken, watchlist, recomendations, list, list_catalog, popular, trending, client} = require('./trakt.js');
+const { getToken, watchlist, recomendations, list, list_catalog, popular, trending, client } = require('./trakt.js');
 
 var manifest = require("./manifest.json");
 const landingTemplate = require('./landingTemplate');
@@ -81,26 +81,27 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 	var c = 0;
 
 	if (lists) {
-		
+
 		for (let i = 0; i < lists.length; i++) {
-			if(((lists[i] = ("trakt_watchlist"||"trakt_rec"))&& access_token) || (lists[i] = ("trakt_trending"||"trakt_popular"))){
-			manifest.catalogs[c] = {
-				"type": "movie",
+			if (((lists[i] = ("trakt_watchlist" || "trakt_rec")) && access_token) || (lists[i] = ("trakt_trending" || "trakt_popular"))) {
+				manifest.catalogs[c] = {
+					"type": "movie",
 
-				"id":  + "_movies",
+					"id": + "_movies",
 
-				"name": lists_array[lists[i]] + " movies"
-			};
-			c++;
-			manifest.catalogs[c] = {
-				"type": "series",
+					"name": lists_array[lists[i]] + " movies"
+				};
+				c++;
+				manifest.catalogs[c] = {
+					"type": "series",
 
-				"id": lists[i] + "_series",
+					"id": lists[i] + "_series",
 
-				"name": lists_array[lists[i]] + " series"
-			};
-			c++;
-		}}
+					"name": lists_array[lists[i]] + " series"
+				};
+				c++;
+			}
+		}
 	}
 	if (ids) {
 		Promise.resolve(list_cat(ids)).then((data) => {
@@ -147,16 +148,17 @@ app.get('/:configuration?/:resource/:type/:id/', (req, res) => {
 				metas = metas.filter(function (element) {
 					return element !== undefined;
 				});
-			res.send(JSON.stringify({ metas: metas }));
-			res.end();
-			console.log(metas);
+				res.send(JSON.stringify({ metas: metas }));
+				res.end();
+				console.log(metas);
 
-		})})
+			})
+		})
 	} else if (id.match(/trakt_[a-z]*_[a-z]*/i)) {
 		list_id = id.split('_')[1];
 		console.log(list_id);
 		if (list_id == "rec") {
-			recomendations(type, trakt_type, access_token).then(promises=>{
+			recomendations(type, trakt_type, access_token).then(promises => {
 				Promise.all(promises).then(metas => {
 					metas = metas.filter(function (element) {
 						return element !== undefined;
@@ -166,7 +168,7 @@ app.get('/:configuration?/:resource/:type/:id/', (req, res) => {
 				})
 			})
 		} else if (list_id == "watchlist") {
-			watchlist(type, trakt_type, access_token).then(promises=>{
+			watchlist(type, trakt_type, access_token).then(promises => {
 				Promise.all(promises).then(metas => {
 					metas = metas.filter(function (element) {
 						return element !== undefined;
@@ -177,7 +179,7 @@ app.get('/:configuration?/:resource/:type/:id/', (req, res) => {
 			})
 		}
 		else if (list_id == "trending") {
-			trending(type, trakt_type).then(promises=>{
+			trending(type, trakt_type).then(promises => {
 				Promise.all(promises).then(metas => {
 					metas = metas.filter(function (element) {
 						return element !== undefined;
@@ -186,10 +188,10 @@ app.get('/:configuration?/:resource/:type/:id/', (req, res) => {
 					res.end();
 				})
 			})
-			
+
 		}
 		else if (list_id == "popular") {
-			popular(type).then(promises=>{
+			popular(type).then(promises => {
 				Promise.all(promises).then(metas => {
 					metas = metas.filter(function (element) {
 						return element !== undefined;
@@ -198,7 +200,7 @@ app.get('/:configuration?/:resource/:type/:id/', (req, res) => {
 					res.end();
 				})
 			})
-			
+
 		}
 
 
