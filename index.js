@@ -197,33 +197,33 @@ app.get('/:configuration?/:resource/:type/:id/', (req, res) => {
 					})
 				})
 			}
-		}
-		else if (list_id == "trending") {
-			trending(type, trakt_type).then(promises => {
-				Promise.all(promises).then(metas => {
-					metas = metas.filter(function (element) {
-						return element !== undefined;
-					});
-					res.send(JSON.stringify({ metas: metas }));
-					res.end();
+		} else {
+			if (list_id == "trending") {
+				trending(type, trakt_type).then(promises => {
+					Promise.all(promises).then(metas => {
+						metas = metas.filter(function (element) {
+							return element !== undefined;
+						});
+						res.send(JSON.stringify({ metas: metas }));
+						res.end();
+					})
 				})
-			})
 
-		}
-		else if (list_id == "popular") {
-			popular(type).then(promises => {
-				Promise.all(promises).then(metas => {
-					metas = metas.filter(function (element) {
-						return element !== undefined;
-					});
-					res.send(JSON.stringify({ metas: metas }));
-					res.end();
+			}
+			else if (list_id == "popular") {
+				popular(type).then(promises => {
+					Promise.all(promises).then(metas => {
+						metas = metas.filter(function (element) {
+							return element !== undefined;
+						});
+						res.send(JSON.stringify({ metas: metas }));
+						res.end();
+					})
 				})
-			})
+
+			}
 
 		}
-
-
 	}
 
 })
