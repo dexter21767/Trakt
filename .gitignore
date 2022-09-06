@@ -2,4 +2,4 @@
 *.log
 /res
 /node_modules
-/beamup.json
+beamup.json
