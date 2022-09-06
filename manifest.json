@@ -1,0 +1,20 @@
+{
+	"id": "community.trakt-lists",
+    "version": "0.0.1",
+    "name": "Trakt Lists by dexter21767",
+    "description": "Addon for getting Trakt's public and user lists, recommendations and watch list.",
+    "logo": "https://i.imgur.com/zPqau8y.png",
+	"background":"https://github.com/Stremio/stremio-art/raw/main/originals/Samantha%20Dowling2.png",
+    "contactEmail": "ahmidiyasser@gmail.com",
+
+    "catalogs": [],
+    "resources": [],
+    "types": [
+		"movies",
+		"series"
+    ],
+    "behaviorHints": {
+        "configurable": true,
+        "configurationRequired": false
+    }
+}
