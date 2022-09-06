@@ -1,6 +1,6 @@
 {
 	"name": "community.trakt-lists",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Addon for getting Trakt's public and user lists, recommendations and watch list.",
 	"main": "server.js",
 	"scripts": {
