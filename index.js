@@ -135,7 +135,7 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 
 	console.log(req.params);
 	const { configuration, resource, type, id } = req.params;
-	if (configuration) {
+	if (configuration != undefined) {
 
 		if (configuration.split('|')[0].split('=')[1]) {
 			var lists = configuration.split('|')[0].split('=')[1].split(',');
@@ -161,7 +161,7 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 	}
 
 	if (id.match(/trakt_list:[0-9]*/i)) {
-		list_id = id.split(':')[1].split('.')[0];
+		list_id = id.split(':')[1];
 		console.log('trakt_list:', list_id);
 		list_catalog(type, trakt_type, list_id).then(promises => {
 			Promise.all(promises).then(metas => {
@@ -240,6 +240,7 @@ async function list_cat(ids) {
 	return Promise.all(list(ids)).then(datas => {
 		const promises = [];
 		for (let i = 0; i < datas.length; i++) {
+			
 			var name = datas[i].data.name;
 			var id = datas[i].data.ids.trakt;
 			if (id) {

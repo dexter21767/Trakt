@@ -42,9 +42,9 @@ function list(list_ids) {
 
 function popular(type) {
 	if (type == "movie") {
-		var url = `${host}/movies/popular`;
+		var url = `${host}/movies/popular?limit=100`;
 	} else if (type == "series") {
-		var url = `${host}/shows/popular`;
+		var url = `${host}/shows/popular?limit=100`;
 	}
 	return request(url).then(data => {
 		const metas = [];
@@ -52,8 +52,6 @@ function popular(type) {
 		var i = 0;
 		while (i < 100 && i < items.length) {
 			var item = items[i];
-			console.log(i);
-			console.log(item);
 			if (item.ids.imdb) {
 				metas.push({
 					"id": item.ids.imdb,
@@ -72,7 +70,7 @@ function popular(type) {
 
 function trending(type, trakt_type) {
 
-	var url = `${host}/${trakt_type}s/trending`;
+	var url = `${host}/${trakt_type}s/trending/?limit=100`;
 
 	return request(url).then(data => {
 		const metas = [];
@@ -80,8 +78,6 @@ function trending(type, trakt_type) {
 		var i = 0;
 		while (i < 100 && i < items.length) {
 			var item = items[i];
-			console.log(i);
-			console.log(item);
 			if (item[trakt_type].ids.imdb) {
 				metas.push({
 					"id": item[trakt_type].ids.imdb,
@@ -105,12 +101,12 @@ function watchlist(type, trakt_type, access_token) { //working
 			"Authorization": `Bearer ${access_token}`
 		}
 	};
-	var url = `${host}/sync/watchlist/${trakt_type}s/`;
+	var url = `${host}/sync/watchlist/${trakt_type}s/?limit=100`;
 	return request(url, header).then(data => { return getMeta(data.data, type, trakt_type); })
 };
 
 function list_catalog(type, trakt_type, id) {
-	var url = `${host}/lists/${id}/items/${trakt_type}`;
+	var url = `${host}/lists/${id}/items/${trakt_type}/`;
 	return request(url).then(data => { return getMeta(data.data, type, trakt_type) })
 		;
 }
@@ -134,7 +130,6 @@ function getMeta(items, type, trakt_type) {
 		}
 		i++;
 	}
-	console.log('metas', metas)
 	return metas;
 
 }
