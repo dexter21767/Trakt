@@ -141,8 +141,28 @@ function recomendations(type, trakt_type, access_token) {
 			"Authorization": `Bearer ${access_token}`
 		}
 	};
-	var url = `${host}/recommendations/${trakt_type}s/`;
-	return request(url, header).then(data => { return getMeta(data.data, type, trakt_type); })
+	var url = `${host}/recommendations/${trakt_type}s/?limit=100`;
+	//return request(url, header).then(data => { console.log(data.data); return getMeta(data.data, type, trakt_type); })
+	return request(url).then(data => {
+		const metas = [];
+		items = data.data;
+		var i = 0;
+		while (i < 100 && i < items.length) {
+			var item = items[i];
+			if (item.ids.imdb) {
+				metas.push({
+					"id": item.ids.imdb,
+					"type": type,
+					"name": item.title,
+					"poster": `https://images.metahub.space/poster/small/${item.ids.imdb}/img`,
+					"background": `https://images.metahub.space/background/medium/${item.ids.imdb}/img`,
+					"releaseInfo": item.year
+				});
+			}
+			i++;
+		}
+		return metas;
+	})
 }
 
 async function getToken(code) { //working
