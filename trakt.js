@@ -141,7 +141,7 @@ function recomendations(type, trakt_type, access_token) {
 			"Authorization": `Bearer ${access_token}`
 		}
 	};
-	var url = `${host}/sync/recommendations/${trakt_type}s/`;
+	var url = `${host}/recommendations/${trakt_type}s/`;
 	return request(url, header).then(data => { return getMeta(data.data, type, trakt_type); })
 }
 
