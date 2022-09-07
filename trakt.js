@@ -1,6 +1,5 @@
 const axios = require('axios').default;
 
-const cinemeta = require('./cinemeta');
 const host = "https://api.trakt.tv";
 //const myurl = "http://127.0.0.1:63355";
 const myurl = "https://2ecbbd610840-trakt.baby-beamup.club/";
@@ -12,21 +11,15 @@ client = axios.create({
 	}
 });
 
-
 async function request(url, header) {
 
-	//console.log(url,'url');
 	return await client
-		.get(url, header)
+		.get(url, header, { timeout: 5000 })
 		.then(res => {
-
-			// console.log(`statusCode: ${res.status}`);
 			return res;
-
 		})
 		.catch(error => {
 			console.error(error);
-			console.log('error');
 		});
 
 }
@@ -34,7 +27,6 @@ async function request(url, header) {
 // rab1t 
 function list(list_ids) {
 	const promises = [];
-	console.log(list_ids);
 	for (let i = 0; i < list_ids.length; i++) {
 		if (list_ids[i].split(':').length > 1) {
 			var user_id = list_ids[i].split(':')[0];
@@ -43,7 +35,6 @@ function list(list_ids) {
 		} else {
 			var url = `${host}/lists/${list_ids[i]}/`;
 		}
-		console.log(url);
 		promises.push(request(url));
 	}
 	return promises;
@@ -56,7 +47,7 @@ function popular(type) {
 		var url = `${host}/shows/popular`;
 	}
 	return request(url).then(data => {
-		const promises = [];
+		const metas = [];
 		items = data.data;
 		var i = 0;
 		while (i < 100 && i < items.length) {
@@ -64,22 +55,27 @@ function popular(type) {
 			console.log(i);
 			console.log(item);
 			if (item.ids.imdb) {
-				promises.push(cinemeta(type, item.ids.imdb));
+				metas.push({
+				"id":  item.ids.imdb,
+				"type": type,
+				"name": item.title,
+				"poster": `https://images.metahub.space/poster/small/${item.ids.imdb}/img`,
+				"background": `https://images.metahub.space/background/medium/${item.ids.imdb}/img`,
+				"releaseInfo": item.year
+			});
 			}
 			i++;
 		}
-		return promises;
+		return metas;
 	})
 }
 
 function trending(type, trakt_type) {
-	if (type == "movie") {
-		var url = `${host}/movies/trending`;
-	} else if (type == "series") {
-		var url = `${host}/shows/trending`;
-	}
+	
+	var url = `${host}/${trakt_type}s/trending`;
+	
 	return request(url).then(data => {
-		const promises = [];
+		const metas = [];
 		items = data.data;
 		var i = 0;
 		while (i < 100 && i < items.length) {
@@ -87,11 +83,18 @@ function trending(type, trakt_type) {
 			console.log(i);
 			console.log(item);
 			if (item[trakt_type].ids.imdb) {
-				promises.push(cinemeta(type, item[trakt_type].ids.imdb));
+				metas.push({
+				"id":  item[trakt_type].ids.imdb,
+				"type": type,
+				"name": item[trakt_type].title,
+				"poster": `https://images.metahub.space/poster/small/${item[trakt_type].ids.imdb}/img`,
+				"background": `https://images.metahub.space/background/medium/${item[trakt_type].ids.imdb}/img`,
+				"releaseInfo": item[trakt_type].year
+			});
 			}
 			i++;
 		}
-		return promises;
+		return metas;
 	})
 }
 
@@ -102,35 +105,37 @@ function watchlist(type, trakt_type, access_token) { //working
 			"Authorization": `Bearer ${access_token}`
 		}
 	};
-
 	var url = `${host}/sync/watchlist/${trakt_type}s/`;
-	console.log(url);
 	return request(url, header).then(data => { return getMeta(data.data, type, trakt_type); })
 };
 
-async function list_catalog(type, trakt_type, id) {
-	console.log(type, id);
+function list_catalog(type, trakt_type, id) {
 	var url = `${host}/lists/${id}/items/${trakt_type}`;
-	var items = (await request(url)).data;
-	return await getMeta(items, type, trakt_type);
+	return request(url).then(data=>{return getMeta(data.data, type, trakt_type)})
+	 ;
 }
 
 function getMeta(items, type, trakt_type) {
-	var promises = [];
+	var metas = [];
 	var i = 0;
 	while (i < 100 && i < items.length) {
 		var item = items[i];
 		if (item.type == trakt_type) {
-			console.log(i);
-			console.log(item);
 			if (item[item.type].ids.imdb) {
-				console.log()
-				promises.push(cinemeta(type, item[item.type].ids.imdb));
+				metas.push({
+					"id":  item[trakt_type].ids.imdb,
+					"type": type,
+					"name": item[trakt_type].title,
+					"poster": `https://images.metahub.space/poster/small/${item[trakt_type].ids.imdb}/img`,
+					"background": `https://images.metahub.space/background/medium/${item[trakt_type].ids.imdb}/img`,
+					"releaseInfo": item[trakt_type].year
+				});
 			}
 		}
 		i++;
 	}
-	return promises;
+	console.log('metas',metas)
+	return metas;
 
 }
 
@@ -141,9 +146,7 @@ function recomendations(type, trakt_type, access_token) {
 			"Authorization": `Bearer ${access_token}`
 		}
 	};
-
 	var url = `${host}/sync/recommendations/${trakt_type}s/`;
-
 	return request(url, header).then(data => { return getMeta(data.data, type, trakt_type); })
 }
 
@@ -157,14 +160,10 @@ async function getToken(code) { //working
 	};
 	const url = 'https://api.trakt.tv/oauth/token';
 	return axios.post(url, data).then(res => {
-		console.log(res.data.access_token);
 		return (res.data.access_token)
 	}).catch(error => {
-		console.log(error);
+		console.error(error);
 	})
 }
 
-
-
-
-module.exports = { getToken, watchlist, recomendations, list, list_catalog, popular, trending, request, client };
+module.exports = { getToken, watchlist, recomendations, list, list_catalog, popular, trending, client };
