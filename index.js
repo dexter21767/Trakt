@@ -22,6 +22,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/:configuration?/configure', (req, res) => {
+	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, public');
 	res.setHeader('content-type', 'text/html');
 	res.end(landingTemplate());
 });
@@ -55,17 +56,16 @@ app.get('/manifest.json', (req, res) => {
 	}];
 
 
-	res.setHeader('Cache-Control', 'max-age=86400, public');
+	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, public');
 	res.setHeader('Content-Type', 'application/json');
 	res.send(manifest);
 	res.end();
 });
 
-
 app.get('/:configuration?/manifest.json', (req, res) => {
 	console.log(req.params);
 	var catalog = [];
-	res.setHeader('Cache-Control', 'max-age=86400, public');
+	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, public');
 	res.setHeader('Content-Type', 'application/json');
 	const configuration = req.params.configuration;
 	if (configuration.split('|')[0].split('=')[1]) {
@@ -130,7 +130,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 
 app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 
-	res.setHeader('Cache-Control', 'max-age=86400, public');
+	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, public');
 	res.setHeader('Content-Type', 'application/json');
 
 	console.log(req.params);
