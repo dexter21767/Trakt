@@ -4,7 +4,7 @@ const cors = require('cors');
 
 const { getToken, watchlist, recomendations, list, list_catalog, popular, trending, client } = require('./trakt.js');
 
-var manifest = require("./manifest.json");
+const manifest = require("./manifest.json");
 const landingTemplate = require('./landingTemplate');
 var lists_array = { 'trakt_trending': "trakt - Trending", 'trakt_popular': "trakt - Popular", 'trakt_watchlist': "trakt - Watchlist", 'trakt_rec': "trakt - Recommended" };
 app.use(cors())
@@ -64,7 +64,7 @@ app.get('/manifest.json', (req, res) => {
 
 app.get('/:configuration?/manifest.json', (req, res) => {
 	console.log(req.params);
-
+	var catalog = [];
 	res.setHeader('Cache-Control', 'max-age=86400, public');
 	res.setHeader('Content-Type', 'application/json');
 	const configuration = req.params.configuration;
@@ -93,7 +93,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 
 			console.log(lists[i])
 			if (access_token || (lists[i] == 'trakt_trending' || lists[i] == 'trakt_popular')) {
-				manifest.catalogs[c] = {
+				catalog[c] = {
 					"type": "movie",
 
 					"id": lists[i],
@@ -101,7 +101,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 					"name": lists_array[lists[i]] + " movies"
 				};
 				c++;
-				manifest.catalogs[c] = {
+				catalog[c] = {
 					"type": "series",
 
 					"id": lists[i],
@@ -114,7 +114,8 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 	}
 	if (ids) {
 		list_cat(ids).then((data) => {
-			manifest.catalogs = manifest.catalogs.concat(data);
+			manifest.catalogs = catalog.concat(data);
+			manifest.catalogs = manifest.catalogs.filter(Boolean);
 			res.send(manifest);
 			res.end();
 		}).catch((error) => {
@@ -249,9 +250,7 @@ async function list_cat(ids) {
 		return promises;
 	}).then(promises => {
 		return Promise.all(promises).then(catalogs => {
-			catalogs = catalogs.filter(function (element) {
-				return element !== undefined;
-			});
+			catalogs = catalogs.filter(Boolean);
 			return (catalogs);
 		});
 	}).catch(error => { console.error(error) })
