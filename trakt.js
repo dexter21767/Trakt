@@ -148,14 +148,14 @@ function recomendations(type, trakt_type, access_token) {
 }
 
 async function getToken(code) { //working
-	var data = {
+	const data = {
 		"code": code,
 		"client_id": "18bde7dcd858c86f9593addf9f66528f8c1443ec1bef9ecee501d1c5177ce281",
 		"client_secret": "d4214fec4f6f994b79f03430f19441120a44c67441c06cc1dd10dc92d7967b0c",
 		"redirect_uri": myurl,
 		"grant_type": "authorization_code"
 	};
-	var url = 'https://api.trakt.tv/oauth/token';
+	const url = 'https://api.trakt.tv/oauth/token';
 	return axios.post(url, data).then(res => {
 		console.log(res.data.access_token);
 		return (res.data.access_token)
