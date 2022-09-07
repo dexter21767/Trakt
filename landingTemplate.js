@@ -294,6 +294,13 @@ function landingTemplate() {
           function generateInstallLink() {
 			var lists = [];
 			var data = [];
+
+         var query = window.location.search.substring(1);
+			if(query){
+			   var access_token = query.split('=')[1];
+			}else{
+            var access_token = 0;
+         }
 			
 			if($('#trakt_trending').is(':checked')){
 				lists.push($('#trakt_trending').val());
@@ -308,6 +315,9 @@ function landingTemplate() {
 			lists = lists.filter(function(value, index, arr){ 
 				return value != $('#trakt_popular').val();
 			})	
+
+         if(access_token){
+			data['access_token']= access_token;
 			}
 			if($('#trakt_watchlist').is(':checked')){
 				lists.push($('#trakt_watchlist').val());
@@ -323,14 +333,10 @@ function landingTemplate() {
 				return value != $('#trakt_rec').val();
 			})	
 			}
-			
+         }
 			data['lists']=lists.join(',');
 			data['ids']=$('#trakt_lists').val().replaceAll(' ',',');
-			var query = window.location.search.substring(1);
-			if(query){
 			
-			data[query.split('=')[0]]=query.split('=')[1];
-			}
 			
 			configurationValue = Object.keys(data).map(key => key + '=' + data[key]).join('|');
 			console.log(configurationValue);
