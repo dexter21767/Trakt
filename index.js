@@ -240,7 +240,7 @@ async function list_cat(ids) {
 	return Promise.all(list(ids)).then(datas => {
 		const promises = [];
 		for (let i = 0; i < datas.length; i++) {
-			
+
 			var name = datas[i].data.name;
 			var id = datas[i].data.ids.trakt;
 			if (id) {
