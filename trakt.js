@@ -56,13 +56,13 @@ function popular(type) {
 			console.log(item);
 			if (item.ids.imdb) {
 				metas.push({
-				"id":  item.ids.imdb,
-				"type": type,
-				"name": item.title,
-				"poster": `https://images.metahub.space/poster/small/${item.ids.imdb}/img`,
-				"background": `https://images.metahub.space/background/medium/${item.ids.imdb}/img`,
-				"releaseInfo": item.year
-			});
+					"id": item.ids.imdb,
+					"type": type,
+					"name": item.title,
+					"poster": `https://images.metahub.space/poster/small/${item.ids.imdb}/img`,
+					"background": `https://images.metahub.space/background/medium/${item.ids.imdb}/img`,
+					"releaseInfo": item.year
+				});
 			}
 			i++;
 		}
@@ -71,9 +71,9 @@ function popular(type) {
 }
 
 function trending(type, trakt_type) {
-	
+
 	var url = `${host}/${trakt_type}s/trending`;
-	
+
 	return request(url).then(data => {
 		const metas = [];
 		items = data.data;
@@ -84,13 +84,13 @@ function trending(type, trakt_type) {
 			console.log(item);
 			if (item[trakt_type].ids.imdb) {
 				metas.push({
-				"id":  item[trakt_type].ids.imdb,
-				"type": type,
-				"name": item[trakt_type].title,
-				"poster": `https://images.metahub.space/poster/small/${item[trakt_type].ids.imdb}/img`,
-				"background": `https://images.metahub.space/background/medium/${item[trakt_type].ids.imdb}/img`,
-				"releaseInfo": item[trakt_type].year
-			});
+					"id": item[trakt_type].ids.imdb,
+					"type": type,
+					"name": item[trakt_type].title,
+					"poster": `https://images.metahub.space/poster/small/${item[trakt_type].ids.imdb}/img`,
+					"background": `https://images.metahub.space/background/medium/${item[trakt_type].ids.imdb}/img`,
+					"releaseInfo": item[trakt_type].year
+				});
 			}
 			i++;
 		}
@@ -111,8 +111,8 @@ function watchlist(type, trakt_type, access_token) { //working
 
 function list_catalog(type, trakt_type, id) {
 	var url = `${host}/lists/${id}/items/${trakt_type}`;
-	return request(url).then(data=>{return getMeta(data.data, type, trakt_type)})
-	 ;
+	return request(url).then(data => { return getMeta(data.data, type, trakt_type) })
+		;
 }
 
 function getMeta(items, type, trakt_type) {
@@ -123,7 +123,7 @@ function getMeta(items, type, trakt_type) {
 		if (item.type == trakt_type) {
 			if (item[item.type].ids.imdb) {
 				metas.push({
-					"id":  item[trakt_type].ids.imdb,
+					"id": item[trakt_type].ids.imdb,
 					"type": type,
 					"name": item[trakt_type].title,
 					"poster": `https://images.metahub.space/poster/small/${item[trakt_type].ids.imdb}/img`,
@@ -134,7 +134,7 @@ function getMeta(items, type, trakt_type) {
 		}
 		i++;
 	}
-	console.log('metas',metas)
+	console.log('metas', metas)
 	return metas;
 
 }

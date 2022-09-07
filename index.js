@@ -72,7 +72,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 		var lists = configuration.split('|')[0].split('=')[1].split(',');
 	} else {
 		var lists = 0;
-	} 
+	}
 	if (configuration.split('|')[1].split('=')[1]) {
 		var ids = configuration.split('|')[1].split('=')[1].split(',');
 		ids = ids.filter(Boolean);
@@ -118,6 +118,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 			res.send(manifest);
 			res.end();
 		}).catch((error) => {
+			res.end();
 			console.error(error);
 		})
 	} else {
@@ -151,16 +152,16 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 		if (configuration.split('|')[2]) {
 			access_token = configuration.split('|')[2].split('=')[1];
 		}
-	} 
-		if (type == "movie") {
-			var trakt_type = "movie";
-		} else if (type == "series") {
-			var trakt_type = "show";
-		}
+	}
+	if (type == "movie") {
+		var trakt_type = "movie";
+	} else if (type == "series") {
+		var trakt_type = "show";
+	}
 
 	if (id.match(/trakt_list:[0-9]*/i)) {
 		list_id = id.split(':')[1].split('.')[0];
-		console.log('trakt_list:',list_id);
+		console.log('trakt_list:', list_id);
 		list_catalog(type, trakt_type, list_id).then(promises => {
 			Promise.all(promises).then(metas => {
 				metas = metas.filter(function (element) {
@@ -223,6 +224,8 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 				res.end();
 			})
 
+		} else {
+			res.end();
 		}
 
 
@@ -274,7 +277,6 @@ async function request(url, id, name, type) {
 		})
 		.catch(error => {
 			console.error(error);
-			console.log('error');
 		});
 
 }
