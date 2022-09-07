@@ -294,6 +294,7 @@ function landingTemplate() {
           function generateInstallLink() {
 			var lists = [];
 			var data = [];
+         data['lists'];
 
          var query = window.location.search.substring(1);
 			if(query){
@@ -315,10 +316,8 @@ function landingTemplate() {
 			lists = lists.filter(function(value, index, arr){ 
 				return value != $('#trakt_popular').val();
 			})	
-
+         }
          if(access_token){
-			data['access_token']= access_token;
-			}
 			if($('#trakt_watchlist').is(':checked')){
 				lists.push($('#trakt_watchlist').val());
 			}else{
@@ -336,8 +335,9 @@ function landingTemplate() {
          }
 			data['lists']=lists.join(',');
 			data['ids']=$('#trakt_lists').val().replaceAll(' ',',');
-			
-			
+         if(access_token){
+			data['access_token']= access_token;
+         }
 			configurationValue = Object.keys(data).map(key => key + '=' + data[key]).join('|');
 			console.log(configurationValue);
 			const configuration = configurationValue && configurationValue.length ? '/' + configurationValue : '';

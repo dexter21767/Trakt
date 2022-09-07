@@ -92,7 +92,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 		for (let i = 0; i < lists.length; i++) {
 
 			console.log(lists[i])
-			if (access_token || (lists[i] == 'trakt_trending' || lists[i] == 'trakt_popular')) {
+			if ((access_token.length > 0) || (lists[i] == 'trakt_trending' || lists[i] == 'trakt_popular')) {
 				catalog[c] = {
 					"type": "movie",
 
