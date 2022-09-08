@@ -42,9 +42,9 @@ function list(list_ids) {
 
 function popular(type) {
 	if (type == "movie") {
-		var url = `${host}/movies/popular?limit=100`;
+		var url = `${host}/movies/popular?limit=100&extended=full`;
 	} else if (type == "series") {
-		var url = `${host}/shows/popular?limit=100`;
+		var url = `${host}/shows/popular?limit=100&extended=full`;
 	}
 	return request(url).then(data => {
 		const metas = [];
@@ -53,13 +53,23 @@ function popular(type) {
 		while (i < 100 && i < items.length) {
 			var item = items[i];
 			if (item.ids.imdb) {
+				if (item.trailer) {
+					var trailer =  [{ source: item.trailer.split('?v=')[1], type: "Trailer" }];
+					//var trailer = [{ "ytId":  item.trailer.split('?v=')[1]}];
+				} else {
+					var trailer = [];
+				}
 				metas.push({
 					"id": item.ids.imdb,
 					"type": type,
 					"name": item.title,
 					"poster": `https://images.metahub.space/poster/small/${item.ids.imdb}/img`,
 					"background": `https://images.metahub.space/background/medium/${item.ids.imdb}/img`,
-					"releaseInfo": item.year
+					"releaseInfo": item.year.toString() || '',
+					"imdbRating": item.rating.toString() || "N/A",
+					"description": item.overview || '',
+					"genres": item.genres || [],
+					"trailers": trailer || []
 				});
 			}
 			i++;
@@ -70,7 +80,7 @@ function popular(type) {
 
 function trending(type, trakt_type) {
 
-	var url = `${host}/${trakt_type}s/trending/?limit=100`;
+	var url = `${host}/${trakt_type}s/trending/?limit=100&extended=full`;
 
 	return request(url).then(data => {
 		const metas = [];
@@ -79,13 +89,23 @@ function trending(type, trakt_type) {
 		while (i < 100 && i < items.length) {
 			var item = items[i];
 			if (item[trakt_type].ids.imdb) {
+				if (item[trakt_type].trailer) {
+					var trailer =  [{ source: item[trakt_type].trailer.split('?v=')[1], type: "Trailer" }];
+					//var trailer = [{ "ytId":  item[trakt_type].trailer.split('?v=')[1]}];
+				} else {
+					var trailer = [];
+				}
 				metas.push({
 					"id": item[trakt_type].ids.imdb,
 					"type": type,
 					"name": item[trakt_type].title,
 					"poster": `https://images.metahub.space/poster/small/${item[trakt_type].ids.imdb}/img`,
 					"background": `https://images.metahub.space/background/medium/${item[trakt_type].ids.imdb}/img`,
-					"releaseInfo": item[trakt_type].year
+					"releaseInfo": item[trakt_type].year.toString() || "N/A",
+					"imdbRating": item[trakt_type].rating.toString() || "N/A",
+					"description": item[trakt_type].overview || '',
+					"genres": item[trakt_type].genres || [],
+					"trailers": trailer || []
 				});
 			}
 			i++;
@@ -101,12 +121,12 @@ function watchlist(type, trakt_type, access_token) { //working
 			"Authorization": `Bearer ${access_token}`
 		}
 	};
-	var url = `${host}/sync/watchlist/${trakt_type}s/?limit=100`;
+	var url = `${host}/sync/watchlist/${trakt_type}s/?limit=100&extended=full`;
 	return request(url, header).then(data => { return getMeta(data.data, type, trakt_type); })
 };
 
 function list_catalog(type, trakt_type, id) {
-	var url = `${host}/lists/${id}/items/${trakt_type}/`;
+	var url = `${host}/lists/${id}/items/${trakt_type}/?extended=full`;
 	return request(url).then(data => { return getMeta(data.data, type, trakt_type) })
 		;
 }
@@ -118,13 +138,23 @@ function getMeta(items, type, trakt_type) {
 		var item = items[i];
 		if (item.type == trakt_type) {
 			if (item[item.type].ids.imdb) {
+				if(item[trakt_type].trailer){
+					var trailer =  [{ source: item[trakt_type].trailer.split('?v=')[1], type: "Trailer" }];
+					//var trailer = [{"ytId": item[trakt_type].trailer.split('?v=')[1] }];
+				} else{
+					var trailer = [];	
+				}
 				metas.push({
 					"id": item[trakt_type].ids.imdb,
 					"type": type,
 					"name": item[trakt_type].title,
 					"poster": `https://images.metahub.space/poster/small/${item[trakt_type].ids.imdb}/img`,
 					"background": `https://images.metahub.space/background/medium/${item[trakt_type].ids.imdb}/img`,
-					"releaseInfo": item[trakt_type].year
+					"releaseInfo": item[trakt_type].year.toString() || "N/A",
+					"imdbRating": item[trakt_type].rating.toString() || '',
+					"description": item[trakt_type].overview || '',
+					"genres": item[trakt_type].genres || [],
+					"trailers": trailer || []
 				});
 			}
 		}
@@ -141,7 +171,7 @@ function recomendations(type, trakt_type, access_token) {
 			"Authorization": `Bearer ${access_token}`
 		}
 	};
-	var url = `${host}/recommendations/${trakt_type}s/?limit=100`;
+	var url = `${host}/recommendations/${trakt_type}s/?limit=100&extended=full`;
 	//return request(url, header).then(data => { console.log(data.data); return getMeta(data.data, type, trakt_type); })
 	return request(url).then(data => {
 		const metas = [];
@@ -150,13 +180,23 @@ function recomendations(type, trakt_type, access_token) {
 		while (i < 100 && i < items.length) {
 			var item = items[i];
 			if (item.ids.imdb) {
+				if (item.trailer) {
+					var trailer =  [{ source: item.trailer.split('?v=')[1], type: "Trailer" }];
+					//var trailer = [{ "ytId":  item.trailer.split('?v=')[1]}];
+				} else {
+					var trailer = [];
+				}
 				metas.push({
 					"id": item.ids.imdb,
 					"type": type,
 					"name": item.title,
 					"poster": `https://images.metahub.space/poster/small/${item.ids.imdb}/img`,
 					"background": `https://images.metahub.space/background/medium/${item.ids.imdb}/img`,
-					"releaseInfo": item.year
+					"releaseInfo": item.year.toString() || "N/A",
+					"imdbRating": item.rating.toString() || "N/A",
+					"description": item.overview || '',
+					"genres": item.genres || [],
+					"trailers": trailer || []
 				});
 			}
 			i++;
