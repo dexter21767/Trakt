@@ -54,19 +54,19 @@ function popular(type) {
 			var item = items[i];
 			if (item.ids.imdb) {
 				if (item.trailer) {
-					var trailer =  [{ source: item.trailer.split('?v=')[1], type: "Trailer" }];
+					var trailer = [{ source: item.trailer.split('?v=')[1], type: "Trailer" }];
 					//var trailer = [{ "ytId":  item.trailer.split('?v=')[1]}];
 				} else {
 					var trailer = [];
 				}
+				var year = item.year ? item.year.toString() : "N/A";
 				metas.push({
 					"id": item.ids.imdb,
 					"type": type,
 					"name": item.title,
 					"poster": `https://images.metahub.space/poster/small/${item.ids.imdb}/img`,
 					"background": `https://images.metahub.space/background/medium/${item.ids.imdb}/img`,
-					"releaseInfo": item.year.toString() || '',
-					"imdbRating": item.rating.toString() || "N/A",
+					"releaseInfo": year,
 					"description": item.overview || '',
 					"genres": item.genres || [],
 					"trailers": trailer || []
@@ -90,19 +90,19 @@ function trending(type, trakt_type) {
 			var item = items[i];
 			if (item[trakt_type].ids.imdb) {
 				if (item[trakt_type].trailer) {
-					var trailer =  [{ source: item[trakt_type].trailer.split('?v=')[1], type: "Trailer" }];
+					var trailer = [{ source: item[trakt_type].trailer.split('?v=')[1], type: "Trailer" }];
 					//var trailer = [{ "ytId":  item[trakt_type].trailer.split('?v=')[1]}];
 				} else {
 					var trailer = [];
 				}
+				var year = item[trakt_type].year ? item[trakt_type].year.toString() : "N/A";
 				metas.push({
 					"id": item[trakt_type].ids.imdb,
 					"type": type,
 					"name": item[trakt_type].title,
 					"poster": `https://images.metahub.space/poster/small/${item[trakt_type].ids.imdb}/img`,
 					"background": `https://images.metahub.space/background/medium/${item[trakt_type].ids.imdb}/img`,
-					"releaseInfo": item[trakt_type].year.toString() || "N/A",
-					"imdbRating": item[trakt_type].rating.toString() || "N/A",
+					"releaseInfo": year,
 					"description": item[trakt_type].overview || '',
 					"genres": item[trakt_type].genres || [],
 					"trailers": trailer || []
@@ -138,20 +138,20 @@ function getMeta(items, type, trakt_type) {
 		var item = items[i];
 		if (item.type == trakt_type) {
 			if (item[item.type].ids.imdb) {
-				if(item[trakt_type].trailer){
-					var trailer =  [{ source: item[trakt_type].trailer.split('?v=')[1], type: "Trailer" }];
+				if (item[trakt_type].trailer) {
+					var trailer = [{ source: item[trakt_type].trailer.split('?v=')[1], type: "Trailer" }];
 					//var trailer = [{"ytId": item[trakt_type].trailer.split('?v=')[1] }];
-				} else{
-					var trailer = [];	
+				} else {
+					var trailer = [];
 				}
+				var year = item[trakt_type].year ? item[trakt_type].year.toString() : "N/A";
 				metas.push({
 					"id": item[trakt_type].ids.imdb,
 					"type": type,
 					"name": item[trakt_type].title,
 					"poster": `https://images.metahub.space/poster/small/${item[trakt_type].ids.imdb}/img`,
 					"background": `https://images.metahub.space/background/medium/${item[trakt_type].ids.imdb}/img`,
-					"releaseInfo": item[trakt_type].year.toString() || "N/A",
-					"imdbRating": item[trakt_type].rating.toString() || '',
+					"releaseInfo": year,
 					"description": item[trakt_type].overview || '',
 					"genres": item[trakt_type].genres || [],
 					"trailers": trailer || []
@@ -181,19 +181,19 @@ function recomendations(type, trakt_type, access_token) {
 			var item = items[i];
 			if (item.ids.imdb) {
 				if (item.trailer) {
-					var trailer =  [{ source: item.trailer.split('?v=')[1], type: "Trailer" }];
+					var trailer = [{ source: item.trailer.split('?v=')[1], type: "Trailer" }];
 					//var trailer = [{ "ytId":  item.trailer.split('?v=')[1]}];
 				} else {
 					var trailer = [];
 				}
+				var year = item.year ? item.year.toString() : "N/A";
 				metas.push({
 					"id": item.ids.imdb,
 					"type": type,
 					"name": item.title,
 					"poster": `https://images.metahub.space/poster/small/${item.ids.imdb}/img`,
 					"background": `https://images.metahub.space/background/medium/${item.ids.imdb}/img`,
-					"releaseInfo": item.year.toString() || "N/A",
-					"imdbRating": item.rating.toString() || "N/A",
+					"releaseInfo": year,
 					"description": item.overview || '',
 					"genres": item.genres || [],
 					"trailers": trailer || []
