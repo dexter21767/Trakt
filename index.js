@@ -32,25 +32,25 @@ app.get('/manifest.json', (req, res) => {
 	manifest.catalogs = [{
 		"type": "movie",
 
-		"id": "trakt_popular",
+		"id": "trakt_popular_movies",
 
 		"name": "trakt - Popular movies"
 	}, {
 		"type": "movie",
 
-		"id": "trakt_popular",
+		"id": "trakt_trending_movies",
 
 		"name": "trakt - Trending movies"
 	}, {
 		"type": "series",
 
-		"id": "trakt_trending",
+		"id": "trakt_popular_series",
 
 		"name": "trakt - Popular series"
 	}, {
 		"type": "series",
 
-		"id": "trakt_trending",
+		"id": "trakt_trending_series",
 
 		"name": "trakt - Trending series"
 	}];
@@ -96,7 +96,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 				catalog[c] = {
 					"type": "movie",
 
-					"id": lists[i],
+					"id": lists[i] + "_movies",
 
 					"name": lists_array[lists[i]] + " movies"
 				};
@@ -104,7 +104,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 				catalog[c] = {
 					"type": "series",
 
-					"id": lists[i],
+					"id": lists[i] + "_series",
 
 					"name": lists_array[lists[i]] + " series"
 				};
