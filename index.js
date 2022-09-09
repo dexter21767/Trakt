@@ -7,7 +7,7 @@ const { getToken, watchlist, recomendations, list, list_catalog, popular, trendi
 const manifest = require("./manifest.json");
 const landingTemplate = require('./landingTemplate');
 const lists_array = { 'trakt_trending': "trakt - Trending", 'trakt_popular': "trakt - Popular", 'trakt_watchlist': "trakt - Watchlist", 'trakt_rec': "trakt - Recommended" };
-const genres = ["action", "adventure", "animation", "anime", "comedy", "crime", "disaster", "documentary", "Donghua", "drama", "eastern", "family", "fan-film", "fantasy", "film-noir", "history", "holiday", "horror", "indie", "music", "musical", "mystery", "none", "road", "romance", "science-fiction", "short", "sports", "sporting-event", "suspense", "thriller", "tv-movie", "war", "western"]; 
+const genres = ["action", "adventure", "animation", "anime", "comedy", "crime", "disaster", "documentary", "Donghua", "drama", "eastern", "family", "fan-film", "fantasy", "film-noir", "history", "holiday", "horror", "indie", "music", "musical", "mystery", "none", "road", "romance", "science-fiction", "short", "sports", "sporting-event", "suspense", "thriller", "tv-movie", "war", "western"];
 
 app.use(cors())
 
@@ -38,31 +38,31 @@ app.get('/manifest.json', (req, res) => {
 
 		"name": "trakt - Popular movies",
 
-		"extra": [{ "name": "genre", "isRequired": false,"options": genres}]
+		"extra": [{ "name": "genre", "isRequired": false, "options": genres }]
 	}, {
 		"type": "movie",
 
 		"id": "trakt_trending_movies",
 
 		"name": "trakt - Trending movies",
-		
-		"extra": [{ "name": "genre", "isRequired": false,"options": genres}]
+
+		"extra": [{ "name": "genre", "isRequired": false, "options": genres }]
 	}, {
 		"type": "series",
 
 		"id": "trakt_popular_series",
 
 		"name": "trakt - Popular series",
-		
-		"extra": [{ "name": "genre", "isRequired": false,"options": genres}]
+
+		"extra": [{ "name": "genre", "isRequired": false, "options": genres }]
 	}, {
 		"type": "series",
 
 		"id": "trakt_trending_series",
 
 		"name": "trakt - Trending series",
-		
-		"extra": [{ "name": "genre", "isRequired": false,"options": genres}]
+
+		"extra": [{ "name": "genre", "isRequired": false, "options": genres }]
 	}];
 
 
@@ -77,7 +77,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 	var catalog = [];
 	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, public');
 	res.setHeader('Content-Type', 'application/json');
-	//const configuration = req.params.configuration;
+	const configuration = req.params.configuration;
 
 
 	if (configuration.split('|')[0].split('=')[1]) {
@@ -111,8 +111,8 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 					"id": lists[i] + "_movies",
 
 					"name": lists_array[lists[i]] + " movies",
-		
-					"extra": [{ "name": "genre", "isRequired": false,"options": genres}]
+
+					"extra": [{ "name": "genre", "isRequired": false, "options": genres }]
 				};
 				c++;
 				catalog[c] = {
@@ -121,11 +121,11 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 					"id": lists[i] + "_series",
 
 					"name": lists_array[lists[i]] + " series",
-		
-					"extra": [{ "name": "genre", "isRequired": false,"options": genres}]
+
+					"extra": [{ "name": "genre", "isRequired": false, "options": genres }]
 				};
 				c++;
-			}else if(access_token.length > 0 && lists[i] == 'trakt_watchlist'){
+			} else if (access_token.length > 0 && lists[i] == 'trakt_watchlist') {
 				catalog[c] = {
 					"type": "movie",
 
@@ -166,10 +166,10 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, public');
 	res.setHeader('Content-Type', 'application/json');
 
-	
-	if (req.params.resource == "catalog"){
+
+	if (req.params.resource == "catalog") {
 		var { configuration, resource, type, id, extra } = req.params;
-	} else if (req.params.resource == ("movie"||"series")){
+	} else if (req.params.resource == ("movie" || "series")) {
 		//var { resource, type, id, extra } = req.params;
 		var type = req.params.resource;
 		var id = req.params.type;
@@ -177,14 +177,14 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 	} else {
 		var { resource, type, id, extra } = req.params;
 	}
-	if(extra  !== undefined) {
+	if (extra !== undefined) {
 		extra = extra.split('=');
-		if(extra[0]=="genre"){
+		if (extra[0] == "genre") {
 			var genre = extra[1];
 		}
 	}
-	console.log(configuration, resource, type, id, genre );
-	
+	console.log(configuration, resource, type, id, genre);
+
 	if (configuration !== undefined) {
 		if (configuration.split('|')[0].split('=')[1]) {
 			var lists = configuration.split('|')[0].split('=')[1].split(',');
@@ -203,7 +203,7 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 			access_token = configuration.split('|')[2].split('=')[1];
 		}
 	}
-	
+
 	if (type == "movie") {
 		var trakt_type = "movie";
 	} else if (type == "series") {
@@ -228,7 +228,7 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 
 		if (list_id == "rec") {
 			if (access_token) {
-				recomendations(type, trakt_type, access_token,genre).then(metas => {
+				recomendations(type, trakt_type, access_token, genre).then(metas => {
 					metas = metas.filter(function (element) {
 						return element !== undefined;
 					});
@@ -252,7 +252,7 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 			}
 		}
 		else if (list_id == "trending") {
-			trending(type, trakt_type,genre).then(metas => {
+			trending(type, trakt_type, genre).then(metas => {
 				metas = metas.filter(function (element) {
 					return element !== undefined;
 				});
@@ -265,7 +265,7 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 
 		}
 		else if (list_id == "popular") {
-			popular(type,genre).then(metas => {
+			popular(type, genre).then(metas => {
 				metas = metas.filter(function (element) {
 					return element !== undefined;
 				});

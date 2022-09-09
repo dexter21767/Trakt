@@ -40,15 +40,15 @@ function list(list_ids) {
 	return promises;
 }
 
-function popular(type,genre) {
+function popular(type, genre) {
 	if (type == "movie") {
 		var url = `${host}/movies/popular?limit=100&extended=full`;
 	} else if (type == "series") {
 		var url = `${host}/shows/popular?limit=100&extended=full`;
 	}
-	if(genre  !== undefined) {
+	if (genre !== undefined) {
 		url = url + `&genres=${genre}`;
-   }
+	}
 	return request(url).then(data => {
 		const metas = [];
 		items = data.data;
@@ -81,12 +81,12 @@ function popular(type,genre) {
 	})
 }
 
-function trending(type, trakt_type,genre) {
+function trending(type, trakt_type, genre) {
 
 	var url = `${host}/${trakt_type}s/trending/?limit=100&extended=full`;
-	if(genre  !== undefined) {
+	if (genre !== undefined) {
 		url = url + `&genres=${genre}`;
-   }
+	}
 	return request(url).then(data => {
 		const metas = [];
 		items = data.data;
@@ -169,7 +169,7 @@ function getMeta(items, type, trakt_type) {
 
 }
 
-function recomendations(type, trakt_type, access_token,genre) {
+function recomendations(type, trakt_type, access_token, genre) {
 
 	var header = {
 		headers: {
@@ -177,8 +177,8 @@ function recomendations(type, trakt_type, access_token,genre) {
 		}
 	};
 	var url = `${host}/recommendations/${trakt_type}s/?limit=100&extended=full`;
-	if(genre  !== undefined) {
-		 url = url + `&genres=${genre}`;
+	if (genre !== undefined) {
+		url = url + `&genres=${genre}`;
 	}
 	//return request(url, header).then(data => { console.log(data.data); return getMeta(data.data, type, trakt_type); })
 	return request(url).then(data => {
