@@ -19,6 +19,7 @@ async function request(url, header) {
 			return res;
 		})
 		.catch(error => {
+			//console.error(error);
 			console.error('error on trakt.js request:', error.response.status, error.response.statusText, error.config.url);
 		});
 
@@ -229,4 +230,24 @@ async function getToken(code) { //working
 	})
 }
 
-module.exports = { getToken, watchlist, recomendations, list, list_catalog, popular, trending, client };
+
+function listOfLists(list_type) {
+	const popular = [];
+	var url = `${host}/lists/${list_type}/?limit=20`;
+	return request(url).then(data => {
+		for (let i = 0; i < data.data.length; i++) {
+			var list = data.data[i].list;
+			if (list.privacy == "public") {
+				popular.push({
+					name: list.name,
+					id: list.ids.trakt,
+					user: list.user.name
+				});
+			}
+		}
+		return popular;
+	});
+}
+
+
+module.exports = { getToken, watchlist, recomendations, list, list_catalog, popular, trending, client, listOfLists };

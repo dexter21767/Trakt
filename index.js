@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 app.get('/:configuration?/configure', (req, res) => {
 	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, public');
 	res.setHeader('content-type', 'text/html');
-	res.end(landingTemplate());
+	landingTemplate().then(template => { res.end(template) }).catch(error=>res.end(error));
 });
 
 app.get('/manifest.json', (req, res) => {
