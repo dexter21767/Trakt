@@ -38,7 +38,7 @@ app.get('/manifest.json', (req, res) => {
 
 		"name": "trakt - Popular movies",
 
-		"extra": [{ "name": "genre", "isRequired": false, "options": genres }]
+		"extra": [{ "name": "genre", "isRequired": false, "options": genres },{"name": "skip","isRequired": false}]
 	}, {
 		"type": "movie",
 
@@ -46,7 +46,7 @@ app.get('/manifest.json', (req, res) => {
 
 		"name": "trakt - Trending movies",
 
-		"extra": [{ "name": "genre", "isRequired": false, "options": genres }]
+		"extra": [{ "name": "genre", "isRequired": false, "options": genres },{"name": "skip","isRequired": false}]
 	}, {
 		"type": "series",
 
@@ -54,7 +54,7 @@ app.get('/manifest.json', (req, res) => {
 
 		"name": "trakt - Popular series",
 
-		"extra": [{ "name": "genre", "isRequired": false, "options": genres }]
+		"extra": [{ "name": "genre", "isRequired": false, "options": genres },{"name": "skip","isRequired": false}]
 	}, {
 		"type": "series",
 
@@ -62,7 +62,7 @@ app.get('/manifest.json', (req, res) => {
 
 		"name": "trakt - Trending series",
 
-		"extra": [{ "name": "genre", "isRequired": false, "options": genres }]
+		"extra": [{ "name": "genre", "isRequired": false, "options": genres },{"name": "skip","isRequired": false}]
 	}];
 
 
@@ -112,7 +112,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 
 					"name": lists_array[lists[i]] + " movies",
 
-					"extra": [{ "name": "genre", "isRequired": false, "options": genres }]
+					"extra": [{ "name": "genre", "isRequired": false, "options": genres },{"name": "skip","isRequired": false}]
 				};
 				c++;
 				catalog[c] = {
@@ -122,7 +122,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 
 					"name": lists_array[lists[i]] + " series",
 
-					"extra": [{ "name": "genre", "isRequired": false, "options": genres }]
+					"extra": [{ "name": "genre", "isRequired": false, "options": genres },{"name": "skip","isRequired": false}]
 				};
 				c++;
 			} else if (access_token.length > 0 && lists[i] == 'trakt_watchlist') {
@@ -180,13 +180,27 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 		var { resource, type, id, extra } = req.params;
 	}
 	if (extra !== undefined) {
-		extra = extra.split('=');
-		if (extra[0] == "genre") {
-			var genre = extra[1];
+		const params = new URLSearchParams(extra);
+		console.log(params);
+		//extra = extra.split('=');
+		for (const [key, value] of params) {
+			console.log('key',key,'value',value);
+		if (key == "genre"){
+			
+			var genre = value;
+		} else if (key == "skip"){
+			if (value >= 100){
+				var skip = (value/100)+1;
+			}
+			else{
+				var skip = 0;
+			}
+			
 		}
 	}
-	console.log(configuration, resource, type, id, genre);
-
+	}
+	console.log(configuration, resource, type, id);
+	console.log('extra: genre:', genre,'skip:',skip);
 	if (configuration !== undefined) {
 		if (configuration.split('|')[0].split('=')[1]) {
 			var lists = configuration.split('|')[0].split('=')[1].split(',');
@@ -215,11 +229,12 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 	if (id.match(/trakt_list:[0-9]*/i)) {
 		list_id = id.split(':')[1];
 		console.log('trakt_list:', list_id);
-		list_catalog(type, trakt_type, list_id).then(promises => {
+		list_catalog(type, trakt_type, list_id,skip).then(promises => {
 			Promise.all(promises).then(metas => {
 				metas = metas.filter(function (element) {
 					return element !== undefined;
 				});
+				console.log(metas.length);
 				res.send(JSON.stringify({ metas: metas }));
 				res.end();
 			})
@@ -230,7 +245,7 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 
 		if (list_id == "rec") {
 			if (access_token) {
-				recomendations(type, trakt_type, access_token, genre).then(metas => {
+				recomendations(type, trakt_type, access_token, genre,skip).then(metas => {
 					metas = metas.filter(function (element) {
 						return element !== undefined;
 					});
@@ -254,7 +269,7 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 			}
 		}
 		else if (list_id == "trending") {
-			trending(type, trakt_type, genre).then(metas => {
+			trending(type, trakt_type, genre,skip).then(metas => {
 				metas = metas.filter(function (element) {
 					return element !== undefined;
 				});
@@ -267,7 +282,7 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 
 		}
 		else if (list_id == "popular") {
-			popular(type, genre).then(metas => {
+			popular(type, genre,skip).then(metas => {
 				metas = metas.filter(function (element) {
 					return element !== undefined;
 				});
@@ -323,7 +338,9 @@ async function request(url, id, name, type) {
 
 					"id": "trakt_list:" + id,
 
-					"name": name
+					"name": name,
+
+					"extra": [{"name": "skip","isRequired": false}]
 				}
 			}
 		})

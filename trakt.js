@@ -1,5 +1,5 @@
 const axios = require('axios').default;
-
+const count = 100;
 const host = "https://api.trakt.tv";
 //const myurl = "http://127.0.0.1:63355";
 const myurl = "https://2ecbbd610840-trakt.baby-beamup.club/";
@@ -40,11 +40,11 @@ function list(list_ids) {
 	return promises;
 }
 
-function popular(type, genre) {
+function popular(type, genre,skip) {
 	if (type == "movie") {
-		var url = `${host}/movies/popular?limit=100&extended=full`;
+		var url = `${host}/movies/popular?page=${skip}&limit=${count}&extended=full`;
 	} else if (type == "series") {
-		var url = `${host}/shows/popular?limit=100&extended=full`;
+		var url = `${host}/shows/popular?page=${skip}&limit=${count}&extended=full`;
 	}
 	if (genre !== undefined) {
 		url = url + `&genres=${genre}`;
@@ -53,7 +53,7 @@ function popular(type, genre) {
 		const metas = [];
 		items = data.data;
 		var i = 0;
-		while (i < 100 && i < items.length) {
+		while (i < count && i < items.length) {
 			var item = items[i];
 			if (item.ids.imdb) {
 				if (item.trailer) {
@@ -81,9 +81,9 @@ function popular(type, genre) {
 	})
 }
 
-function trending(type, trakt_type, genre) {
+function trending(type, trakt_type,genre,skip) {
 
-	var url = `${host}/${trakt_type}s/trending/?limit=100&extended=full`;
+	var url = `${host}/${trakt_type}s/trending/?page=${skip}&limit=${count}&extended=full`;
 	if (genre !== undefined) {
 		url = url + `&genres=${genre}`;
 	}
@@ -91,7 +91,7 @@ function trending(type, trakt_type, genre) {
 		const metas = [];
 		items = data.data;
 		var i = 0;
-		while (i < 100 && i < items.length) {
+		while (i < count && i < items.length) {
 			var item = items[i];
 			if (item[trakt_type].ids.imdb) {
 				if (item[trakt_type].trailer) {
@@ -126,12 +126,12 @@ function watchlist(type, trakt_type, access_token) { //working
 			"Authorization": `Bearer ${access_token}`
 		}
 	};
-	var url = `${host}/sync/watchlist/${trakt_type}s/?limit=100&extended=full`;
+	var url = `${host}/sync/watchlist/${trakt_type}s/?limit=${count}&extended=full`;
 	return request(url, header).then(data => { return getMeta(data.data, type, trakt_type); })
 };
 
-function list_catalog(type, trakt_type, id) {
-	var url = `${host}/lists/${id}/items/${trakt_type}/?extended=full`;
+function list_catalog(type, trakt_type, id,skip) {
+	var url = `${host}/lists/${id}/items/${trakt_type}/?page=${skip}&limit=${count}&extended=full`;
 	return request(url).then(data => { return getMeta(data.data, type, trakt_type) })
 		;
 }
@@ -139,7 +139,7 @@ function list_catalog(type, trakt_type, id) {
 function getMeta(items, type, trakt_type) {
 	var metas = [];
 	var i = 0;
-	while (i < 100 && i < items.length) {
+	while (i < count && i < items.length) {
 		var item = items[i];
 		if (item.type == trakt_type) {
 			if (item[item.type].ids.imdb) {
@@ -169,14 +169,14 @@ function getMeta(items, type, trakt_type) {
 
 }
 
-function recomendations(type, trakt_type, access_token, genre) {
+function recomendations(type, trakt_type, access_token, genre,skip) {
 
 	var header = {
 		headers: {
 			"Authorization": `Bearer ${access_token}`
 		}
 	};
-	var url = `${host}/recommendations/${trakt_type}s/?limit=100&extended=full`;
+	var url = `${host}/recommendations/${trakt_type}s/?page=${skip}&limit=${count}&extended=full`;
 	if (genre !== undefined) {
 		url = url + `&genres=${genre}`;
 	}
@@ -185,7 +185,7 @@ function recomendations(type, trakt_type, access_token, genre) {
 		const metas = [];
 		items = data.data;
 		var i = 0;
-		while (i < 100 && i < items.length) {
+		while (i < count && i < items.length) {
 			var item = items[i];
 			if (item.ids.imdb) {
 				if (item.trailer) {
