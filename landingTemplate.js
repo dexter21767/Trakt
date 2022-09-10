@@ -246,7 +246,7 @@ async function landingTemplate() {
 		  <h3 class="gives">please start with this before doing any changes because all changes will be discarded when you press it.</h3><br>
 		 <a id="Authorize" class="install-link" href="https://trakt.tv/oauth/authorize?client_id=18bde7dcd858c86f9593addf9f66528f8c1443ec1bef9ecee501d1c5177ce281&redirect_uri=https%3A%2F%2F2ecbbd610840-trakt.baby-beamup.club%2F&response_type=code">
           
-       <button name="Authorize">Authorize</button>
+       <button name="Authorize" id="Auth">Authorize</button>
          </a>
 			<div class="separator"></div>
 		 <label class="label" for="trakt_defualt">trakt list:</label><br>
@@ -337,6 +337,11 @@ async function landingTemplate() {
 			   var access_token = query.split('=')[1];
 			}else{
             var access_token = 0;
+         }
+
+         if(access_token){
+            document.getElementById('Auth').style.background = 'red';
+            document.getElementById('Auth').innerHTML = 'Autherized';
          }
 			
 			if($('#trakt_trending').is(':checked')){
