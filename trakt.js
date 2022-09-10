@@ -19,7 +19,7 @@ async function request(url, header) {
 			return res;
 		})
 		.catch(error => {
-			console.error('error on trakt.js request:',error.response.status, error.response.statusText,error.config.url);
+			console.error('error on trakt.js request:', error.response.status, error.response.statusText, error.config.url);
 		});
 
 }
@@ -40,7 +40,7 @@ function list(list_ids) {
 	return promises;
 }
 
-function popular(type, genre,skip) {
+function popular(type, genre, skip) {
 	if (type == "movie") {
 		var url = `${host}/movies/popular?page=${skip}&limit=${count}&extended=full`;
 	} else if (type == "series") {
@@ -81,7 +81,7 @@ function popular(type, genre,skip) {
 	})
 }
 
-function trending(type, trakt_type,genre,skip) {
+function trending(type, trakt_type, genre, skip) {
 
 	var url = `${host}/${trakt_type}s/trending/?page=${skip}&limit=${count}&extended=full`;
 	if (genre !== undefined) {
@@ -130,7 +130,7 @@ function watchlist(type, trakt_type, access_token) { //working
 	return request(url, header).then(data => { return getMeta(data.data, type, trakt_type); })
 };
 
-function list_catalog(type, trakt_type, id,skip) {
+function list_catalog(type, trakt_type, id, skip) {
 	var url = `${host}/lists/${id}/items/${trakt_type}/?page=${skip}&limit=${count}&extended=full`;
 	return request(url).then(data => { return getMeta(data.data, type, trakt_type) })
 		;
@@ -169,7 +169,7 @@ function getMeta(items, type, trakt_type) {
 
 }
 
-function recomendations(type, trakt_type, access_token, genre,skip) {
+function recomendations(type, trakt_type, access_token, genre, skip) {
 
 	var header = {
 		headers: {
