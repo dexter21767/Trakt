@@ -330,8 +330,7 @@ async function landingTemplate() {
 			var data = [];
          data['lists']; 
 
-         var preset_lists =  ($('#popular_lists').val()).concat($('#trending_lists').val()).join(',') || '';
-         lists.push(preset_lists)
+         
          var query = window.location.search.substring(1);
 			if(query){
 			   var access_token = query.split('=')[1];
@@ -376,10 +375,10 @@ async function landingTemplate() {
          }
          
 			data['lists']=lists.join(',');
-			data['ids']=$('#trakt_lists').val().replaceAll(' ',',');
+         data['ids'] = ($('#popular_lists').val()).concat($('#trending_lists').val(),$('#trakt_lists').val().replaceAll(' ',',')).join(',') || '';
          if(access_token){
 			data['access_token']= access_token;
-         }
+      }
 			configurationValue = Object.keys(data).map(key => key + '=' + data[key]).join('|');
 			console.log(configurationValue);
 			const configuration = configurationValue && configurationValue.length ? '/' + configurationValue : '';
