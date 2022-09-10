@@ -152,6 +152,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 			res.send(manifest);
 			res.end();
 		}).catch((error) => {
+			res.send(error);
 			res.end();
 			console.error(error);
 		})
@@ -160,6 +161,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 		res.end();
 	}
 });
+
 
 app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 
@@ -285,12 +287,13 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 	}
 })
 
+
 async function list_cat(ids) {
 	const host = "https://api.trakt.tv";
 	return Promise.all(list(ids)).then(datas => {
 		const promises = [];
 		for (let i = 0; i < datas.length; i++) {
-
+			if(datas[i] !== undefined){
 			var name = datas[i].data.name;
 			var id = datas[i].data.ids.trakt;
 			if (id) {
@@ -298,6 +301,7 @@ async function list_cat(ids) {
 				promises.push(request(`${host}/lists/${id}/items/shows`, id, name, "series"));
 			}
 		}
+	}
 		return promises;
 	}).then(promises => {
 		return Promise.all(promises).then(catalogs => {
@@ -306,8 +310,6 @@ async function list_cat(ids) {
 		});
 	}).catch(error => { console.error(error) })
 }
-
-
 
 
 async function request(url, id, name, type) {
@@ -326,7 +328,7 @@ async function request(url, id, name, type) {
 			}
 		})
 		.catch(error => {
-			console.error(error);
+			console.error('error on index.js request:',error.response.status, error.response.statusText,error.config.url);
 		});
 
 }

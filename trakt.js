@@ -19,7 +19,7 @@ async function request(url, header) {
 			return res;
 		})
 		.catch(error => {
-			console.error(error);
+			console.error('error on trakt.js request:',error.response.status, error.response.statusText,error.config.url);
 		});
 
 }
