@@ -188,17 +188,18 @@ const {listOfLists} = require("./trakt");
 
 
 async function landingTemplate() {
+
    var trendingHTML = await listOfLists('trending').then(trending=>{
       var trendingHTML = '';
       for (let i = 0; i<trending.length;i++) {
-         trendingHTML += `<option value="${trending[i].id}">${trending[i].name}</option>`;
+         trendingHTML += `<option value="${trending[i].id}">${trending[i].name} by: ${trending[i].user}</option>`;
       }
       return trendingHTML;
    });
    var popularHTML = await listOfLists('popular').then(popular=>{
       var popularHTML = '';
    for (let i = 0; i<popular.length;i++) {
-      popularHTML += `<option value="${popular[i].id}">${popular[i].name}</option>`;
+      popularHTML += `<option value="${popular[i].id}">${popular[i].name} by: ${popular[i].user}</option>`;
    }
       return popularHTML;
    });
