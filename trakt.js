@@ -1,4 +1,6 @@
 const axios = require('axios').default;
+var _ = require('underscore');
+
 const count = 100;
 const host = "https://api.trakt.tv";
 //const myurl = "http://127.0.0.1:63355";
@@ -131,10 +133,24 @@ function watchlist(type, trakt_type, access_token) { //working
 	return request(url, header).then(data => { return getMeta(data.data, type, trakt_type); })
 };
 
-function list_catalog(type, trakt_type, id, skip) {
+function list_catalog(type, trakt_type, id, sort, skip) {
 	var url = `${host}/lists/${id}/items/${trakt_type}/?page=${skip}&limit=${count}&extended=full`;
-	return request(url).then(data => { return getMeta(data.data, type, trakt_type) })
-		;
+	return request(url).then(data => { return sortList(trakt_type, data.data, sort) }).then(items => { return getMeta(items, type, trakt_type) });
+}
+
+function sortList(trakt_type, items, sort) {
+	sort = sort.split(' ');
+	if (sort[0] == "added") { sort[0] = "listed_at" }
+	console.log(sort)
+	if (sort[0] == "listed_at") {
+		items = _.sortBy(items, sort[0]);
+	} else {
+		items = _.sortBy(items, function (item) { return item[trakt_type][sort[0]] });
+	}
+	if (sort[1] == 'desc') {
+		items = items.reverse();
+	}
+	return items;
 }
 
 function getMeta(items, type, trakt_type) {

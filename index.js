@@ -8,6 +8,7 @@ const manifest = require("./manifest.json");
 const landingTemplate = require('./landingTemplate');
 const lists_array = { 'trakt_trending': "trakt - Trending", 'trakt_popular': "trakt - Popular", 'trakt_watchlist': "trakt - Watchlist", 'trakt_rec': "trakt - Recommended" };
 const genres = ["action", "adventure", "animation", "anime", "comedy", "crime", "disaster", "documentary", "Donghua", "drama", "eastern", "family", "fan-film", "fantasy", "film-noir", "history", "holiday", "horror", "indie", "music", "musical", "mystery", "none", "road", "romance", "science-fiction", "short", "sports", "sporting-event", "suspense", "thriller", "tv-movie", "war", "western"];
+const sort = ["added asc", "added desc", "title asc", "title desc", "released asc", "released desc", "runtime asc", "runtime desc", "votes asc", "votes desc" , "rating asc", "rating desc"];
 
 app.use(cors())
 
@@ -27,7 +28,7 @@ app.get('/:configuration?/configure', (req, res) => {
 	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, public');
 	res.setHeader('content-type', 'text/html');
 	landingTemplate().then(template => { res.end(template) })
-	.catch(error=>console.log(error));
+		.catch(error => console.log(error));
 });
 
 app.get('/manifest.json', (req, res) => {
@@ -230,7 +231,7 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 	if (id.match(/trakt_list:[0-9]*/i)) {
 		list_id = id.split(':')[1];
 		console.log('trakt_list:', list_id);
-		list_catalog(type, trakt_type, list_id, skip).then(promises => {
+		list_catalog(type, trakt_type, list_id, genre, skip).then(promises => {
 			Promise.all(promises).then(metas => {
 				metas = metas.filter(function (element) {
 					return element !== undefined;
@@ -341,12 +342,16 @@ async function request(url, id, name, type) {
 
 					"name": name,
 
-					"extra": [{ "name": "skip", "isRequired": false }]
+					"extra": [{ "name": "genre", "isRequired": true, "options": sort }, { "name": "skip", "isRequired": false }]
 				}
 			}
 		})
 		.catch(error => {
-			console.error('error on index.js request:', error.response.status, error.response.statusText, error.config.url);
+			if (error.response !== undefined) {
+				console.error('error on index.js request:', error.response.status, error.response.statusText, error.config.url);
+			} else {
+				console.error(error);
+			}
 		});
 
 }
