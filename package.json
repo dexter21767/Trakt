@@ -4,12 +4,16 @@
 	"description": "Addon for getting Trakt's public and user lists, recommendations and watch list.",
 	"main": "server.js",
 	"scripts": {
-		"start": "node server.js"
+		"start": "node server.js",
+		"dev": "nodemon server.js"
 	},
 	"dependencies": {
 		"axios": "^0.27.2",
 		"cors": "^2.8.5",
 		"express": "^4.16.4",
 		"stremio-addon-sdk": "1.1.x"
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.19"
 	}
 }

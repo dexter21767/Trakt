@@ -1,13 +1,16 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-
-const { getToken, watchlist, recomendations, list, list_catalog, popular, trending, client } = require('./trakt.js');
-
+const path = require('path');
+const { getToken, watchlist, recomendations, list, list_catalog, popular, trending, searchLists, client } = require('./trakt.js');
 const manifest = require("./manifest.json");
-const landingTemplate = require('./landingTemplate');
+const { default: axios } = require('axios');
+
+app.set('trust proxy', true)
+app.use(cors());
+app.use(express.static(path.join(__dirname, 'vue', 'dist')));
+
 var lists_array = { 'trakt_trending': "trakt - Trending", 'trakt_popular': "trakt - Popular", 'trakt_watchlist': "trakt - Watchlist", 'trakt_rec': "trakt - Recommended" };
-app.use(cors())
 
 app.get('/', (req, res) => {
 	if (req.query.code) {
@@ -24,7 +27,7 @@ app.get('/', (req, res) => {
 app.get('/:configuration?/configure', (req, res) => {
 	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, public');
 	res.setHeader('content-type', 'text/html');
-	res.end(landingTemplate());
+	res.sendFile(path.join(__dirname, 'vue', 'dist', 'index.html'));
 });
 
 app.get('/manifest.json', (req, res) => {
@@ -60,6 +63,10 @@ app.get('/manifest.json', (req, res) => {
 	res.setHeader('Content-Type', 'application/json');
 	res.send(manifest);
 	res.end();
+});
+
+app.get('/search/:query', async (req, res) => {
+	res.send(await searchLists(req.params.query).catch(e => console.error));
 });
 
 app.get('/:configuration?/manifest.json', (req, res) => {

@@ -111,6 +111,12 @@ function list_catalog(type, trakt_type, id) {
 		;
 }
 
+function searchLists(query) {
+	const url = `${host}/search/list/?query=${query}`;
+	console.log(url);
+	return request(url).catch(e => console.error).then(res => res.data);
+}
+
 function getMeta(items, type, trakt_type) {
 	var metas = [];
 	var i = 0;
@@ -181,4 +187,4 @@ async function getToken(code) { //working
 	})
 }
 
-module.exports = { getToken, watchlist, recomendations, list, list_catalog, popular, trending, client };
+module.exports = { getToken, watchlist, recomendations, list, list_catalog, popular, trending, searchLists, client };
