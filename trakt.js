@@ -139,16 +139,18 @@ function list_catalog(type, trakt_type, id, sort, skip) {
 }
 
 function sortList(trakt_type, items, sort) {
-	sort = sort.split(' ');
-	if (sort[0] == "added") { sort[0] = "listed_at" }
-	console.log(sort)
-	if (sort[0] == "listed_at") {
-		items = _.sortBy(items, sort[0]);
-	} else {
-		items = _.sortBy(items, function (item) { return item[trakt_type][sort[0]] });
-	}
-	if (sort[1] == 'desc') {
-		items = items.reverse();
+	if (sort) {
+		sort = sort.split(' ');
+		if (sort[0] == "added") { sort[0] = "listed_at" }
+		console.log(sort)
+		if (sort[0] == "listed_at") {
+			items = _.sortBy(items, sort[0]);
+		} else {
+			items = _.sortBy(items, function (item) { return item[trakt_type][sort[0]] });
+		}
+		if (sort[1] == 'desc') {
+			items = items.reverse();
+		}
 	}
 	return items;
 }

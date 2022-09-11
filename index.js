@@ -8,7 +8,7 @@ const manifest = require("./manifest.json");
 const landingTemplate = require('./landingTemplate');
 const lists_array = { 'trakt_trending': "trakt - Trending", 'trakt_popular': "trakt - Popular", 'trakt_watchlist': "trakt - Watchlist", 'trakt_rec': "trakt - Recommended" };
 const genres = ["action", "adventure", "animation", "anime", "comedy", "crime", "disaster", "documentary", "Donghua", "drama", "eastern", "family", "fan-film", "fantasy", "film-noir", "history", "holiday", "horror", "indie", "music", "musical", "mystery", "none", "road", "romance", "science-fiction", "short", "sports", "sporting-event", "suspense", "thriller", "tv-movie", "war", "western"];
-const sort = ["added asc", "added desc", "title asc", "title desc", "released asc", "released desc", "runtime asc", "runtime desc", "votes asc", "votes desc" , "rating asc", "rating desc"];
+const sort = ["added asc", "added desc", "title asc", "title desc", "released asc", "released desc", "runtime asc", "runtime desc", "votes asc", "votes desc", "rating asc", "rating desc"];
 
 app.use(cors())
 
@@ -342,7 +342,7 @@ async function request(url, id, name, type) {
 
 					"name": name,
 
-					"extra": [{ "name": "genre", "isRequired": true, "options": sort }, { "name": "skip", "isRequired": false }]
+					"extra": [{ "name": "genre", "isRequired": false, "options": sort }, { "name": "skip", "isRequired": false }]
 				}
 			}
 		})
