@@ -1,16 +1,19 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-
-const { getToken, watchlist, recomendations, list, list_catalog, popular, trending, client } = require('./trakt.js');
-
+const path = require('path');
+const { getToken, watchlist, recomendations, list, list_catalog, popular, trending, searchLists, client } = require('./trakt.js');
 const manifest = require("./manifest.json");
-const landingTemplate = require('./landingTemplate');
+const { default: axios } = require('axios');
+
+app.set('trust proxy', true)
+app.use(cors());
+app.use(express.static(path.join(__dirname, 'vue', 'dist')));
+
 const lists_array = { 'trakt_trending': "trakt - Trending", 'trakt_popular': "trakt - Popular", 'trakt_watchlist': "trakt - Watchlist", 'trakt_rec': "trakt - Recommended" };
 const genres = ["action", "adventure", "animation", "anime", "comedy", "crime", "disaster", "documentary", "Donghua", "drama", "eastern", "family", "fan-film", "fantasy", "film-noir", "history", "holiday", "horror", "indie", "music", "musical", "mystery", "none", "road", "romance", "science-fiction", "short", "sports", "sporting-event", "suspense", "thriller", "tv-movie", "war", "western"];
 const sort = ["added asc", "added desc", "title asc", "title desc", "released asc", "released desc", "runtime asc", "runtime desc", "votes asc", "votes desc", "rating asc", "rating desc"];
 
-app.use(cors())
 
 app.get('/', (req, res) => {
 	if (req.query.code) {
@@ -27,8 +30,7 @@ app.get('/', (req, res) => {
 app.get('/:configuration?/configure', (req, res) => {
 	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, public');
 	res.setHeader('content-type', 'text/html');
-	landingTemplate().then(template => { res.end(template) })
-		.catch(error => console.log(error));
+	res.sendFile(path.join(__dirname, 'vue', 'dist', 'index.html'));
 });
 
 app.get('/manifest.json', (req, res) => {
@@ -72,6 +74,10 @@ app.get('/manifest.json', (req, res) => {
 	res.setHeader('Content-Type', 'application/json');
 	res.send(manifest);
 	res.end();
+});
+
+app.get('/search/:query', async (req, res) => {
+	res.send(await searchLists(req.params.query).catch(e => console.error));
 });
 
 app.get('/:configuration?/manifest.json', (req, res) => {

@@ -155,6 +155,12 @@ function sortList(trakt_type, items, sort) {
 	return items;
 }
 
+function searchLists(query) {
+	const url = `${host}/search/list/?query=${query}`;
+	console.log(url);
+	return request(url).catch(e => console.error).then(res => res.data);
+}
+
 function getMeta(items, type, trakt_type) {
 	var metas = [];
 	var i = 0;
@@ -268,4 +274,4 @@ function listOfLists(list_type) {
 }
 
 
-module.exports = { getToken, watchlist, recomendations, list, list_catalog, popular, trending, client, listOfLists };
+module.exports = { getToken, watchlist, recomendations, list, list_catalog, popular, trending, client, listOfLists, searchLists };
