@@ -180,12 +180,29 @@ button:active {
   background-color: rgb(255, 255, 255);
   box-shadow: 0 0.5vh 1vh rgba(0, 0, 0, 0.2);
 }
+button.multiselect.dropdown-toggle.btn.btn-default {
+   height: auto;
+}
 `;
-function landingTemplate() {
+const {listOfLists} = require("./trakt");
 
 
+async function landingTemplate() {
 
-
+   var trendingHTML = await listOfLists('trending').then(trending=>{
+      var trendingHTML = '';
+      for (let i = 0; i<trending.length;i++) {
+         trendingHTML += `<option value="${trending[i].id}">${trending[i].name} by: ${trending[i].user}</option>`;
+      }
+      return trendingHTML;
+   });
+   var popularHTML = await listOfLists('popular').then(popular=>{
+      var popularHTML = '';
+   for (let i = 0; i<popular.length;i++) {
+      popularHTML += `<option value="${popular[i].id}">${popular[i].name} by: ${popular[i].user}</option>`;
+   }
+      return popularHTML;
+   });
    const manifest = require("./manifest.json");
 
    const stylizedTypes = manifest.types.map(t => t[0].toUpperCase() + t.slice(1) + (t !== 'series' ? 's' : ''));
@@ -229,15 +246,24 @@ function landingTemplate() {
 		  <h3 class="gives">please start with this before doing any changes because all changes will be discarded when you press it.</h3><br>
 		 <a id="Authorize" class="install-link" href="https://trakt.tv/oauth/authorize?client_id=18bde7dcd858c86f9593addf9f66528f8c1443ec1bef9ecee501d1c5177ce281&redirect_uri=https%3A%2F%2F2ecbbd610840-trakt.baby-beamup.club%2F&response_type=code">
           
-       <button name="Authorize">Authorize</button>
+       <button name="Authorize" id="Auth">Authorize</button>
          </a>
 			<div class="separator"></div>
 		 <label class="label" for="trakt_defualt">trakt list:</label><br>
 		 <input type="checkbox" id="trakt_trending" value="trakt_trending" checked> trending</input><br>
 		 <input type="checkbox" id="trakt_popular" value="trakt_popular" checked> Popular</input><br>
 		  
-		  <div class="separator"></div>
-		 
+       <div class="separator"></div>
+       <label class="label" for="trending_lists">trakt trending lists:</label><br>
+       <select id="trending_lists" class="input" name="trending_lists[]" multiple="multiple">
+         ${trendingHTML}
+       </select> 
+        <div class="separator"></div>
+        <label class="label" for="popular_lists">trakt popular lists:</label><br>
+        <select id="popular_lists" class="input" name="popular_lists[]" multiple="multiple">
+          ${popularHTML}
+        </select> 
+        <div class="separator"></div>
 		  <label class="label" for="trakt_lists">trakt public lists ids:</label>
 		  <h3 class="gives">please separate ids with commas or spaces only and the id for user lists is written as user_slug:list_slug (example: 35,justin:imdb-top-rated-tv-shows,52,donxy:marvel-cinematic-universe,14,giladg:latest-releases or justin:imdb-top-rated-tv-shows 35 52 14 donxy:marvel-cinematic-universe giladg:latest-releases)</h3>
 		 <br>
@@ -286,6 +312,14 @@ function landingTemplate() {
 			$('#trakt_lists').change(function() {
 				generateInstallLink()
 			});
+         $('#trending_lists').multiselect({ 
+            nonSelectedText: 'No list',
+            onChange: () => generateInstallLink()
+        });
+        $('#popular_lists').multiselect({ 
+         nonSelectedText: 'No list',
+         onChange: () => generateInstallLink()
+        });
 			generateInstallLink();
           });
 
@@ -294,13 +328,19 @@ function landingTemplate() {
           function generateInstallLink() {
 			var lists = [];
 			var data = [];
-         data['lists'];
+         data['lists']; 
 
+         
          var query = window.location.search.substring(1);
 			if(query){
 			   var access_token = query.split('=')[1];
 			}else{
             var access_token = 0;
+         }
+
+         if(access_token){
+            document.getElementById('Auth').style.background = 'red';
+            document.getElementById('Auth').innerHTML = 'Autherized';
          }
 			
 			if($('#trakt_trending').is(':checked')){
@@ -333,11 +373,12 @@ function landingTemplate() {
 			})	
 			}
          }
+         
 			data['lists']=lists.join(',');
-			data['ids']=$('#trakt_lists').val().replaceAll(' ',',');
+         data['ids'] = ($('#popular_lists').val()).concat($('#trending_lists').val(),$('#trakt_lists').val().replaceAll(' ',',')).join(',') || '';
          if(access_token){
 			data['access_token']= access_token;
-         }
+      }
 			configurationValue = Object.keys(data).map(key => key + '=' + data[key]).join('|');
 			console.log(configurationValue);
 			const configuration = configurationValue && configurationValue.length ? '/' + configurationValue : '';
