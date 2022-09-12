@@ -288,7 +288,7 @@
                             <div class="mt-5 flex flex-col items-center">
                                 <a
                                     href="https://trakt.tv/oauth/authorize?client_id=18bde7dcd858c86f9593addf9f66528f8c1443ec1bef9ecee501d1c5177ce281&redirect_uri=https%3A%2F%2F2ecbbd610840-trakt.baby-beamup.club%2F&response_type=code">
-                                    <button type="button"
+                                    <button type="button"  id="Auth"
                                         class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Login
                                         to Trakt.tv</button></a>
                             </div>
@@ -602,6 +602,7 @@ const trendingModal = ref();
 
 onMounted(() => {
     getListsOflists()
+    generateInstallUrl()
     state.genericLists = new Dropdown(generic_Menu.value, generic_Button.value);
     state.modal = new Modal(searchModal.value);
     state.popularModal = new Modal(popularModal.value);
@@ -628,6 +629,11 @@ function generateInstallUrl() {
     } else {
         var access_token = 0;
     }
+    if(access_token){
+            document.getElementById('Auth').style.background = 'blue';
+            document.getElementById('Auth').innerHTML = 'Autherized';
+         }
+
     if ($('#trakt_trending').is(':checked')) {
         generic.push($('#trakt_trending').val());
     } else {

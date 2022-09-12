@@ -29,16 +29,7 @@ async function request(url, header) {
 
 // rab1t 
 function list(list_ids,access_token) {
-	let header;
-	if(access_token){
-	header = {
-		headers: {
-			"Authorization": `Bearer ${access_token}`
-		}
-	};
-	}else{
-	 header = {};
-	}
+	
 	const promises = [];
 	for (let i = 0; i < list_ids.length; i++) {
 		if (list_ids[i].split(':').length > 1) {
@@ -48,7 +39,10 @@ function list(list_ids,access_token) {
 		} else {
 			var url = `${host}/lists/${list_ids[i]}/`;
 		}
-		promises.push(request(url,header));
+		
+		
+		promises.push(request(url));
+		
 	}
 	return promises;
 }

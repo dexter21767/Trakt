@@ -7,5 +7,5 @@ npm run build
 cd ../
 git add --all
 git commit -am "Deploy"
-git push origin master
-git push beamup master
+git push origin main
+git push beamup main
