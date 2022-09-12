@@ -84,7 +84,7 @@
 
 
         <!-- Main modal -->
-<div id="defaultModal"  ref='instl' tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full justify-center items-center">
+<div id="installModal"  ref='installModal' tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full justify-center items-center">
     <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
         <!-- Modal content -->
         <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
@@ -461,13 +461,13 @@ const Button_popular = ref();
 const Menu_popular = ref();
 const Button_trending = ref();
 const Menu_trending = ref();
-const instl = ref();
+const installModal = ref();
 onMounted(() => {
     getListsOflists()
     state.dropdownPopular = new Dropdown(Menu_popular.value, Button_popular.value);
     state.dropdownTrending = new Dropdown(Menu_trending.value, Button_trending.value);
     state.modal = new Modal(searchModal.value);
-    state.install = new Modal(instl.value);
+    state.install = new Modal(installModal.value);
 });
 
 
