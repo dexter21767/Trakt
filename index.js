@@ -124,7 +124,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 				};
 				c++;
 				catalog[c] = {
-					"type": "series",
+					"type": "trakt",
 
 					"id": lists[i] + "_series",
 
@@ -319,7 +319,7 @@ async function list_cat(ids) {
 				var name = datas[i].data.name;
 				var id = datas[i].data.ids.trakt;
 				if (id) {
-					promises.push(request(`${host}/lists/${id}/items`,access_token, id, name));
+					promises.push(request(`${host}/lists/${id}/items`, id, name));
 				}
 			}
 		}
