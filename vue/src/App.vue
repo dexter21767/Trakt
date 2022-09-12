@@ -218,12 +218,11 @@
                         </div> -->
 
                         <div class="mt-10 flex flex-col">
-                            <button type="button"
-                                class="text-white bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mr-2">Donate</button>
-                            <button type="button"
+                            <button  @click="state.install.show();  generateInstallUrl();"  type="button"
                                 class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Install
                                 Addon</button>
                         </div>
+
 
                         <div class="mt-5 flex flex-col">
                             <p class="text-center text-gray-400">This addon was created by<br />
@@ -281,6 +280,7 @@ const state = reactive({
     dropdownTrending: null,
     lists_popular: null,
     lists_trending: null,
+    install: null,
 });
 
 const searchModal = ref();
@@ -288,12 +288,13 @@ const Button_popular = ref();
 const Menu_popular = ref();
 const Button_trending = ref();
 const Menu_trending = ref();
-
+const installModal = ref();
 onMounted(() => {
     getListsOflists()
     state.dropdownPopular = new Dropdown(Menu_popular.value, Button_popular.value);
     state.dropdownTrending = new Dropdown(Menu_trending.value, Button_trending.value);
     state.modal = new Modal(searchModal.value);
+    state.install = new Modal(installModal.value);
 });
 
 
@@ -305,6 +306,10 @@ async function getListsOflists() {
     state.lists_trending = list;
 }
 
+function generateInstallUrl() {
+    console.log(state.lists)
+}
+
 function addListUrl() {
     let url, username, slug, sort;
     [url, username, slug, sort] = state.listUrl.match(/https:\/\/trakt\.tv\/users\/([^\/?#]+)\/lists\/([^\/#?]+)(\?[^$]+)?/i);
@@ -313,17 +318,14 @@ function addListUrl() {
         alert('Invalid Trakt list URL, make sure it starts with https://trakt.tv/');
         return;
     }
-
     if (sort.split('?')[1]) {
         sort = sort.split('?')[1].split('=')[1].split(',');
     }
-    console.log(username, slug, sort)
 
-    state.lists.push({
-        username,
-        slug,
-        sort,
-    });
+    let id = sort.length? username+":"+slug+":"+sort[0]+":"+sort[1]:username+":"+slug;
+
+    state.lists.push({user:username, name:slug, slort: sort});
+    generateInstallUrl();
 }
 
 async function searchLists() {
@@ -336,7 +338,9 @@ function addList(list) {
         name: list.name,
         slug: list.id,
         username: list.user,
+        id:list.id
     });
+    generateInstallUrl();
 }
 
 function removeList(list) {
@@ -346,6 +350,7 @@ function removeList(list) {
     }
 
     state.lists.splice(index, 1);
+    generateInstallUrl();
 }
 </script>
 
