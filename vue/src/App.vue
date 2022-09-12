@@ -85,8 +85,7 @@
         </div>
 
 
-        <div class="relative min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 bg-gray-500 bg-no-repeat bg-cover bg-center relative items-center"
-            :style="`background-image: url(${manifest.background});`">
+        <div class="bg-img relative min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 bg-gray-500 bg-no-repeat bg-cover bg-center relative items-center"  :style="`background-image: url(${manifest.background});`">
             <div class="absolute bg-black opacity-60 inset-0 z-0"></div>
             <div class="max-w-md w-full space-y-8 p-10 bg-white shadow-lg rounded-xl z-10">
 
@@ -523,5 +522,12 @@ h1 {
     cursor: grabbing;
     cursor: -moz-grabbing;
     cursor: -webkit-grabbing;
+}
+
+.bg-img{
+    background: fixed;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: repeat-y;
 }
 </style>
