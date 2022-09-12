@@ -448,7 +448,9 @@ async function getListsOflists() {
     state.lists_trending = list;
 }
 
-
+function generateInstallUrl() {
+    console.log(state.lists)
+}
 
 function addListUrl() {
     let url, username, slug, sort;
@@ -464,12 +466,11 @@ function addListUrl() {
         alert('Invalid Trakt list URL, make sure it starts with https://trakt.tv/');
         return;
     }
-
-    state.lists.push({
-        username,
-        slug,
-        sort,
-    });
+    let id = sort.length? username+":"+slug+":"+sort[0]+":"+sort[1]:username+":"+slug;
+    function addList(list) {
+}
+    state.lists.push({user:username, name:slug, slort: sort});
+    generateInstallUrl();
 }
 
 
@@ -483,7 +484,9 @@ function addList(list) {
         name: list.name,
         slug: list.id,
         username: list.user,
+        id:list.id
     });
+    generateInstallUrl();
 }
 
 function removeList(list) {
@@ -493,6 +496,7 @@ function removeList(list) {
     }
 
     state.lists.splice(index, 1);
+    generateInstallUrl();
 }
 </script>
 
