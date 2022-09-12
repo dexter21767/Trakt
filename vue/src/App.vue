@@ -96,17 +96,21 @@
                             manifest.version }}</h2>
                         </div>
 
-                        <div class="separator"></div>
+                        <div class="flex items-center justify-center space-x-2 mt-5">
+                            <span class="h-px w-full bg-gray-200"></span>
+                        </div>
 
-                        <div class="items-center description">
+                        <div class="items-center mt-5 description">
                             <p>{{ manifest.description }}</p>
                             <h2 class="font-semibold text-lg mr-auto">This addon has more :</h2>
                             <ul v-html="stylizedTypes.map(t => `<li>${t}</li>`).join('')"></ul>
                         </div>
 
-                        <div class="separator"></div>
+                        <div class="flex items-center justify-center space-x-2 mt-5">
+                            <span class="h-px w-full bg-gray-200"></span>
+                        </div>
 
-                        <div class="flex flex-col sm:flex-row items-center">
+                        <div class="flex mt-5 flex-col sm:flex-row items-center">
                             <h2 class="font-semibold text-lg mr-auto">Popular Lists</h2>
                             <div class="w-full sm:w-auto sm:ml-auto mt-3 sm:mt-0"></div>
                         </div>
@@ -128,7 +132,11 @@
                         </div>
 
 
-                        <div class="separator"></div>
+                        <div class="flex items-center justify-center space-x-2 mt-5">
+                            <span class="h-px w-16 bg-gray-300"></span>
+                            <span class="text-gray-400 font-normal">or</span>
+                            <span class="h-px w-16 bg-gray-300"></span>
+                        </div>
 
 
                         <div class="flex flex-col sm:flex-row items-center">
@@ -151,10 +159,12 @@
                         </div>
 
 
-                        <div class="separator"></div>
+                        <div class="flex items-center justify-center space-x-2 mt-10">
+                            <span class="h-px w-full bg-gray-200"></span>
+                        </div>
 
 
-                        <div class="flex flex-col sm:flex-row items-center">
+                        <div class="flex flex-col mt-5 sm:flex-row items-center">
                             <h2 class="font-semibold text-lg mr-auto">Trakt Lists</h2>
                             <div class="w-full sm:w-auto sm:ml-auto mt-3 sm:mt-0"></div>
                         </div>
@@ -334,9 +344,11 @@
                                 class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Install
                                 Addon</button>
                         </div>
-                        
-                        <div class="mt-10 flex flex-col">
-                            <p style="text-align: center;">This addon was made by <a class="github" href="https://github.com/dexter21767">dexter21767</a> and <a class="github" href="https://github.com/rleroi">Rab1t</a>.</p>
+
+                        <div class="mt-5 flex flex-col">
+                            <p style="text-align: center;">This addon was made by <a class="github"
+                                    href="https://github.com/dexter21767">dexter21767</a> and <a class="github"
+                                    href="https://github.com/rleroi">Rab1t</a>.</p>
                         </div>
                         <!-- <div class="mt-5">
                             <div class="form">
@@ -483,6 +495,7 @@ const state = reactive({
     lists_popular: null,
     lists_trending: null,
 });
+
 const searchModal = ref();
 const Button_popular = ref();
 const Menu_popular = ref();
@@ -501,7 +514,7 @@ async function getListsOflists() {
     var list = (await axios.get(import.meta.env.VITE_APP_URL + '/lists/popular'))?.data || [];
     state.lists_popular = list.map(t => `<li><input id="${t.id}" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
           <label for="${t.id}" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">${t.name} by ${t.user}</label></li>`).join('');
-    
+
     var list = (await axios.get(import.meta.env.VITE_APP_URL + '/lists/trending'))?.data || [];
     state.lists_trending = list.map(t => `<li><input id="${t.id}" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
           <label for="${t.id}" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">${t.name} by ${t.user}</label></li>`).join('');
@@ -553,7 +566,8 @@ a.github {
     color: red;
     font-weight: bold;
 }
-.dropdown{
+
+.dropdown {
 
     width: fit-content;
     max-width: inherit;

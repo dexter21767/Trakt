@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const path = require('path');
-const { getToken, watchlist, recomendations, list, list_catalog, popular, trending, searchLists, client,listOfLists } = require('./trakt.js');
+const { getToken, watchlist, recomendations, list, list_catalog, popular, trending, searchLists, client, listOfLists } = require('./trakt.js');
 const manifest = require("./manifest.json");
 const { default: axios } = require('axios');
 

@@ -1,6 +1,6 @@
 {
     "id": "community.trakt-lists",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "name": "Trakt Lists by dexter21767",
     "description": "Addon for getting Trakt's public and user lists, recommendations and watch list.",
     "logo": "https://i.imgur.com/zPqau8y.png",
