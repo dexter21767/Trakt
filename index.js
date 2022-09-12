@@ -311,16 +311,6 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 
 
 async function list_cat(ids) {
-	let header;
-	if(access_token){
-	header = {
-		headers: {
-			"Authorization": `Bearer ${access_token}`
-		}
-	};
-	}else{
-	 header = {};
-	}
 	const host = "https://api.trakt.tv";
 	return Promise.all(list(ids)).then(datas => {
 		const promises = [];
