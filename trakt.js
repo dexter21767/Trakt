@@ -257,7 +257,7 @@ async function getToken(code) { //working
 function listOfLists(query) {
 	const popular = [];
 	if(query == 'trending'|| query == 'popular'){
-		var url = `${host}/lists/${query}/?limit=10`;
+		var url = `${host}/lists/${query}/?limit=20`;
 	}else{
 		var url = `${host}/search/list/?query=${query}`;
 	}
@@ -272,7 +272,7 @@ function listOfLists(query) {
 					user: list.user.name?list.user.name:list.user.username,
 					likes: list.likes,
 					item_count: list.item_count,
-					description: list.description.slice(0,300)
+					description: list.description
 				});
 			}
 		}

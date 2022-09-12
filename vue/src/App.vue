@@ -1,6 +1,6 @@
 <template>
     <div>
-        <!-- Main modal -->
+
         <!-- Search modal -->
         <div id="searchModal" ref="searchModal" tabindex="-1" aria-hidden="true"
             class="hidden overflow-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full">
@@ -59,7 +59,74 @@
                                             count: {{item.item_count}}</span>
                                     </h5>
                                 </a>
-                                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{item.description}}</p>
+                                <p :id="`${item.id}_less`" class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                    {{item.description.slice(0,100)}} <button class="readmore"
+                                        @click=" readmore(item.id)">read more</button></p>
+                                <p :id="`${item.id}_more`"
+                                    class="hidden mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                    {{item.description}} <button class="readless" @click=" readless(item.id)">read
+                                        less</button></p>
+                                <button @click="addList(item)"
+                                    class="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    Add list
+                                    <svg aria-hidden="true" class="ml-2 -mr-1 w-4 h-4" fill="currentColor"
+                                        viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- popular Lists modal -->
+        <div id="popularModal" ref="popularModal" tabindex="-1" aria-hidden="true"
+            class="hidden overflow-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full">
+            <div class="relative p-4 w-full max-w-2xl h-full md:max-h-screen overflow-hidden">
+                <!-- Modal content -->
+                <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 overflow-y-auto h-full">
+                    <!-- Modal header -->
+                    <div class="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600">
+                        <h3 class="w-full text-xl font-semibold text-gray-900 dark:text-white mr-4">Trakt popular Lists
+                        </h3>
+                        <button @click="state.popularModal.toggle" type="button"
+                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-6 space-y-6">
+                        <div class="flex flex-col w-full gap-3 z-10">
+                            <div v-for="item in state.lists_popular" :key="item.id"
+                                class="p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+                                <a href="#">
+                                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                        {{item.name}} <small>by {{item.user}}</small>
+                                        <span
+                                            class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{item.likes}}
+                                            likes</span>
+                                        <span
+                                            class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">Items
+                                            count: {{item.item_count}}</span>
+                                    </h5>
+                                </a>
+                                <p :id="`${item.id}_less`" class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                    {{item.description.slice(0,100)}} <button class="readmore"
+                                        @click=" readmore(item.id)">read more</button></p>
+                                <p :id="`${item.id}_more`"
+                                    class="hidden mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                    {{item.description}} <button class="readless" @click=" readless(item.id)">read
+                                        less</button></p>
                                 <button @click="addList(item)"
                                     class="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                     Add list
@@ -78,6 +145,68 @@
         </div>
 
 
+        <!-- trending Lists modal -->
+        <div id="trendingModal" ref="trendingModal" tabindex="-1" aria-hidden="true"
+            class="hidden overflow-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full">
+            <div class="relative p-4 w-full max-w-2xl h-full md:max-h-screen overflow-hidden">
+                <!-- Modal content -->
+                <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 overflow-y-auto h-full">
+                    <!-- Modal header -->
+                    <div class="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600">
+                        <h3 class="w-full text-xl font-semibold text-gray-900 dark:text-white mr-4">Trakt popular Lists
+                        </h3>
+                        <button @click="state.trendingModal.toggle" type="button"
+                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-6 space-y-6">
+                        <div class="flex flex-col w-full gap-3 z-10">
+                            <div v-for="item in state.lists_trending" :key="item.id"
+                                class="p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+                                <a href="#">
+                                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                        {{item.name}} <small>by {{item.user}}</small>
+                                        <span
+                                            class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{item.likes}}
+                                            likes</span>
+                                        <span
+                                            class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">Items
+                                            count: {{item.item_count}}</span>
+                                    </h5>
+                                </a>
+                                <p :id="`${item.id}_less`" class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                    {{item.description.slice(0,100)}} <button class="readmore"
+                                        @click=" readmore(item.id)">read more</button></p>
+                                <p :id="`${item.id}_more`"
+                                    class="hidden mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                    {{item.description}} <button class="readless" @click=" readless(item.id)">read
+                                        less</button></p>
+                                <button @click="addList(item)"
+                                    class="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    Add list
+                                    <svg aria-hidden="true" class="ml-2 -mr-1 w-4 h-4" fill="currentColor"
+                                        viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- install Modal -->
         <div id="installModal" ref='installModal' tabindex="-1" aria-hidden="true"
             class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full justify-center items-center">
             <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
@@ -86,7 +215,7 @@
                     <!-- Modal header -->
                     <div class="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600">
                         <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                            Donate to the addon
+                            Install the addon
                         </h3>
                         <button @click="state.install.hide();" type="button"
                             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -104,18 +233,18 @@
                     <!-- Modal body -->
                     <div class="p-6 space-y-6">
                         <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                            just Donate </p>
+                            Hello guys, seems like we have reached the end of our journey together, most things are working properly and most features are implemented. a huge thanks to Rab1t for his tremendous help.</p>
                         <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                            Donate ffs </p>
+                            I have decided to drop support for this addon. so now it's up to Rab1t to keep maintaining it or not. otherwise the source code is always available on my github.<br>Peace.</p>
                     </div>
                     <!-- Modal footer -->
                     <div
                         class="flex items-center p-6 space-x-2 rounded-b border-t border-gray-200 dark:border-gray-600">
-                        <button data-modal-toggle="defaultModal" type="button"
-                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Donate</button>
-                        <button data-modal-toggle="defaultModal" type="button"
-                            class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Install
-                            Addon</button>
+                        <a id="install_button" href="#"><button type="button"
+                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Install
+                                Addon</button></a>
+                       <button type="button" @click="state.install.hide();"
+                                class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Cancle</button>
                     </div>
                 </div>
             </div>
@@ -160,7 +289,56 @@
                                         class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Login
                                         to Trakt.tv</button></a>
                             </div>
-                            <div class="mt-5">
+
+                            <div class="flex items-center justify-center space-x-2 mt-5">
+                                <span class="h-px w-full bg-gray-200"></span>
+                            </div>
+
+                            <div class="flex items-center justify-center space-x-2 mt-5">
+                                <button id="generic_Button" ref="generic_Button"
+                                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                    type="button">Generic Lists: <svg aria-hidden="true" class="ml-2 w-4 h-4"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7"></path>
+                                    </svg></button>
+                            </div>
+                            <!-- Dropdown menu -->
+                            <div id="generic_Menu" ref="generic_Menu"
+                                class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
+                                <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
+                                    aria-labelledby="generic_Button" style="width: max-content;">
+                                    <li>
+                                        <input id="trakt_popular" type="checkbox" checked value="trakt_popular"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                                        <label for="trakt_popular"
+                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Popular</label>
+                                    </li>
+                                    <li>
+                                        <input id="trakt_trending" type="checkbox" checked value="trakt_trending"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                                        <label for="trakt_trending"
+                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Trending</label>
+                                    </li>
+                                    <li>
+                                        <input id="trakt_watchlist" type="checkbox" value="trakt_watchlist"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                                        <label for="trakt_watchlist"
+                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Watch List
+                                            (Requires Login)</label>
+                                    </li>
+                                    <li>
+                                        <input id="trakt_rec" type="checkbox" value="trakt_rec"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                                        <label for="trakt_rec"
+                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Recommendations
+                                            (Requires Login)</label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!--                            <div class="mt-5">
                                 <label class="inline-flex relative items-center cursor-pointer">
                                     <input type="checkbox" class="sr-only peer" v-model="checkRecommendations" disabled>
                                     <div
@@ -180,7 +358,7 @@
                                         Watchlist</span>
                                 </label>
                             </div>
-                        </div>
+                        </div> -->
 
 
                         <!-- <div class="flex items-center justify-center space-x-2 mt-10">
@@ -219,11 +397,11 @@
                         <span class="text-xs font-semibold text-gray-600 py-2 mt-10">Add lists</span>
 
                         <div class="flex rounded-md shadow-sm mt-5 w-full" role="group">
-                            <button type="button"
+                            <button @click="state.popularModal.show()" type="button"
                                 class="grow py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-l-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
                                 Browse popular lists
                             </button>
-                            <button type="button"
+                            <button @click="state.trendingModal.show()" type="button"
                                 class="grow py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-r-md border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
                                 Browse trending lists
                             </button>
@@ -376,6 +554,7 @@ import { reactive, ref, onMounted } from 'vue';
 import Modal from 'flowbite/src/components/modal';
 import Dropdown from 'flowbite/src/components/dropdown';
 import { useHead } from "@vueuse/head";
+import $ from 'jquery'
 import * as manifest from '../../manifest.json';
 // import SearchModal from './components/SearchModal.vue';
 
@@ -403,24 +582,27 @@ const state = reactive({
     checkRecommendations: false,
     lists: [],
     modal: null,
-    dropdownPopular: null,
-    dropdownTrending: null,
+    genericLists: null,
     lists_popular: null,
     lists_trending: null,
     install: null,
+    popularModal: null,
+    trendingModal: null
 });
 
 const searchModal = ref();
-const Button_popular = ref();
-const Menu_popular = ref();
-const Button_trending = ref();
-const Menu_trending = ref();
+const generic_Button = ref();
+const generic_Menu = ref();
 const installModal = ref();
+const popularModal = ref();
+const trendingModal = ref();
+
 onMounted(() => {
     getListsOflists()
-    state.dropdownPopular = new Dropdown(Menu_popular.value, Button_popular.value);
-    state.dropdownTrending = new Dropdown(Menu_trending.value, Button_trending.value);
+    state.genericLists = new Dropdown(generic_Menu.value, generic_Button.value);
     state.modal = new Modal(searchModal.value);
+    state.popularModal = new Modal(popularModal.value);
+    state.trendingModal = new Modal(trendingModal.value);
     state.install = new Modal(installModal.value);
 });
 
@@ -434,18 +616,66 @@ async function getListsOflists() {
 }
 
 function generateInstallUrl() {
+    const data = [];
     const lists = [];
+    var generic = [];
+    var query = window.location.search.substring(1);
+    if (query) {
+        var access_token = query.split('=')[1];
+    } else {
+        var access_token = 0;
+    }
+    if ($('#trakt_trending').is(':checked')) {
+        generic.push($('#trakt_trending').val());
+    } else {
+        generic = generic.filter(function (value, index, arr) {
+            return value != $('#trakt_trending').val();
+        })
+    }
+    if ($('#trakt_popular').is(':checked')) {
+        generic.push($('#trakt_popular').val());
+    } else {
+        generic = generic.filter(function (value, index, arr) {
+            return value != $('#trakt_popular').val();
+        })
+    }
+    if (access_token) {
+        if ($('#trakt_watchlist').is(':checked')) {
+            generic.push($('#trakt_watchlist').val());
+        } else {
+            generic = generic.filter(function (value, index, arr) {
+                return value != $('#trakt_watchlist').val();
+            })
+        }
+        if ($('#trakt_rec').is(':checked')) {
+            generic.push($('#trakt_rec').val());
+        } else {
+            generic = generic.filter(function (value, index, arr) {
+                return value != $('#trakt_rec').val();
+            })
+        }
+    }
     for (let list in state.lists) {
         console.log(state.lists[list])
         if (state.lists[list].id) {
             lists.push(state.lists[list].id)
         } else if (state.lists[list].sort) {
-            lists.push(`${state.lists[list].user}:${state.lists[list].slug}:${state.lists[list].sort[0]}:${state.lists[list].sort[1]}`)
+            lists.push(`${state.lists[list].username}:${state.lists[list].slug}:${state.lists[list].sort[0]}:${state.lists[list].sort[1]}`)
         } else {
-            lists.push(`${state.lists[list].user}:${state.lists[list].slug}`)
+            lists.push(`${state.lists[list].username}:${state.lists[list].slug}`)
         }
     }
     console.log(lists);
+    data['lists'] = generic.join(',');
+    data['ids'] = lists.join(',');
+    if (access_token) {
+        data['access_token'] = access_token;
+    }
+    let configurationValue = Object.keys(data).map(key => key + '=' + data[key]).join('|');
+    console.log(configurationValue);
+    const configuration = configurationValue && configurationValue.length ? '/' + configurationValue : '';
+    const location = window.location.host + configuration + '/manifest.json'
+    document.getElementById("install_button").href = 'stremio://' + location;
 }
 
 function addListUrl() {
@@ -460,9 +690,14 @@ function addListUrl() {
         sort = sort.split('?')[1].split('=')[1].split(',');
     }
 
-    let id = sort.length ? username + ":" + slug + ":" + sort[0] + ":" + sort[1] : username + ":" + slug;
 
-    state.lists.push({ user: username, name: slug, slort: sort });
+    state.lists.push({
+        name: slug,
+        slug: slug,
+        username: username,
+        sort: sort
+    });
+
 }
 
 async function searchLists() {
@@ -486,6 +721,15 @@ function removeList(list) {
     }
 
     state.lists.splice(index, 1);
+}
+function readmore(id) {
+    document.getElementById(`${id}_more`).classList.remove('hidden');
+    document.getElementById(`${id}_less`).classList.add('hidden');
+}
+
+function readless(id) {
+    document.getElementById(`${id}_less`).classList.remove('hidden');
+    document.getElementById(`${id}_more`).classList.add('hidden');
 }
 </script>
 

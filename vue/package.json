@@ -12,6 +12,7 @@
     "@vueuse/head": "^0.7.10",
     "axios": "^0.27.2",
     "flowbite": "^1.5.3",
+    "jquery": "^3.6.1",
     "vue": "^3.2.37",
     "vuedraggable": "^4.1.0"
   },
