@@ -146,7 +146,7 @@ function watchlist(type, trakt_type, access_token) { //working
 
 function list_catalog(id, sort, skip) {
 	var url = `${host}/lists/${id}/items/?page=${skip}&limit=${count}&extended=full`;
-	return request(url).then(data => { if(data.data){return sortList(data.data, sort)} }).then(items => { return getMeta(items) });
+	return request(url).then(data => { if(data !== undefined){return sortList(data.data, sort)} }).then(items => { if(items !== undefined){return getMeta(items)} });
 }
 
 function sortList(items, sort) {
@@ -171,7 +171,6 @@ function getMeta(items) {
 	var i = 0;
 	while (i < count && i < items.length) {
 		var item = items[i];
-		console.log(item);
 		if(item.movie||item.show){
 			if (item[item.type].ids.imdb) {
 				if (item[item.type].trailer) {

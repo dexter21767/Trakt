@@ -333,10 +333,10 @@ async function list_cat(ids) {
 }
 
 
-async function request(url,header, id, name) {
+async function request(url, id, name) {
 	//console.log(url,'url');
 	return await client
-		.get(url,header, { timeout: 5000 })
+		.get(url, { timeout: 5000 })
 		.then(res => {
 			if (res.data.length) {
 				return {
