@@ -13,7 +13,9 @@
                         <h3 class="w-full text-xl font-semibold text-gray-900 dark:text-white mr-4">
 
                             <form @submit.prevent="getLists" class="w-full">
-                                <label for="searchModalInput" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-gray-300">Search Trakt lists</label>
+                                <label for="searchModalInput"
+                                    class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-gray-300">Search
+                                    Trakt lists</label>
                                 <div class="relative">
                                     <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                                         <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400"
@@ -80,13 +82,78 @@
 
 
         <div class="relative min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 bg-gray-500 bg-no-repeat bg-cover bg-center relative items-center"
-            style="background-image: url('https://blog.stremio.com/wp-content/uploads/2022/08/shino-1024x632.png');">
+            :style="`background-image: url(${manifest.background});`">
             <div class="absolute bg-black opacity-60 inset-0 z-0"></div>
             <div class="max-w-md w-full space-y-8 p-10 bg-white shadow-lg rounded-xl z-10">
 
 
                 <div class="grid gap-8 grid-cols-1">
                     <div class="flex flex-col ">
+                        <div class="items-center header">
+                            <img class="logo" :src="manifest.logo">
+                            <h1 class="font-semibold text-lg mr-auto">{{ manifest.name }}</h1>
+                            <h2 class="font-semibold text-lg mr-auto" style="text-align: right;">Version: {{
+                            manifest.version }}</h2>
+                        </div>
+
+                        <div class="separator"></div>
+
+                        <div class="items-center description">
+                            <p>{{ manifest.description }}</p>
+                            <h2 class="font-semibold text-lg mr-auto">This addon has more :</h2>
+                            <ul v-html="stylizedTypes.map(t => `<li>${t}</li>`).join('')"></ul>
+                        </div>
+
+                        <div class="separator"></div>
+
+                        <div class="flex flex-col sm:flex-row items-center">
+                            <h2 class="font-semibold text-lg mr-auto">Popular Lists</h2>
+                            <div class="w-full sm:w-auto sm:ml-auto mt-3 sm:mt-0"></div>
+                        </div>
+
+
+
+                        <button id="dropdownButton" ref="Button_popular"
+                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                            type="button">Dropdown button <svg aria-hidden="true" class="ml-2 w-4 h-4" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg></button>
+
+                        <div id="dropdownMenu" ref="Menu_popular"
+                            class="dropdown hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
+                            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownButton"
+                                v-html="state.lists_popular"></ul>
+                        </div>
+
+
+                        <div class="separator"></div>
+
+
+                        <div class="flex flex-col sm:flex-row items-center">
+                            <h2 class="font-semibold text-lg mr-auto">Trending Lists</h2>
+                            <div class="w-full sm:w-auto sm:ml-auto mt-3 sm:mt-0"></div>
+                        </div>
+
+                        <button id="dropdownButton" ref="Button_trending"
+                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                            type="button">Dropdown button <svg aria-hidden="true" class="ml-2 w-4 h-4" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg></button>
+                        <!-- Dropdown menu -->
+                        <div id="dropdownMenu" ref="Menu_trending"
+                            class="dropdown hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
+                            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownButton"
+                                v-html="state.lists_trending"></ul>
+                        </div>
+
+
+                        <div class="separator"></div>
+
+
                         <div class="flex flex-col sm:flex-row items-center">
                             <h2 class="font-semibold text-lg mr-auto">Trakt Lists</h2>
                             <div class="w-full sm:w-auto sm:ml-auto mt-3 sm:mt-0"></div>
@@ -95,7 +162,9 @@
 
                         <div class="mt-5">
                             <form @submit.prevent="getLists">
-                                <label for="searchInput" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-gray-300">Search Trakt lists</label>
+                                <label for="searchInput"
+                                    class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-gray-300">Search
+                                    Trakt lists</label>
                                 <div class="relative">
                                     <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                                         <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400"
@@ -116,14 +185,16 @@
                         </div>
 
                         <div class="flex items-center justify-center space-x-2 mt-5">
-                                <span class="h-px w-16 bg-gray-300"></span>
-                                <span class="text-gray-400 font-normal">or</span>
-                                <span class="h-px w-16 bg-gray-300"></span>
-                            </div>
+                            <span class="h-px w-16 bg-gray-300"></span>
+                            <span class="text-gray-400 font-normal">or</span>
+                            <span class="h-px w-16 bg-gray-300"></span>
+                        </div>
 
                         <div class="mt-5">
                             <form @submit.prevent="addListUrl">
-                                <label for="urlInput" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-gray-300">Paste list URL</label>
+                                <label for="urlInput"
+                                    class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-gray-300">Paste list
+                                    URL</label>
                                 <div class="relative">
                                     <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -149,16 +220,21 @@
                         <div class="mt-10">
                             <span class="text-xs font-semibold text-gray-600 py-2">Your lists</span>
 
-                            <draggable v-if="state.lists.length" v-model="state.lists" group="lists" item-key="list.slug" @start="state.drag=true" @end="state.drag=false" class="mt-5 w-full text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <draggable v-if="state.lists.length" v-model="state.lists" group="lists"
+                                item-key="list.slug" @start="state.drag=true" @end="state.drag=false"
+                                class="mt-5 w-full text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 <template #item="{element}">
-                                    <div class="grabbable py-2 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600 flex">
-                                        <span class="mr-2" style="line-height: 32px;">{{element.name || element.slug}}</span>
-                                        <span style="line-height: 32px;" class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-auto mr-2">{{element.username}}</span>
+                                    <div
+                                        class="grabbable py-2 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600 flex">
+                                        <span class="mr-2" style="line-height: 32px;">{{element.name ||
+                                        element.slug}}</span>
+                                        <span style="line-height: 32px;"
+                                            class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-auto mr-2">{{element.username}}</span>
                                         <button type="button"
                                             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
                                             @click="removeList(element)">
-                                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
+                                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor"
+                                                viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                                 <path fill-rule="evenodd"
                                                     d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                                     clip-rule="evenodd"></path>
@@ -181,16 +257,22 @@
                             <span class="text-xs font-semibold text-gray-600 py-2">Add special lists</span>
                             <div class="mt-5">
                                 <label class="inline-flex relative items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer" v-model="checkTrending">
-                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Trakt Trending</span>
+                                    <input type="checkbox" class="sr-only peer" v-model="checkTrending">
+                                    <div
+                                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                                    </div>
+                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Trakt
+                                        Trending</span>
                                 </label>
                             </div>
                             <div class="mt-5">
                                 <label class="inline-flex relative items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer" v-model="checkPopular">
-                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Trakt Popular</span>
+                                    <input type="checkbox" class="sr-only peer" v-model="checkPopular">
+                                    <div
+                                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                                    </div>
+                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Trakt
+                                        Popular</span>
                                 </label>
                             </div>
                         </div>
@@ -200,22 +282,31 @@
                         </div>
 
                         <div class="mt-10">
-                            <span class="text-xs font-semibold text-gray-600 py-2">Add personal lists (requires Trakt login)</span>
+                            <span class="text-xs font-semibold text-gray-600 py-2">Add personal lists (requires Trakt
+                                login)</span>
                             <div class="mt-5 flex flex-col">
-                                <button type="button" class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Login to Trakt.tv</button>
+                                <button type="button"
+                                    class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Login
+                                    to Trakt.tv</button>
                             </div>
                             <div class="mt-5">
                                 <label class="inline-flex relative items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer" v-model="checkRecommendations">
-                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Your Recommendations</span>
+                                    <input type="checkbox" class="sr-only peer" v-model="checkRecommendations">
+                                    <div
+                                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                                    </div>
+                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Your
+                                        Recommendations</span>
                                 </label>
                             </div>
                             <div class="mt-5">
                                 <label class="inline-flex relative items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer" v-model="checkWatchlist">
-                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Your Watchlist</span>
+                                    <input type="checkbox" class="sr-only peer" v-model="checkWatchlist">
+                                    <div
+                                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                                    </div>
+                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Your
+                                        Watchlist</span>
                                 </label>
                             </div>
                         </div>
@@ -224,21 +315,29 @@
                             <span class="h-px w-full bg-gray-200"></span>
                         </div>
 
-                        <div class="mt-10">
-                            <a href="https://ratingposterdb.com/api-key/" target="_blank" class="text-xs font-semibold text-gray-600 py-2">RPDB API (?)</a>
-                            <input type="text" id="company" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mt-5" placeholder="Paste RPDB API Key (optional)">
+                        <!-- <div class="mt-10">
+                            <a href="https://ratingposterdb.com/api-key/" target="_blank"
+                                class="text-xs font-semibold text-gray-600 py-2">RPDB API (?)</a>
+                            <input type="text" id="company"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mt-5"
+                                placeholder="Paste RPDB API Key (optional)">
                         </div>
 
                         <div class="flex items-center justify-center space-x-2 mt-10">
                             <span class="h-px w-full bg-gray-200"></span>
-                        </div>
+                        </div> -->
 
                         <div class="mt-10 flex flex-col">
-                            <button type="button" class="text-white bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mr-2">Donate</button>
-                            <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Install Addon</button>
+                            <button type="button"
+                                class="text-white bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mr-2">Donate</button>
+                            <button type="button"
+                                class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Install
+                                Addon</button>
                         </div>
-
-
+                        
+                        <div class="mt-10 flex flex-col">
+                            <p style="text-align: center;">This addon was made by <a class="github" href="https://github.com/dexter21767">dexter21767</a> and <a class="github" href="https://github.com/rleroi">Rab1t</a>.</p>
+                        </div>
                         <!-- <div class="mt-5">
                             <div class="form">
                                 <div class="md:space-y-2 mb-3">
@@ -351,6 +450,22 @@ import draggable from 'vuedraggable';
 import axios from 'axios';
 import { reactive, ref, onMounted } from 'vue';
 import Modal from 'flowbite/src/components/modal';
+import Dropdown from 'flowbite/src/components/dropdown';
+import * as manifest from '../../manifest.json';
+import { useHead } from "@vueuse/head";
+
+const stylizedTypes = manifest.types.map(t => t[0].toUpperCase() + t.slice(1));
+
+useHead({
+    title: manifest.name + ' - Stremio Addon',
+    link: [
+        {
+            rel: "icon",
+            type: "image/svg+xml",
+            href: manifest.logo,
+        }
+    ],
+})
 
 const state = reactive({
     searchResults: [],
@@ -363,13 +478,36 @@ const state = reactive({
     checkRecommendations: false,
     lists: [],
     modal: null,
+    dropdownPopular: null,
+    dropdownTrending: null,
+    lists_popular: null,
+    lists_trending: null,
 });
-
 const searchModal = ref();
+const Button_popular = ref();
+const Menu_popular = ref();
+const Button_trending = ref();
+const Menu_trending = ref();
 
 onMounted(() => {
+    getListsOflists()
+    state.dropdownPopular = new Dropdown(Menu_popular.value, Button_popular.value);
+    state.dropdownTrending = new Dropdown(Menu_trending.value, Button_trending.value);
     state.modal = new Modal(searchModal.value);
 });
+
+
+async function getListsOflists() {
+    var list = (await axios.get(import.meta.env.VITE_APP_URL + '/lists/popular'))?.data || [];
+    state.lists_popular = list.map(t => `<li><input id="${t.id}" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+          <label for="${t.id}" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">${t.name} by ${t.user}</label></li>`).join('');
+    
+    var list = (await axios.get(import.meta.env.VITE_APP_URL + '/lists/trending'))?.data || [];
+    state.lists_trending = list.map(t => `<li><input id="${t.id}" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+          <label for="${t.id}" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">${t.name} by ${t.user}</label></li>`).join('');
+}
+
+
 
 function addListUrl() {
     let url, username, slug;
@@ -384,6 +522,7 @@ function addListUrl() {
         slug,
     });
 }
+
 
 async function getLists() {
     state.modal.show();
@@ -410,14 +549,43 @@ function removeList(list) {
 
 
 <style scoped>
+a.github {
+    color: red;
+    font-weight: bold;
+}
+.dropdown{
+
+    width: fit-content;
+    max-width: inherit;
+
+
+}
+
+h1 {
+    font-size: x-large;
+    text-align: center;
+    color: red;
+    padding-top: 10px;
+}
+
+.separator {
+    margin-bottom: 4vh;
+}
+
+.logo {
+    margin: auto;
+    max-width: 200px;
+}
+
 .grabbable {
-    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: move;
+    /* fallback if grab cursor is unsupported */
     cursor: grab;
     cursor: -moz-grab;
     cursor: -webkit-grab;
 }
 
- /* (Optional) Apply a "closed-hand" cursor during drag operation. */
+/* (Optional) Apply a "closed-hand" cursor during drag operation. */
 .grabbable:active {
     cursor: grabbing;
     cursor: -moz-grabbing;

@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vueuse/head": "^0.7.10",
     "axios": "^0.27.2",
     "flowbite": "^1.5.3",
     "vue": "^3.2.37",
