@@ -480,7 +480,18 @@ async function getListsOflists() {
 }
 
 function generateInstallUrl() {
-    console.log(state.lists)
+    const lists = [];
+    for(let list in state.lists){
+    console.log(state.lists[list])
+    if(state.lists[list].id){
+        lists.push(state.lists[list].id)
+    }else if(state.lists[list].sort){
+        lists.push(`${state.lists[list].user}:${state.lists[list].slug}:${state.lists[list].sort[0]}:${state.lists[list].sort[1]}`)
+    }else{
+        lists.push(`${state.lists[list].user}:${state.lists[list].slug}`)
+    }
+    }
+    console.log(lists);
 }
 
 function addListUrl() {
