@@ -28,12 +28,17 @@ async function request(url, header) {
 }
 
 // rab1t 
-function list(list_ids) {
-	const header = {
+function list(list_ids,access_token) {
+	let header;
+	if(access_token){
+	header = {
 		headers: {
 			"Authorization": `Bearer ${access_token}`
 		}
 	};
+	}else{
+	 header = {};
+	}
 	const promises = [];
 	for (let i = 0; i < list_ids.length; i++) {
 		if (list_ids[i].split(':').length > 1) {
@@ -49,7 +54,7 @@ function list(list_ids) {
 }
 
 function popular(type, genre, skip) {
-	if (type == "movie") {
+	if (type == "movies") {
 		var url = `${host}/movies/popular?page=${skip}&limit=${count}&extended=full`;
 	} else if (type == "series") {
 		var url = `${host}/shows/popular?page=${skip}&limit=${count}&extended=full`;
@@ -73,7 +78,7 @@ function popular(type, genre, skip) {
 				var year = item.year ? item.year.toString() : "N/A";
 				metas.push({
 					"id": item.ids.imdb,
-					"type": type,
+					"type": item.type =="movie"?"movie":"series",
 					"name": item.title,
 					"poster": `https://images.metahub.space/poster/small/${item.ids.imdb}/img`,
 					"background": `https://images.metahub.space/background/medium/${item.ids.imdb}/img`,
@@ -89,35 +94,43 @@ function popular(type, genre, skip) {
 	})
 }
 
-function trending(type, trakt_type, genre, skip) {
-
+function trending(trakt_type, genre, skip) {
+	if(skip == undefined){
+		skip = 1;
+	}
 	var url = `${host}/${trakt_type}s/trending/?page=${skip}&limit=${count}&extended=full`;
+	
 	if (genre !== undefined) {
 		url = url + `&genres=${genre}`;
 	}
+	
 	return request(url).then(data => {
 		const metas = [];
 		items = data.data;
 		var i = 0;
 		while (i < count && i < items.length) {
-			var item = items[i];
-			if (item[trakt_type].ids.imdb) {
-				if (item[trakt_type].trailer) {
-					var trailer = [{ source: item[trakt_type].trailer.split('?v=')[1], type: "Trailer" }];
+			if(items[i].movie){
+				var item = items[i].movie;
+			}else if(items[i].show){
+				var item = items[i].show;
+			}
+			if (item.ids.imdb) {
+				if (item.trailer) {
+					var trailer = [{ source: item.trailer.split('?v=')[1], type: "Trailer" }];
 					//var trailer = [{ "ytId":  item[trakt_type].trailer.split('?v=')[1]}];
 				} else {
 					var trailer = [];
 				}
-				var year = item[trakt_type].year ? item[trakt_type].year.toString() : "N/A";
+				var year = item.year ? item.year.toString() : "N/A";
 				metas.push({
-					"id": item[trakt_type].ids.imdb,
-					"type": type,
-					"name": item[trakt_type].title,
-					"poster": `https://images.metahub.space/poster/small/${item[trakt_type].ids.imdb}/img`,
-					"background": `https://images.metahub.space/background/medium/${item[trakt_type].ids.imdb}/img`,
+					"id": item.ids.imdb,
+					"type": item.type =="movie"?"movie":"series",
+					"name": item.title,
+					"poster": `https://images.metahub.space/poster/small/${item.ids.imdb}/img`,
+					"background": `https://images.metahub.space/background/medium/${item.ids.imdb}/img`,
 					"releaseInfo": year,
-					"description": item[trakt_type].overview || '',
-					"genres": item[trakt_type].genres || [],
+					"description": item.overview || '',
+					"genres": item.genres || [],
 					"trailers": trailer || []
 				});
 			}
@@ -128,22 +141,21 @@ function trending(type, trakt_type, genre, skip) {
 }
 
 function watchlist(type, trakt_type, access_token) { //working
-
 	const header = {
 		headers: {
 			"Authorization": `Bearer ${access_token}`
 		}
 	};
 	var url = `${host}/sync/watchlist/${trakt_type}s/?limit=${count}&extended=full`;
-	return request(url, header).then(data => { return getMeta(data.data, type, trakt_type); })
+	return request(url, header).then(data => { return getMeta(data.data); })
 };
 
-function list_catalog(type, trakt_type, id, sort, skip) {
-	var url = `${host}/lists/${id}/items/${trakt_type}/?page=${skip}&limit=${count}&extended=full`;
-	return request(url).then(data => { return sortList(trakt_type, data.data, sort) }).then(items => { return getMeta(items, type, trakt_type) });
+function list_catalog(id, sort, skip) {
+	var url = `${host}/lists/${id}/items/?page=${skip}&limit=${count}&extended=full`;
+	return request(url).then(data => { return sortList(data.data, sort) }).then(items => { return getMeta(items) });
 }
 
-function sortList(trakt_type, items, sort) {
+function sortList(items, sort) {
 	if (sort) {
 		sort = sort.split(' ');
 		if (sort[0] == "added") { sort[0] = "listed_at" }
@@ -151,7 +163,7 @@ function sortList(trakt_type, items, sort) {
 		if (sort[0] == "listed_at") {
 			items = _.sortBy(items, sort[0]);
 		} else {
-			items = _.sortBy(items, function (item) { return item[trakt_type][sort[0]] });
+			items = _.sortBy(items, function (item) { return item[item.type][sort[0]] });
 		}
 		if (sort[1] == 'desc') {
 			items = items.reverse();
@@ -160,29 +172,29 @@ function sortList(trakt_type, items, sort) {
 	return items;
 }
 
-function getMeta(items, type, trakt_type) {
+function getMeta(items) {
 	var metas = [];
 	var i = 0;
 	while (i < count && i < items.length) {
 		var item = items[i];
-		if (item.type == trakt_type) {
+		if(item.type==("movie"||"show")){
 			if (item[item.type].ids.imdb) {
-				if (item[trakt_type].trailer) {
-					var trailer = [{ source: item[trakt_type].trailer.split('?v=')[1], type: "Trailer" }];
+				if (item[item.type].trailer) {
+					var trailer = [{ source: item[item.type].trailer.split('?v=')[1], type: "Trailer" }];
 					//var trailer = [{"ytId": item[trakt_type].trailer.split('?v=')[1] }];
 				} else {
 					var trailer = [];
 				}
-				var year = item[trakt_type].year ? item[trakt_type].year.toString() : "N/A";
+				var year = item[item.type].year ? item[item.type].year.toString() : "N/A";
 				metas.push({
-					"id": item[trakt_type].ids.imdb,
-					"type": type,
-					"name": item[trakt_type].title,
-					"poster": `https://images.metahub.space/poster/small/${item[trakt_type].ids.imdb}/img`,
-					"background": `https://images.metahub.space/background/medium/${item[trakt_type].ids.imdb}/img`,
+					"id": item[item.type].ids.imdb,
+					"type": item.type =="movie"?"movie":"series",
+					"name": item[item.type].title,
+					"poster": `https://images.metahub.space/poster/small/${item[item.type].ids.imdb}/img`,
+					"background": `https://images.metahub.space/background/medium/${item[item.type].ids.imdb}/img`,
 					"releaseInfo": year,
-					"description": item[trakt_type].overview || '',
-					"genres": item[trakt_type].genres || [],
+					"description": item[item.type].overview || '',
+					"genres": item[item.type].genres || [],
 					"trailers": trailer || []
 				});
 			}
@@ -193,14 +205,14 @@ function getMeta(items, type, trakt_type) {
 
 }
 
-function recomendations(type, trakt_type, access_token, genre, skip) {
+function recomendations(access_token, genre, skip) {
 
 	var header = {
 		headers: {
 			"Authorization": `Bearer ${access_token}`
 		}
 	};
-	var url = `${host}/recommendations/${trakt_type}s/?page=${skip}&limit=${count}&extended=full`;
+	var url = `${host}/recommendations/?page=${skip}&limit=${count}&extended=full`;
 	if (genre !== undefined) {
 		url = url + `&genres=${genre}`;
 	}
@@ -221,7 +233,7 @@ function recomendations(type, trakt_type, access_token, genre, skip) {
 				var year = item.year ? item.year.toString() : "N/A";
 				metas.push({
 					"id": item.ids.imdb,
-					"type": type,
+					"type": item.type =="movie"?"movie":"series",
 					"name": item.title,
 					"poster": `https://images.metahub.space/poster/small/${item.ids.imdb}/img`,
 					"background": `https://images.metahub.space/background/medium/${item.ids.imdb}/img`,

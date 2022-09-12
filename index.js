@@ -36,7 +36,7 @@ app.get('/:configuration?/configure', (req, res) => {
 app.get('/manifest.json', (req, res) => {
 
 	manifest.catalogs = [{
-		"type": "movie",
+		"type": "trakt",
 
 		"id": "trakt_popular_movies",
 
@@ -44,7 +44,7 @@ app.get('/manifest.json', (req, res) => {
 
 		"extra": [{ "name": "genre", "isRequired": false, "options": genres }, { "name": "skip", "isRequired": false }]
 	}, {
-		"type": "movie",
+		"type": "trakt",
 
 		"id": "trakt_trending_movies",
 
@@ -52,7 +52,7 @@ app.get('/manifest.json', (req, res) => {
 
 		"extra": [{ "name": "genre", "isRequired": false, "options": genres }, { "name": "skip", "isRequired": false }]
 	}, {
-		"type": "series",
+		"type": "trakt",
 
 		"id": "trakt_popular_series",
 
@@ -60,7 +60,7 @@ app.get('/manifest.json', (req, res) => {
 
 		"extra": [{ "name": "genre", "isRequired": false, "options": genres }, { "name": "skip", "isRequired": false }]
 	}, {
-		"type": "series",
+		"type": "trakt",
 
 		"id": "trakt_trending_series",
 
@@ -114,9 +114,9 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 			console.log(lists[i])
 			if ((access_token.length > 0 && lists[i] == 'trakt_rec') || (lists[i] == 'trakt_trending' || lists[i] == 'trakt_popular')) {
 				catalog[c] = {
-					"type": "movie",
+					"type": 'trakt',
 
-					"id": lists[i] + "_movies",
+					"id": lists[i]+ "_movies",
 
 					"name": lists_array[lists[i]] + " movies",
 
@@ -135,26 +135,18 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 				c++;
 			} else if (access_token.length > 0 && lists[i] == 'trakt_watchlist') {
 				catalog[c] = {
-					"type": "movie",
+					"type": 'trakt',
 
-					"id": lists[i] + "_movies",
+					"id": lists[i],
 
-					"name": lists_array[lists[i]] + " movies"
-				};
-				c++;
-				catalog[c] = {
-					"type": "series",
-
-					"id": lists[i] + "_series",
-
-					"name": lists_array[lists[i]] + " series"
+					"name": lists_array[lists[i]] 
 				};
 				c++;
 			}
 		}
 	}
 	if (ids) {
-		list_cat(ids).then((data) => {
+		list_cat(ids,access_token).then((data) => {
 			manifest.catalogs = catalog.concat(data);
 			manifest.catalogs = manifest.catalogs.filter(Boolean);
 			res.send(manifest);
@@ -176,20 +168,23 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, public');
 	res.setHeader('Content-Type', 'application/json');
 
-
+	const arr = ["movies" , "series" , "trakt"];
 	if (req.params.resource == "catalog") {
 		var { configuration, resource, type, id, extra } = req.params;
-	} else if (req.params.resource == ("movie" || "series")) {
+	} else if (arr.includes(req.params.resource)) {
 		//var { resource, type, id, extra } = req.params;
+		console.log('dexter')
 		var type = req.params.resource;
 		var id = req.params.type;
 		var extra = req.params.id;
 	} else {
 		var { resource, type, id, extra } = req.params;
 	}
+	console.log('req.params.resource',req.params.resource);
+	console.log('req.params',req.params);
 	if (extra !== undefined) {
 		const params = new URLSearchParams(extra);
-		console.log(params);
+		console.log('params',extra);
 		//extra = extra.split('=');
 		for (const [key, value] of params) {
 			console.log('key', key, 'value', value);
@@ -209,35 +204,33 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 	}
 	console.log(configuration, resource, type, id);
 	console.log('extra: genre:', genre, 'skip:', skip);
+	let lists,ids,access_token;
 	if (configuration !== undefined) {
 		if (configuration.split('|')[0].split('=')[1]) {
-			var lists = configuration.split('|')[0].split('=')[1].split(',');
+		 lists = configuration.split('|')[0].split('=')[1].split(',');
 
 		} else {
-			var lists = 0;
+		 lists = 0;
 		} if (configuration.split('|')[1].split('=')[1]) {
-			var ids = configuration.split('|')[1].split('=')[1].split(',');
+		 ids = configuration.split('|')[1].split('=')[1].split(',');
 			ids = ids.filter(Boolean);
 		} else {
-			var ids = 0;
+		 ids = 0;
 		}
 
-		var access_token;
+		
 		if (configuration.split('|')[2]) {
 			access_token = configuration.split('|')[2].split('=')[1];
 		}
 	}
 
-	if (type == "movie") {
-		var trakt_type = "movie";
-	} else if (type == "series") {
-		var trakt_type = "show";
-	}
-
 	if (id.match(/trakt_list:[0-9]*/i)) {
 		list_id = id.split(':')[1];
+		if(genre == undefined && id.split(':').length == 4 ){
+			genre = [id.split(':')[2],id.split(':')[3]]
+		}
 		console.log('trakt_list:', list_id);
-		list_catalog(type, trakt_type, list_id, genre, skip).then(promises => {
+		list_catalog(list_id, genre, skip).then(promises => {
 			Promise.all(promises).then(metas => {
 				metas = metas.filter(function (element) {
 					return element !== undefined;
@@ -249,6 +242,12 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 		})
 	} else if (id.match(/trakt_[a-z]*/i)) {
 		list_id = id.split('_')[1];
+		type = id.split('_')[2];
+		if (type=="movies"){
+			trakt_type = "movie";
+		} else if (type == "series"){
+			trakt_type = "show";
+		}
 		console.log(list_id);
 
 		if (list_id == "rec") {
@@ -277,7 +276,7 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 			}
 		}
 		else if (list_id == "trending") {
-			trending(type, trakt_type, genre, skip).then(metas => {
+			trending(trakt_type, genre, skip).then(metas => {
 				metas = metas.filter(function (element) {
 					return element !== undefined;
 				});
@@ -311,17 +310,26 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 })
 
 
-async function list_cat(ids) {
+async function list_cat(ids,access_token) {
+	let header;
+	if(access_token){
+	header = {
+		headers: {
+			"Authorization": `Bearer ${access_token}`
+		}
+	};
+	}else{
+	 header = {};
+	}
 	const host = "https://api.trakt.tv";
-	return Promise.all(list(ids)).then(datas => {
+	return Promise.all(list(ids, access_token)).then(datas => {
 		const promises = [];
 		for (let i = 0; i < datas.length; i++) {
 			if (datas[i] !== undefined) {
 				var name = datas[i].data.name;
 				var id = datas[i].data.ids.trakt;
 				if (id) {
-					promises.push(request(`${host}/lists/${id}/items/movie`, id, name, "movie"));
-					promises.push(request(`${host}/lists/${id}/items/shows`, id, name, "series"));
+					promises.push(request(`${host}/lists/${id}/items`,access_token, id, name));
 				}
 			}
 		}
@@ -335,14 +343,14 @@ async function list_cat(ids) {
 }
 
 
-async function request(url, id, name, type) {
+async function request(url,header, id, name) {
 	//console.log(url,'url');
 	return await client
-		.get(url, { timeout: 5000 })
+		.get(url,header, { timeout: 5000 })
 		.then(res => {
 			if (res.data.length) {
 				return {
-					"type": type,
+					"type": 'trakt',
 
 					"id": "trakt_list:" + id,
 
