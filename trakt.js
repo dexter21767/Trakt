@@ -255,7 +255,6 @@ async function getToken(code) { //working
 
 
 function listOfLists(query) {
-	console.log(query)
 	const popular = [];
 	if(query == 'trending'|| query == 'popular'){
 		var url = `${host}/lists/${query}/?limit=10`;
@@ -266,7 +265,7 @@ function listOfLists(query) {
 		for (let i = 0; i < data.data.length; i++) {
 			var list = data.data[i].list;
 			if (list.privacy == "public") {
-				console.log(list.description.length)
+				//console.log(list)
 				popular.push({
 					name: list.name,
 					id: list.ids.trakt,

@@ -554,8 +554,15 @@ async function getListsOflists() {
 
 
 function addListUrl() {
-    let url, username, slug;
-    [url, username, slug] = state.listUrl.match(/https:\/\/trakt\.tv\/users\/([^\/?#]+)\/lists\/([^\/?#]+)/i);
+    let url, username, slug, sort;
+    [url, username, slug] = state.listUrl.match(/https:\/\/trakt\.tv\/users\/([^\/?#]+)\/lists\/([^\/#]+)/i);
+    
+    console.log(username, slug)
+    if(slug.split('?')[1]){
+        sort = slug.split('?')[1].split('=')[1].split(',');
+    }
+    slug = slug.split('?')[0];
+    console.log(username, slug, sort)
     if (!url || !username || !slug) {
         alert('Invalid Trakt list URL, make sure it starts with https://trakt.tv/');
         return;
@@ -564,6 +571,7 @@ function addListUrl() {
     state.lists.push({
         username,
         slug,
+        sort,
     });
 }
 
@@ -593,9 +601,17 @@ function removeList(list) {
 
 
 <style scoped>
-a.github {
+a.github:link {
     color: red;
     font-weight: bold;
+}
+
+a.github:visited {
+  color: rgb(108 43 217 / var(--tw-bg-opacity));
+}
+
+a.github:hover {
+  color: rgb(26 86 219 / var(--tw-bg-opacity));
 }
 
 .dropdown {
