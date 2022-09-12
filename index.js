@@ -146,7 +146,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 		}
 	}
 	if (ids) {
-		list_cat(ids,access_token).then((data) => {
+		list_cat(ids).then((data) => {
 			manifest.catalogs = catalog.concat(data);
 			manifest.catalogs = manifest.catalogs.filter(Boolean);
 			res.send(manifest);
@@ -310,7 +310,7 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 })
 
 
-async function list_cat(ids,access_token) {
+async function list_cat(ids) {
 	let header;
 	if(access_token){
 	header = {
@@ -322,7 +322,7 @@ async function list_cat(ids,access_token) {
 	 header = {};
 	}
 	const host = "https://api.trakt.tv";
-	return Promise.all(list(ids, access_token)).then(datas => {
+	return Promise.all(list(ids)).then(datas => {
 		const promises = [];
 		for (let i = 0; i < datas.length; i++) {
 			if (datas[i] !== undefined) {

@@ -28,7 +28,7 @@ async function request(url, header) {
 }
 
 // rab1t 
-function list(list_ids,access_token) {
+function list(list_ids) {
 	
 	const promises = [];
 	for (let i = 0; i < list_ids.length; i++) {
