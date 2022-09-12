@@ -1,90 +1,6 @@
 <template>
     <div>
 
-
-        <!-- Search modal -->
-        <div id="searchModal" ref="searchModal" tabindex="-1" aria-hidden="true"
-            class="hidden overflow-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full">
-            <div class="relative p-4 w-full max-w-2xl h-full md:max-h-screen overflow-hidden">
-                <!-- Modal content -->
-                <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 overflow-y-auto h-full">
-                    <!-- Modal header -->
-                    <div class="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600">
-                        <h3 class="w-full text-xl font-semibold text-gray-900 dark:text-white mr-4">
-
-                            <form @submit.prevent="getLists" class="w-full">
-                                <label for="searchModalInput"
-                                    class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-gray-300">Search
-                                    Trakt lists</label>
-                                <div class="relative">
-                                    <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
-                                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                        </svg>
-                                    </div>
-                                    <input v-model="state.searchQuery" type="search" id="searchModalInput"
-                                        class="block p-4 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Search Trakt lists" required>
-                                    <button type="submit"
-                                        class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
-                                </div>
-                            </form>
-
-                        </h3>
-                        <button type="button"
-                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                            @click="state.modal.toggle">
-                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span class="sr-only">Close modal</span>
-                        </button>
-                    </div>
-                    <!-- Modal body -->
-                    <div class="p-6 space-y-6">
-
-
-                        <div class="flex flex-col w-full gap-3 z-10">
-                            <div v-for="item in state.searchResults" :key="item.id"
-                                class="p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
-                                <a href="#">
-                                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                        {{item.name}} <small>by {{item.user}}</small>
-                                        <span
-                                            class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{item.likes}}
-                                            likes</span>
-                                        <span
-                                            class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">Items
-                                            count: {{item.item_count}}</span>
-                                    </h5>
-                                </a>
-                                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{item.description}}</p>
-                                <button @click="addList(item)"
-                                    class="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                    Add list
-                                    <svg aria-hidden="true" class="ml-2 -mr-1 w-4 h-4" fill="currentColor"
-                                        viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-
-
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
         <div class="bg-img relative min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 bg-gray-500 bg-no-repeat bg-cover bg-center relative items-center"  :style="`background-image: url(${manifest.background});`">
             <div class="absolute bg-black opacity-60 inset-0 z-0"></div>
             <div class="max-w-md w-full space-y-8 p-10 bg-white shadow-lg rounded-xl z-10">
@@ -143,7 +59,7 @@
                         </div>
 
 
-                        <div class="flex items-center justify-center space-x-2 mt-10">
+                        <!-- <div class="flex items-center justify-center space-x-2 mt-10">
                             <span class="h-px w-full bg-gray-200"></span>
                         </div>
 
@@ -169,94 +85,32 @@
                                         Popular</span>
                                 </label>
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="flex items-center justify-center space-x-2 mt-10">
                             <span class="h-px w-full bg-gray-200"></span>
                         </div>
 
 
-                        <span class="text-xs font-semibold text-gray-600 py-2 mt-10">Popular lists</span>
+                        <span class="text-xs font-semibold text-gray-600 py-2 mt-10">Add lists</span>
 
-
-                        <button id="dropdownButton" ref="Button_popular"
-                            class="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                            type="button">Popular lists <svg aria-hidden="true" class="ml-auto w-4 h-4" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7"></path>
-                            </svg></button>
-
-                        <div id="dropdownMenu" ref="Menu_popular"
-                            class="dropdown hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
-                            <div v-for="item in state.lists_popular" :key="item.id"
-                                class="p-4 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
-                                <a href="#">
-                                    <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                        {{item.name}} <small>by {{item.user}}</small><span
-                                            class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{item.likes}}
-                                            likes</span>
-                                        <span
-                                            class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">Items
-                                            count: {{item.item_count}}</span>
-                                    </h5>
-                                </a>
-                                <p class="mb-3 text-xs text-gray-700 dark:text-gray-400">{{item.description}}</p>
-                                <button @click="addList(item)"
-                                    class="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                    Add list
-                                    <svg aria-hidden="true" class="ml-2 -mr-1 w-4 h-4" fill="currentColor"
-                                        viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </button>
-                            </div>
+                        <div class="flex rounded-md shadow-sm mt-5 w-full" role="group">
+                            <button type="button" class="grow py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-l-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+                                Browse popular lists
+                            </button>
+                            <button type="button" class="grow py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-r-md border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+                                Browse trending lists
+                            </button>
                         </div>
 
-                        <button id="dropdownButton" ref="Button_trending"
-                            class="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                            type="button">Trending lists <svg aria-hidden="true" class="ml-auto w-4 h-4" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7"></path>
-                            </svg></button>
-                        <!-- Dropdown menu -->
-                        <div id="dropdownMenu" ref="Menu_trending"
-                            class="dropdown hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
-                            <div v-for="item in state.lists_trending" :key="item.id"
-                                class="p-4 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
-                                <a href="#">
-                                    <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                        {{item.name}} <small>by {{item.user}}</small><span
-                                            class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{item.likes}}
-                                            likes</span>
-                                        <span
-                                            class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">Items
-                                            count: {{item.item_count}}</span>
-                                    </h5>
-                                </a>
-                                <p class="mb-3 text-xs text-gray-700 dark:text-gray-400">{{item.description}}</p>
-                                <button @click="addList(item)"
-                                    class="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                    Add list
-                                    <svg aria-hidden="true" class="ml-2 -mr-1 w-4 h-4" fill="currentColor"
-                                        viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </button>
-                            </div>
+                        <div class="flex items-center justify-center space-x-2 mt-5">
+                            <span class="h-px w-16 bg-gray-300"></span>
+                            <span class="text-gray-400 font-normal">or</span>
+                            <span class="h-px w-16 bg-gray-300"></span>
                         </div>
 
-                        <div class="flex items-center justify-center space-x-2 mt-10">
-                            <span class="h-px w-full bg-gray-200"></span>
-                        </div>
-
-                        <div class="mt-10">
-                            <form @submit.prevent="getLists">
+                        <div class="mt-5">
+                            <form @submit.prevent="searchLists">
                                 <label for="searchInput"
                                     class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-gray-300">Search
                                     Trakt lists</label>
@@ -377,13 +231,15 @@
                                 and
                                 <a href="https://github.com/rleroi" target="_blank" class="text-purple-700">rab1t</a>
                                 .
-                                </p>
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+
+        <!-- <SearchModal ref="searchModal" @addList="addList" :searchQuery="state.searchQuery"></SearchModal> -->
     </div>
 </template>
 
@@ -393,8 +249,9 @@ import axios from 'axios';
 import { reactive, ref, onMounted } from 'vue';
 import Modal from 'flowbite/src/components/modal';
 import Dropdown from 'flowbite/src/components/dropdown';
-import * as manifest from '../../manifest.json';
 import { useHead } from "@vueuse/head";
+import * as manifest from '../../manifest.json';
+// import SearchModal from './components/SearchModal.vue';
 
 const stylizedTypes = manifest.types.map(t => t[0].toUpperCase() + t.slice(1));
 
@@ -448,22 +305,19 @@ async function getListsOflists() {
     state.lists_trending = list;
 }
 
-
-
 function addListUrl() {
     let url, username, slug, sort;
-    [url, username, slug] = state.listUrl.match(/https:\/\/trakt\.tv\/users\/([^\/?#]+)\/lists\/([^\/#]+)/i);
+    [url, username, slug, sort] = state.listUrl.match(/https:\/\/trakt\.tv\/users\/([^\/?#]+)\/lists\/([^\/#?]+)(\?[^$]+)?/i);
 
-    console.log(username, slug)
-    if (slug.split('?')[1]) {
-        sort = slug.split('?')[1].split('=')[1].split(',');
-    }
-    slug = slug.split('?')[0];
-    console.log(username, slug, sort)
     if (!url || !username || !slug) {
         alert('Invalid Trakt list URL, make sure it starts with https://trakt.tv/');
         return;
     }
+
+    if (sort.split('?')[1]) {
+        sort = sort.split('?')[1].split('=')[1].split(',');
+    }
+    console.log(username, slug, sort)
 
     state.lists.push({
         username,
@@ -472,8 +326,7 @@ function addListUrl() {
     });
 }
 
-
-async function getLists() {
+async function searchLists() {
     state.modal.show();
     state.searchResults = (await axios.get(import.meta.env.VITE_APP_URL + '/lists/' + state.searchQuery))?.data || [];
 }
