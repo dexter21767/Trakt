@@ -51,16 +51,15 @@
 
 
                         <div class="flex flex-col w-full gap-3 z-10">
-                            <div v-for="item in state.searchResults" :key="item.list.ids.trakt"
+                            <div v-for="item in state.searchResults" :key="item.id"
                                 class="p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
                                 <a href="#">
                                     <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                        {{item.list.name}} <small>by {{item.list.user.username}}</small> <span
-                                            class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{item.list.likes}}
-                                            likes</span></h5>
+                                        {{item.name}} <small>by {{item.user}}</small> 
+                                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{item.likes}} likes</span>
+                                            <span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">Items count: {{item.item_count}}</span></h5>
                                 </a>
-                                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{item.list.description}}
-                                </p>
+                                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{item.description}}</p>
                                 <button @click="addList(item)"
                                     class="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                     Add list
@@ -92,8 +91,8 @@
                         <div class="items-center header">
                             <img class="logo" :src="manifest.logo">
                             <h1 class="font-semibold text-lg mr-auto">{{ manifest.name }}</h1>
-                            <h2 class="font-semibold text-lg mr-auto" style="text-align: right;">Version: {{
-                            manifest.version }}</h2>
+                            <h2 class="font-semibold text-lg mr-auto" style="text-align: right;">Version: {{ manifest.version }}</h2>
+                            <p class="mt-5" >{{ manifest.description }}</p>
                         </div>
 
                         <div class="flex items-center justify-center space-x-2 mt-5">
@@ -101,15 +100,74 @@
                         </div>
 
                         <div class="items-center mt-5 description">
-                            <p>{{ manifest.description }}</p>
                             <h2 class="font-semibold text-lg mr-auto">This addon has more :</h2>
                             <ul v-html="stylizedTypes.map(t => `<li>${t}</li>`).join('')"></ul>
                         </div>
+                        <div class="mt-10">
+                            <span class="text-xs font-semibold text-gray-600 py-2">Add personal lists (requires Trakt
+                                login)</span>
+                            <div class="mt-5 flex flex-col">
+                                <button type="button"
+                                    class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Login
+                                    to Trakt.tv</button>
+                            </div>
+                            <div class="mt-5">
+                                <label class="inline-flex relative items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" v-model="checkRecommendations">
+                                    <div
+                                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                                    </div>
+                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Your
+                                        Recommendations</span>
+                                </label>
+                            </div>
+                            <div class="mt-5">
+                                <label class="inline-flex relative items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" v-model="checkWatchlist">
+                                    <div
+                                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                                    </div>
+                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Your
+                                        Watchlist</span>
+                                </label>
+                            </div>
+                        </div>
 
-                        <div class="flex items-center justify-center space-x-2 mt-5">
+
+                        <div class="flex items-center justify-center space-x-2 mt-10">
                             <span class="h-px w-full bg-gray-200"></span>
                         </div>
 
+                        <div class="mt-10">
+                            <span class="text-xs font-semibold text-gray-600 py-2">Add special lists</span>
+                            <div class="mt-5">
+                                <label class="inline-flex relative items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" v-model="checkTrending">
+                                    <div
+                                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                                    </div>
+                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Trakt
+                                        Trending</span>
+                                </label>
+                            </div>
+                            <div class="mt-5">
+                                <label class="inline-flex relative items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" v-model="checkPopular">
+                                    <div
+                                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                                    </div>
+                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Trakt
+                                        Popular</span>
+                                </label>
+                            </div>
+                        </div>
+
+
+                        <div class="flex items-center justify-center space-x-2 mt-10">
+                            <span class="h-px w-full bg-gray-200"></span>
+                        </div>
+
+                        
                         <div class="flex mt-5 flex-col sm:flex-row items-center">
                             <h2 class="font-semibold text-lg mr-auto">Popular Lists</h2>
                             <div class="w-full sm:w-auto sm:ml-auto mt-3 sm:mt-0"></div>
@@ -127,8 +185,25 @@
 
                         <div id="dropdownMenu" ref="Menu_popular"
                             class="dropdown hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
-                            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownButton"
-                                v-html="state.lists_popular"></ul>
+                            <div v-for="item in state.lists_popular" :key="item.id"
+                                class="p-4 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+                                <a href="#">
+                                    <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                        {{item.name}} <small>by {{item.user}}</small><span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{item.likes}} likes</span>
+                                            <span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">Items count: {{item.item_count}}</span></h5>
+                                </a>
+                                <p class="mb-3 text-xs text-gray-700 dark:text-gray-400">{{item.description}}</p>
+                                <button @click="addList(item)"
+                                    class="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    Add list
+                                    <svg aria-hidden="true" class="ml-2 -mr-1 w-4 h-4" fill="currentColor"
+                                        viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
 
 
@@ -154,8 +229,25 @@
                         <!-- Dropdown menu -->
                         <div id="dropdownMenu" ref="Menu_trending"
                             class="dropdown hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
-                            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownButton"
-                                v-html="state.lists_trending"></ul>
+                            <div v-for="item in state.lists_trending" :key="item.id"
+                                class="p-4 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+                                <a href="#">
+                                    <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                        {{item.name}} <small>by {{item.user}}</small><span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{item.likes}} likes</span>
+                                            <span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">Items count: {{item.item_count}}</span></h5>
+                                </a>
+                                <p class="mb-3 text-xs text-gray-700 dark:text-gray-400">{{item.description}}</p>
+                                <button @click="addList(item)"
+                                    class="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    Add list
+                                    <svg aria-hidden="true" class="ml-2 -mr-1 w-4 h-4" fill="currentColor"
+                                        viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
 
 
@@ -223,9 +315,12 @@
                                         list</button>
                                 </div>
                             </form>
-
+                            <small><b>Note:</b> adding private lists require trakt login.</small>
                         </div>
 
+                        <div class="flex items-center justify-center space-x-2 mt-5">
+                            <span class="h-px w-full bg-gray-200"></span>
+                        </div>
 
                         <div class="mt-10">
                             <span class="text-xs font-semibold text-gray-600 py-2">Your lists</span>
@@ -256,68 +351,6 @@
                             </draggable>
                             <div v-else class="text-gray-500 mt-5">
                                 <p>No lists added</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-center space-x-2 mt-10">
-                            <span class="h-px w-full bg-gray-200"></span>
-                        </div>
-
-                        <div class="mt-10">
-                            <span class="text-xs font-semibold text-gray-600 py-2">Add special lists</span>
-                            <div class="mt-5">
-                                <label class="inline-flex relative items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" v-model="checkTrending">
-                                    <div
-                                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-                                    </div>
-                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Trakt
-                                        Trending</span>
-                                </label>
-                            </div>
-                            <div class="mt-5">
-                                <label class="inline-flex relative items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" v-model="checkPopular">
-                                    <div
-                                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-                                    </div>
-                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Trakt
-                                        Popular</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-center space-x-2 mt-10">
-                            <span class="h-px w-full bg-gray-200"></span>
-                        </div>
-
-                        <div class="mt-10">
-                            <span class="text-xs font-semibold text-gray-600 py-2">Add personal lists (requires Trakt
-                                login)</span>
-                            <div class="mt-5 flex flex-col">
-                                <button type="button"
-                                    class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Login
-                                    to Trakt.tv</button>
-                            </div>
-                            <div class="mt-5">
-                                <label class="inline-flex relative items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" v-model="checkRecommendations">
-                                    <div
-                                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-                                    </div>
-                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Your
-                                        Recommendations</span>
-                                </label>
-                            </div>
-                            <div class="mt-5">
-                                <label class="inline-flex relative items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" v-model="checkWatchlist">
-                                    <div
-                                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-                                    </div>
-                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Your
-                                        Watchlist</span>
-                                </label>
                             </div>
                         </div>
 
@@ -512,12 +545,10 @@ onMounted(() => {
 
 async function getListsOflists() {
     var list = (await axios.get(import.meta.env.VITE_APP_URL + '/lists/popular'))?.data || [];
-    state.lists_popular = list.map(t => `<li><input id="${t.id}" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-          <label for="${t.id}" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">${t.name} by ${t.user}</label></li>`).join('');
+    state.lists_popular = list;
 
     var list = (await axios.get(import.meta.env.VITE_APP_URL + '/lists/trending'))?.data || [];
-    state.lists_trending = list.map(t => `<li><input id="${t.id}" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-          <label for="${t.id}" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">${t.name} by ${t.user}</label></li>`).join('');
+    state.lists_trending = list;
 }
 
 
@@ -539,14 +570,14 @@ function addListUrl() {
 
 async function getLists() {
     state.modal.show();
-    state.searchResults = (await axios.get(import.meta.env.VITE_APP_URL + '/search/' + state.searchQuery))?.data || [];
+    state.searchResults = (await axios.get(import.meta.env.VITE_APP_URL + '/lists/' + state.searchQuery))?.data || [];
 }
 
 function addList(list) {
     state.lists.push({
-        name: list.list.name,
-        slug: list.list.slug,
-        username: list.list.user.username,
+        name: list.name,
+        slug: list.id,
+        username: list.user,
     });
 }
 

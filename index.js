@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const path = require('path');
-const { getToken, watchlist, recomendations, list, list_catalog, popular, trending, searchLists, client, listOfLists } = require('./trakt.js');
+const { getToken, watchlist, recomendations, list, list_catalog, popular, trending, client, listOfLists } = require('./trakt.js');
 const manifest = require("./manifest.json");
 const { default: axios } = require('axios');
 
@@ -74,10 +74,6 @@ app.get('/manifest.json', (req, res) => {
 	res.setHeader('Content-Type', 'application/json');
 	res.send(manifest);
 	res.end();
-});
-
-app.get('/search/:query', async (req, res) => {
-	res.send(await searchLists(req.params.query).catch(e => console.error));
 });
 
 app.get('/lists/:query', async (req, res) => {

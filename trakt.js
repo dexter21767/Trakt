@@ -29,6 +29,11 @@ async function request(url, header) {
 
 // rab1t 
 function list(list_ids) {
+	const header = {
+		headers: {
+			"Authorization": `Bearer ${access_token}`
+		}
+	};
 	const promises = [];
 	for (let i = 0; i < list_ids.length; i++) {
 		if (list_ids[i].split(':').length > 1) {
@@ -38,7 +43,7 @@ function list(list_ids) {
 		} else {
 			var url = `${host}/lists/${list_ids[i]}/`;
 		}
-		promises.push(request(url));
+		promises.push(request(url,header));
 	}
 	return promises;
 }
@@ -155,12 +160,6 @@ function sortList(trakt_type, items, sort) {
 	return items;
 }
 
-function searchLists(query) {
-	const url = `${host}/search/list/?query=${query}`;
-	console.log(url);
-	return request(url).catch(e => console.error).then(res => res.data);
-}
-
 function getMeta(items, type, trakt_type) {
 	var metas = [];
 	var i = 0;
@@ -255,17 +254,26 @@ async function getToken(code) { //working
 }
 
 
-function listOfLists(list_type) {
+function listOfLists(query) {
+	console.log(query)
 	const popular = [];
-	var url = `${host}/lists/${list_type}/?limit=20`;
+	if(query == 'trending'|| query == 'popular'){
+		var url = `${host}/lists/${query}/?limit=10`;
+	}else{
+		var url = `${host}/search/list/?query=${query}`;
+	}
 	return request(url).then(data => {
 		for (let i = 0; i < data.data.length; i++) {
 			var list = data.data[i].list;
 			if (list.privacy == "public") {
+				console.log(list.description.length)
 				popular.push({
 					name: list.name,
 					id: list.ids.trakt,
-					user: list.user.name
+					user: list.user.name?list.user.name:list.user.username,
+					likes: list.likes,
+					item_count: list.item_count,
+					description: list.description.slice(0,300)
 				});
 			}
 		}
@@ -274,4 +282,4 @@ function listOfLists(list_type) {
 }
 
 
-module.exports = { getToken, watchlist, recomendations, list, list_catalog, popular, trending, client, listOfLists, searchLists };
+module.exports = { getToken, watchlist, recomendations, list, list_catalog, popular, trending, client, listOfLists };
