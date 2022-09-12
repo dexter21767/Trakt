@@ -105,10 +105,11 @@
                         <div class="mt-10">
                             <span class="text-xs font-semibold text-gray-600 py-2">Add personal lists (requires Trakt
                                 login)</span>
-                            <div class="mt-5 flex flex-col">
+                            <div class="mt-5 flex flex-col items-center">
+                                <a href="https://trakt.tv/oauth/authorize?client_id=18bde7dcd858c86f9593addf9f66528f8c1443ec1bef9ecee501d1c5177ce281&redirect_uri=https%3A%2F%2F2ecbbd610840-trakt.baby-beamup.club%2F&response_type=code">
                                 <button type="button"
                                     class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Login
-                                    to Trakt.tv</button>
+                                    to Trakt.tv</button></a>
                             </div>
                             <div class="mt-5">
                                 <label class="inline-flex relative items-center cursor-pointer">
