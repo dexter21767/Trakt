@@ -23,14 +23,14 @@ app.get('/', (req, res) => {
 			if (data== undefined){
 			res.redirect('/configure/?access_token=' + data);
 		}else{	
-			res.redirect('/configure');
+			res.redirect('/configure/');
 			}
 		}
 		).catch(() => {
-			res.redirect('/configure');
+			res.redirect('/configure/');
 		})
 	} else {
-		res.redirect('/configure')
+		res.redirect('/configure/')
 	}
 });
 
