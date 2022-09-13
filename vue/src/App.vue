@@ -625,7 +625,9 @@ function generateInstallUrl() {
     var generic = [];
     var query = window.location.search.substring(1);
     if (query) {
-        var access_token = query.split('=')[1];
+        if(query.split('=')[0] == "access_token"){
+            var access_token = query.split('=')[1];
+        }
     } else {
         var access_token = 0;
     }

@@ -29,7 +29,7 @@ async function request(url, header) {
 
 // rab1t 
 function list(list_ids) {
-	
+	console.log('list_ids',list_ids)
 	const promises = [];
 	for (let i = 0; i < list_ids.length; i++) {
 		if (list_ids[i].split(':').length > 1) {
@@ -134,13 +134,14 @@ function trending(trakt_type, genre, skip) {
 	})
 }
 
-function watchlist(type, trakt_type, access_token) { //working
+function watchlist(access_token) { //working
 	const header = {
 		headers: {
 			"Authorization": `Bearer ${access_token}`
 		}
 	};
-	var url = `${host}/sync/watchlist/${trakt_type}s/?limit=${count}&extended=full`;
+	console.log(header);
+	var url = `${host}/sync/watchlist/?limit=${count}&extended=full`;
 	return request(url, header).then(data => { return getMeta(data.data); })
 };
 
@@ -206,9 +207,12 @@ function recomendations(access_token, genre, skip) {
 			"Authorization": `Bearer ${access_token}`
 		}
 	};
-	var url = `${host}/recommendations/?page=${skip}&limit=${count}&extended=full`;
+	var url = `${host}/recommendations/?limit=${count}&extended=full`;
+	if(skip!==undefined){
+		url += `&page=${skip}`;
+	}
 	if (genre !== undefined) {
-		url = url + `&genres=${genre}`;
+		url += `&genres=${genre}`;
 	}
 	//return request(url, header).then(data => { console.log(data.data); return getMeta(data.data, type, trakt_type); })
 	return request(url).then(data => {
@@ -216,7 +220,8 @@ function recomendations(access_token, genre, skip) {
 		items = data.data;
 		var i = 0;
 		while (i < count && i < items.length) {
-			var item = items[i];
+			var item = items[i][items[i].type];
+			console.log(item)
 			if (item.ids.imdb) {
 				if (item.trailer) {
 					var trailer = [{ source: item.trailer.split('?v=')[1], type: "Trailer" }];

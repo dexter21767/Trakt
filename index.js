@@ -8,7 +8,9 @@ const { default: axios } = require('axios');
 
 app.set('trust proxy', true)
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'vue', 'dist')));
+
+app.use('/configure',express.static(path.join(__dirname, 'vue', 'dist')));
+app.use('/assets',express.static(path.join(__dirname, 'vue', 'dist','assets')));
 
 const lists_array = { 'trakt_trending': "trakt - Trending", 'trakt_popular': "trakt - Popular", 'trakt_watchlist': "trakt - Watchlist", 'trakt_rec': "trakt - Recommended" };
 const genres = ["action", "adventure", "animation", "anime", "comedy", "crime", "disaster", "documentary", "Donghua", "drama", "eastern", "family", "fan-film", "fantasy", "film-noir", "history", "holiday", "horror", "indie", "music", "musical", "mystery", "none", "road", "romance", "science-fiction", "short", "sports", "sporting-event", "suspense", "thriller", "tv-movie", "war", "western"];
@@ -112,7 +114,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 		for (let i = 0; i < lists.length; i++) {
 
 			console.log(lists[i])
-			if ((access_token.length > 0 && lists[i] == 'trakt_rec') || (lists[i] == 'trakt_trending' || lists[i] == 'trakt_popular')) {
+			if ((lists[i] == 'trakt_trending' || lists[i] == 'trakt_popular')) {
 				catalog[c] = {
 					"type": 'trakt',
 
@@ -133,7 +135,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 					"extra": [{ "name": "genre", "isRequired": false, "options": genres }, { "name": "skip", "isRequired": false }]
 				};
 				c++;
-			} else if (access_token.length > 0 && lists[i] == 'trakt_watchlist') {
+			} else if (access_token.length > 0 && (lists[i] == 'trakt_watchlist' || lists[i] == 'trakt_rec') ) {
 				catalog[c] = {
 					"type": 'trakt',
 
@@ -252,7 +254,7 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 
 		if (list_id == "rec") {
 			if (access_token) {
-				recomendations(type, trakt_type, access_token, genre, skip).then(metas => {
+				recomendations(access_token, genre, skip).then(metas => {
 					metas = metas.filter(function (element) {
 						return element !== undefined;
 					});
@@ -264,7 +266,7 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 			}
 		} else if (list_id == "watchlist") {
 			if (access_token) {
-				watchlist(type, trakt_type, access_token).then(metas => {
+				watchlist(access_token).then(metas => {
 					metas = metas.filter(function (element) {
 						return element !== undefined;
 					});
