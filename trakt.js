@@ -72,7 +72,7 @@ function popular(type, genre, skip) {
 				var year = item.year ? item.year.toString() : "N/A";
 				metas.push({
 					"id": item.ids.imdb,
-					"type": item.type =="movie"?"movie":"series",
+					"type": type =="movies"?"movie":"series",
 					"name": item.title,
 					"poster": `https://images.metahub.space/poster/small/${item.ids.imdb}/img`,
 					"background": `https://images.metahub.space/background/medium/${item.ids.imdb}/img`,
