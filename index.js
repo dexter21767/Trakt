@@ -20,8 +20,13 @@ const sort = ["added asc", "added desc", "title asc", "title desc", "released as
 app.get('/', (req, res) => {
 	if (req.query.code) {
 		getToken(req.query.code).then(data => {
+			if (data== undefined){
 			res.redirect('/configure/?access_token=' + data);
-		}).catch(() => {
+		}else{	
+			res.redirect('/configure');
+			}
+		}
+		).catch(() => {
 			res.redirect('/configure');
 		})
 	} else {
