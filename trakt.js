@@ -27,9 +27,35 @@ async function request(url, header) {
 
 }
 
+function list_catalog(id, username, access_token, sort, skip) {
+
+	if (username) {
+		if (access_token) {
+			var url = `${host}/users/${id}/lists/${username}/items?page=${skip}&limit=${count}&extended=full`;
+			var header = {
+				headers: {
+					"Authorization": `Bearer ${access_token}`
+				}
+			}
+			return request(url, header).then(data => { if (data !== undefined) { return sortList(data.data, sort) } }).then(items => { if (items !== undefined) { return getMeta(items) } });
+
+		}
+	} else {
+		var url = `${host}/lists/${id}/items/?page=${skip}&limit=${count}&extended=full`;
+		return request(url).then(data => { if (data !== undefined) { return sortList(data.data, sort) } }).then(items => { if (items !== undefined) { return getMeta(items) } });
+	}
+
+}
 // rab1t 
-function list(list_ids) {
+function list(list_ids, access_token) {
 	console.log('list_ids', list_ids)
+	if (access_token) {
+		var header = {
+			headers: {
+				"Authorization": `Bearer ${access_token}`
+			}
+		}
+	}
 	const promises = [];
 	for (let i = 0; i < list_ids.length; i++) {
 		if (list_ids[i].split(':').length > 1) {
@@ -41,7 +67,7 @@ function list(list_ids) {
 		}
 
 
-		promises.push(request(url));
+		promises.push(request(url, header));
 
 	}
 	return promises;
@@ -140,15 +166,11 @@ function watchlist(access_token) { //working
 			"Authorization": `Bearer ${access_token}`
 		}
 	};
-	console.log(header);
 	var url = `${host}/sync/watchlist/?limit=${count}&extended=full`;
 	return request(url, header).then(data => { return getMeta(data.data); })
 };
 
-function list_catalog(id, sort, skip) {
-	var url = `${host}/lists/${id}/items/?page=${skip}&limit=${count}&extended=full`;
-	return request(url).then(data => { if (data !== undefined) { return sortList(data.data, sort) } }).then(items => { if (items !== undefined) { return getMeta(items) } });
-}
+
 
 function sortList(items, sort) {
 	if (sort) {
@@ -219,7 +241,6 @@ function recomendations(trakt_type, access_token, genre, skip) {
 	return request(url).then(data => {
 		const metas = [];
 		items = data.data;
-		console.log(items[0])
 		var i = 0;
 		while (i < count && i < items.length) {
 			var item = items[i];

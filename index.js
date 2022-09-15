@@ -20,7 +20,6 @@ const sort = ["added asc", "added desc", "title asc", "title desc", "released as
 app.get('/', (req, res) => {
 	if (req.query.code) {
 		getToken(req.query.code).then(data => {
-			console.log(data)
 			if (data !== undefined) {
 				res.redirect('/configure/?access_token=' + data);
 			} else {
@@ -150,7 +149,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 		}
 	}
 	if (ids) {
-		list_cat(ids).then((data) => {
+		list_cat(ids, access_token).then((data) => {
 			manifest.catalogs = catalog.concat(data);
 			manifest.catalogs = manifest.catalogs.filter(Boolean);
 			res.send(manifest);
@@ -178,14 +177,12 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 		var { configuration, resource, type, id, extra } = req.params;
 	} else if (req.params.resource == "trakt") {
 		//var { resource, type, id, extra } = req.params;
-		console.log('dexter')
 		var type = req.params.resource;
 		var id = req.params.type;
 		var extra = req.params.id;
 	} else {
 		var { resource, type, id, extra } = req.params;
 	}
-	console.log('req.params.resource', req.params.resource);
 	console.log('req.params', req.params);
 	if (extra) {
 		const params = new URLSearchParams(extra);
@@ -228,19 +225,21 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 
 	if (id.match(/trakt_list:[0-9]*/i)) {
 		list_id = id.split(':')[1];
+		let username = id.split(':')[2];
 		if (genre == undefined && id.split(':').length == 4) {
 			genre = [id.split(':')[2], id.split(':')[3]]
 		}
-		console.log('trakt_list:', list_id);
-		list_catalog(list_id, genre, skip).then(promises => {
-			Promise.all(promises).then(metas => {
+		console.log('list_id:', list_id, 'username', username);
+		console.log(id);
+		list_catalog(list_id, username, access_token, genre, skip).then(metas => {
+			if (metas) {
 				metas = metas.filter(function (element) {
 					return element !== undefined;
 				});
 				console.log(metas.length);
-				res.send(JSON.stringify({ metas: metas }));
-				res.end();
-			})
+			}
+			res.send(JSON.stringify({ metas: metas }));
+			res.end();
 		})
 	} else if (id.match(/trakt_[a-z]*/i)) {
 		list_id = id.split('_')[1];
@@ -312,16 +311,21 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 })
 
 
-async function list_cat(ids) {
+async function list_cat(ids, access_token) {
 	const host = "https://api.trakt.tv";
-	return Promise.all(list(ids)).then(datas => {
+	return Promise.all(list(ids, access_token)).then(datas => {
 		const promises = [];
 		for (let i = 0; i < datas.length; i++) {
-			if (datas[i] !== undefined) {
-				var name = datas[i].data.name;
-				var id = datas[i].data.ids.trakt;
-				if (id) {
-					promises.push(request(`${host}/lists/${id}/items`, id, name));
+			if (datas[i]) {
+				let data = datas[i].data
+				var name = data.name;
+				var id = data.ids.trakt;
+				var username = data.user.username;
+				if (data.privacy == "private") {
+					promises.push(request(`${host}/users/${username}/lists/${id}/items`, access_token, id, name, username));
+				}
+				else {
+					promises.push(request(`${host}/lists/${id}/items`, access_token, id, name));
 				}
 			}
 		}
@@ -335,25 +339,45 @@ async function list_cat(ids) {
 }
 
 
-async function request(url, id, name) {
+async function request(url, access_token, id, name, username) {
 	//console.log(url,'url');
+	if (access_token) {
+		var header = {
+			headers: {
+				"Authorization": `Bearer ${access_token}`
+			}
+		}
+	}
 	return await client
-		.get(url, { timeout: 5000 })
+		.get(url, header, { timeout: 5000 })
 		.then(res => {
 			if (res.data.length) {
-				return {
-					"type": 'trakt',
+				if (username) {
+					return {
+						"type": 'trakt',
 
-					"id": "trakt_list:" + id,
+						"id": "trakt_list:" + username + ":" + id,
 
-					"name": name,
+						"name": name,
 
-					"extra": [{ "name": "genre", "isRequired": false, "options": sort }, { "name": "skip", "isRequired": false }]
+						"extra": [{ "name": "genre", "isRequired": false, "options": sort }, { "name": "skip", "isRequired": false }]
+					}
+				} else {
+					return {
+						"type": 'trakt',
+
+						"id": "trakt_list:" + id,
+
+						"name": name,
+
+						"extra": [{ "name": "genre", "isRequired": false, "options": sort }, { "name": "skip", "isRequired": false }]
+					}
 				}
+
 			}
 		})
 		.catch(error => {
-			if (error.response !== undefined) {
+			if (error.response) {
 				console.error('error on index.js request:', error.response.status, error.response.statusText, error.config.url);
 			} else {
 				console.error(error);
