@@ -29,7 +29,7 @@ async function request(url, header) {
 
 // rab1t 
 function list(list_ids) {
-	console.log('list_ids',list_ids)
+	console.log('list_ids', list_ids)
 	const promises = [];
 	for (let i = 0; i < list_ids.length; i++) {
 		if (list_ids[i].split(':').length > 1) {
@@ -39,10 +39,10 @@ function list(list_ids) {
 		} else {
 			var url = `${host}/lists/${list_ids[i]}/`;
 		}
-		
-		
+
+
 		promises.push(request(url));
-		
+
 	}
 	return promises;
 }
@@ -72,7 +72,7 @@ function popular(type, genre, skip) {
 				var year = item.year ? item.year.toString() : "N/A";
 				metas.push({
 					"id": item.ids.imdb,
-					"type": type =="movies"?"movie":"series",
+					"type": type == "movies" ? "movie" : "series",
 					"name": item.title,
 					"poster": `https://images.metahub.space/poster/small/${item.ids.imdb}/img`,
 					"background": `https://images.metahub.space/background/medium/${item.ids.imdb}/img`,
@@ -89,23 +89,23 @@ function popular(type, genre, skip) {
 }
 
 function trending(trakt_type, genre, skip) {
-	if(skip == undefined){
+	if (skip == undefined) {
 		skip = 1;
 	}
 	var url = `${host}/${trakt_type}s/trending/?page=${skip}&limit=${count}&extended=full`;
-	
+
 	if (genre !== undefined) {
 		url = url + `&genres=${genre}`;
 	}
-	
+
 	return request(url).then(data => {
 		const metas = [];
 		items = data.data;
 		var i = 0;
 		while (i < count && i < items.length) {
-			if(items[i].movie){
+			if (items[i].movie) {
 				var item = items[i].movie;
-			}else if(items[i].show){
+			} else if (items[i].show) {
 				var item = items[i].show;
 			}
 			if (item.ids.imdb) {
@@ -118,7 +118,7 @@ function trending(trakt_type, genre, skip) {
 				var year = item.year ? item.year.toString() : "N/A";
 				metas.push({
 					"id": item.ids.imdb,
-					"type": item.type =="movie"?"movie":"series",
+					"type": trakt_type == "movie" ? "movie" : "series",
 					"name": item.title,
 					"poster": `https://images.metahub.space/poster/small/${item.ids.imdb}/img`,
 					"background": `https://images.metahub.space/background/medium/${item.ids.imdb}/img`,
@@ -147,7 +147,7 @@ function watchlist(access_token) { //working
 
 function list_catalog(id, sort, skip) {
 	var url = `${host}/lists/${id}/items/?page=${skip}&limit=${count}&extended=full`;
-	return request(url).then(data => { if(data !== undefined){return sortList(data.data, sort)} }).then(items => { if(items !== undefined){return getMeta(items)} });
+	return request(url).then(data => { if (data !== undefined) { return sortList(data.data, sort) } }).then(items => { if (items !== undefined) { return getMeta(items) } });
 }
 
 function sortList(items, sort) {
@@ -172,7 +172,7 @@ function getMeta(items) {
 	var i = 0;
 	while (i < count && i < items.length) {
 		var item = items[i];
-		if(item.movie||item.show){
+		if (item.movie || item.show) {
 			if (item[item.type].ids.imdb) {
 				if (item[item.type].trailer) {
 					var trailer = [{ source: item[item.type].trailer.split('?v=')[1], type: "Trailer" }];
@@ -183,7 +183,7 @@ function getMeta(items) {
 				var year = item[item.type].year ? item[item.type].year.toString() : "N/A";
 				metas.push({
 					"id": item[item.type].ids.imdb,
-					"type": item.type =="movie"?"movie":"series",
+					"type": item.type == "movie" ? "movie" : "series",
 					"name": item[item.type].title,
 					"poster": `https://images.metahub.space/poster/small/${item[item.type].ids.imdb}/img`,
 					"background": `https://images.metahub.space/background/medium/${item[item.type].ids.imdb}/img`,
@@ -200,27 +200,29 @@ function getMeta(items) {
 
 }
 
-function recomendations(access_token, genre, skip) {
+function recomendations(trakt_type, access_token, genre, skip) {
 
 	var header = {
 		headers: {
 			"Authorization": `Bearer ${access_token}`
 		}
 	};
-	var url = `${host}/recommendations/?limit=${count}&extended=full`;
-	if(skip!==undefined){
+	var url = `${host}/recommendations/${trakt_type}s?limit=${count}&extended=full`;
+	if (skip !== undefined) {
 		url += `&page=${skip}`;
 	}
 	if (genre !== undefined) {
 		url += `&genres=${genre}`;
 	}
+	console.log(url)
 	//return request(url, header).then(data => { console.log(data.data); return getMeta(data.data, type, trakt_type); })
 	return request(url).then(data => {
 		const metas = [];
 		items = data.data;
+		console.log(items[0])
 		var i = 0;
 		while (i < count && i < items.length) {
-			var item = items[i][items[i].type];
+			var item = items[i];
 			console.log(item)
 			if (item.ids.imdb) {
 				if (item.trailer) {
@@ -232,7 +234,7 @@ function recomendations(access_token, genre, skip) {
 				var year = item.year ? item.year.toString() : "N/A";
 				metas.push({
 					"id": item.ids.imdb,
-					"type": item.type =="movie"?"movie":"series",
+					"type": trakt_type == "movie" ? "movie" : "series",
 					"name": item.title,
 					"poster": `https://images.metahub.space/poster/small/${item.ids.imdb}/img`,
 					"background": `https://images.metahub.space/background/medium/${item.ids.imdb}/img`,
@@ -267,9 +269,9 @@ async function getToken(code) { //working
 
 function listOfLists(query) {
 	const popular = [];
-	if(query == 'trending'|| query == 'popular'){
+	if (query == 'trending' || query == 'popular') {
 		var url = `${host}/lists/${query}/?limit=20`;
-	}else{
+	} else {
 		var url = `${host}/search/list/?query=${query}`;
 	}
 	return request(url).then(data => {
@@ -280,7 +282,7 @@ function listOfLists(query) {
 				popular.push({
 					name: list.name,
 					id: list.ids.trakt,
-					user: list.user.name?list.user.name:list.user.username,
+					user: list.user.name ? list.user.name : list.user.username,
 					likes: list.likes,
 					item_count: list.item_count,
 					description: list.description

@@ -9,8 +9,8 @@ const { default: axios } = require('axios');
 app.set('trust proxy', true)
 app.use(cors());
 
-app.use('/configure',express.static(path.join(__dirname, 'vue', 'dist')));
-app.use('/assets',express.static(path.join(__dirname, 'vue', 'dist','assets')));
+app.use('/configure', express.static(path.join(__dirname, 'vue', 'dist')));
+app.use('/assets', express.static(path.join(__dirname, 'vue', 'dist', 'assets')));
 
 const lists_array = { 'trakt_trending': "trakt - Trending", 'trakt_popular': "trakt - Popular", 'trakt_watchlist': "trakt - Watchlist", 'trakt_rec': "trakt - Recommended" };
 const genres = ["action", "adventure", "animation", "anime", "comedy", "crime", "disaster", "documentary", "Donghua", "drama", "eastern", "family", "fan-film", "fantasy", "film-noir", "history", "holiday", "horror", "indie", "music", "musical", "mystery", "none", "road", "romance", "science-fiction", "short", "sports", "sporting-event", "suspense", "thriller", "tv-movie", "war", "western"];
@@ -21,10 +21,10 @@ app.get('/', (req, res) => {
 	if (req.query.code) {
 		getToken(req.query.code).then(data => {
 			console.log(data)
-			if (data !== undefined){
-			res.redirect('/configure/?access_token=' + data);
-		}else{	
-			res.redirect('/configure/?access_token_undefined');
+			if (data !== undefined) {
+				res.redirect('/configure/?access_token=' + data);
+			} else {
+				res.redirect('/configure/?access_token_undefined');
 			}
 		}
 		).catch(() => {
@@ -99,18 +99,18 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 	if (configuration.split('|')[0].split('=')[1]) {
 		var lists = configuration.split('|')[0].split('=')[1].split(',');
 	} else {
-		var lists = 0;
+		var lists;
 	}
 	if (configuration.split('|')[1].split('=')[1]) {
 		var ids = configuration.split('|')[1].split('=')[1].split(',');
 		ids = ids.filter(Boolean);
 	} else {
-		var ids = 0;
+		var ids;
 	}
 	if (configuration.split('|')[2]) {
 		var access_token = configuration.split('|')[2].split('=')[1];
 	} else {
-		var access_token = 0;
+		var access_token;
 	}
 	console.log(lists, ids, access_token);
 
@@ -119,12 +119,11 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 	if (lists) {
 		for (let i = 0; i < lists.length; i++) {
 
-			console.log(lists[i])
-			if ((lists[i] == 'trakt_trending' || lists[i] == 'trakt_popular')) {
+			if ((lists[i] == 'trakt_trending' || lists[i] == 'trakt_popular') || (access_token.length > 0 && lists[i] == 'trakt_rec')) {
 				catalog[c] = {
 					"type": 'trakt',
 
-					"id": lists[i]+ "_movies",
+					"id": lists[i] + "_movies",
 
 					"name": lists_array[lists[i]] + " movies",
 
@@ -141,13 +140,13 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 					"extra": [{ "name": "genre", "isRequired": false, "options": genres }, { "name": "skip", "isRequired": false }]
 				};
 				c++;
-			} else if (access_token.length > 0 && (lists[i] == 'trakt_watchlist' || lists[i] == 'trakt_rec') ) {
+			} else if (access_token.length > 0 && lists[i] == 'trakt_watchlist') {
 				catalog[c] = {
 					"type": 'trakt',
 
 					"id": lists[i],
 
-					"name": lists_array[lists[i]] 
+					"name": lists_array[lists[i]]
 				};
 				c++;
 			}
@@ -165,6 +164,8 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 			console.error(error);
 		})
 	} else {
+		manifest.catalogs = catalog;
+		manifest.catalogs = manifest.catalogs.filter(Boolean);
 		res.send(manifest);
 		res.end();
 	}
@@ -176,10 +177,9 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, public');
 	res.setHeader('Content-Type', 'application/json');
 
-	const arr = ["movies" , "series" , "trakt"];
 	if (req.params.resource == "catalog") {
 		var { configuration, resource, type, id, extra } = req.params;
-	} else if (arr.includes(req.params.resource)) {
+	} else if (req.params.resource == "trakt") {
 		//var { resource, type, id, extra } = req.params;
 		console.log('dexter')
 		var type = req.params.resource;
@@ -188,11 +188,11 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 	} else {
 		var { resource, type, id, extra } = req.params;
 	}
-	console.log('req.params.resource',req.params.resource);
-	console.log('req.params',req.params);
-	if (extra !== undefined) {
+	console.log('req.params.resource', req.params.resource);
+	console.log('req.params', req.params);
+	if (extra) {
 		const params = new URLSearchParams(extra);
-		console.log('params',extra);
+		console.log('params', extra);
 		//extra = extra.split('=');
 		for (const [key, value] of params) {
 			console.log('key', key, 'value', value);
@@ -212,21 +212,21 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 	}
 	console.log(configuration, resource, type, id);
 	console.log('extra: genre:', genre, 'skip:', skip);
-	let lists,ids,access_token;
+	let lists, ids, access_token;
 	if (configuration !== undefined) {
 		if (configuration.split('|')[0].split('=')[1]) {
-		 lists = configuration.split('|')[0].split('=')[1].split(',');
+			lists = configuration.split('|')[0].split('=')[1].split(',');
 
 		} else {
-		 lists = 0;
+			lists = 0;
 		} if (configuration.split('|')[1].split('=')[1]) {
-		 ids = configuration.split('|')[1].split('=')[1].split(',');
+			ids = configuration.split('|')[1].split('=')[1].split(',');
 			ids = ids.filter(Boolean);
 		} else {
-		 ids = 0;
+			ids = 0;
 		}
 
-		
+
 		if (configuration.split('|')[2]) {
 			access_token = configuration.split('|')[2].split('=')[1];
 		}
@@ -234,8 +234,8 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 
 	if (id.match(/trakt_list:[0-9]*/i)) {
 		list_id = id.split(':')[1];
-		if(genre == undefined && id.split(':').length == 4 ){
-			genre = [id.split(':')[2],id.split(':')[3]]
+		if (genre == undefined && id.split(':').length == 4) {
+			genre = [id.split(':')[2], id.split(':')[3]]
 		}
 		console.log('trakt_list:', list_id);
 		list_catalog(list_id, genre, skip).then(promises => {
@@ -251,16 +251,16 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 	} else if (id.match(/trakt_[a-z]*/i)) {
 		list_id = id.split('_')[1];
 		type = id.split('_')[2];
-		if (type=="movies"){
+		if (type == "movies") {
 			trakt_type = "movie";
-		} else if (type == "series"){
+		} else if (type == "series") {
 			trakt_type = "show";
 		}
 		console.log(list_id);
 
 		if (list_id == "rec") {
 			if (access_token) {
-				recomendations(access_token, genre, skip).then(metas => {
+				recomendations(trakt_type, access_token, genre, skip).then(metas => {
 					metas = metas.filter(function (element) {
 						return element !== undefined;
 					});

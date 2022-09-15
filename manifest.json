@@ -8,9 +8,7 @@
     "catalogs": [],
     "resources": [],
     "types": [
-        "trakt",
-        "movies",
-        "series"
+        "trakt"
     ],
     "behaviorHints": {
         "configurable": true,
