@@ -223,7 +223,6 @@ function recomendations(trakt_type, access_token, genre, skip) {
 		var i = 0;
 		while (i < count && i < items.length) {
 			var item = items[i];
-			console.log(item)
 			if (item.ids.imdb) {
 				if (item.trailer) {
 					var trailer = [{ source: item.trailer.split('?v=')[1], type: "Trailer" }];
