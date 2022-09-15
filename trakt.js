@@ -3,8 +3,8 @@ var _ = require('underscore');
 
 const count = 100;
 const host = "https://api.trakt.tv";
-const myurl = "http://127.0.0.1:63355";
-//const myurl = "https://2ecbbd610840-trakt.baby-beamup.club/";
+//const myurl = "http://127.0.0.1:63355";
+const myurl = "https://2ecbbd610840-trakt.baby-beamup.club/";
 client = axios.create({
 	headers: {
 		"Content-type": "application/json",
