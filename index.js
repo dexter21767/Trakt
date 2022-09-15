@@ -95,22 +95,19 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 	res.setHeader('Content-Type', 'application/json');
 	const configuration = req.params.configuration;
 
-
+	let lists, ids, access_token;
 	if (configuration.split('|')[0].split('=')[1]) {
-		var lists = configuration.split('|')[0].split('=')[1].split(',');
-	} else {
-		var lists;
+		lists = configuration.split('|')[0].split('=')[1].split(',');
 	}
 	if (configuration.split('|')[1].split('=')[1]) {
-		var ids = configuration.split('|')[1].split('=')[1].split(',');
+		ids = configuration.split('|')[1].split('=')[1].split(',');
 		ids = ids.filter(Boolean);
-	} else {
-		var ids;
+		ids = ids.filter((c, index) => {
+			return ids.indexOf(c) === index;
+		});
 	}
 	if (configuration.split('|')[2]) {
-		var access_token = configuration.split('|')[2].split('=')[1];
-	} else {
-		var access_token;
+		access_token = configuration.split('|')[2].split('=')[1];
 	}
 	console.log(lists, ids, access_token);
 
@@ -213,20 +210,17 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 	console.log(configuration, resource, type, id);
 	console.log('extra: genre:', genre, 'skip:', skip);
 	let lists, ids, access_token;
-	if (configuration !== undefined) {
+	if (configuration) {
 		if (configuration.split('|')[0].split('=')[1]) {
 			lists = configuration.split('|')[0].split('=')[1].split(',');
-
-		} else {
-			lists = 0;
-		} if (configuration.split('|')[1].split('=')[1]) {
+		}
+		if (configuration.split('|')[1].split('=')[1]) {
 			ids = configuration.split('|')[1].split('=')[1].split(',');
 			ids = ids.filter(Boolean);
-		} else {
-			ids = 0;
+			ids = ids.filter((c, index) => {
+				return ids.indexOf(c) === index;
+			});
 		}
-
-
 		if (configuration.split('|')[2]) {
 			access_token = configuration.split('|')[2].split('=')[1];
 		}
