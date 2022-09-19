@@ -21,8 +21,11 @@ async function request(url, header) {
 			return res;
 		})
 		.catch(error => {
-			//console.error(error);
-			console.error('error on trakt.js request:', error.response.status, error.response.statusText, error.config.url);
+			if (error.response) {
+				console.error('error on index.js request:', error.response.status, error.response.statusText, error.config.url);
+			} else {
+				console.error(error);
+			}
 		});
 
 }
