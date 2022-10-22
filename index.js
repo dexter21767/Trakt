@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/:configuration?/configure', (req, res) => {
-	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, public');
+	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, publiccache-control: max-age=86400, stale-while-revalidate=43200, stale-if-error=86400, public');
 	res.setHeader('content-type', 'text/html');
 	res.sendFile(path.join(__dirname, 'vue', 'dist', 'index.html'));
 });
@@ -77,7 +77,7 @@ app.get('/manifest.json', (req, res) => {
 	}];
 
 
-	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, public');
+	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, publiccache-control: max-age=86400, stale-while-revalidate=43200, stale-if-error=86400, public');
 	res.setHeader('Content-Type', 'application/json');
 	res.send(manifest);
 	res.end();
@@ -90,7 +90,7 @@ app.get('/lists/:query', async (req, res) => {
 app.get('/:configuration?/manifest.json', (req, res) => {
 	console.log(req.params);
 	var catalog = [];
-	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, public');
+	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, publiccache-control: max-age=86400, stale-while-revalidate=43200, stale-if-error=86400, public');
 	res.setHeader('Content-Type', 'application/json');
 	const configuration = req.params.configuration;
 
@@ -170,7 +170,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 
 app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 
-	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, public');
+	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, publiccache-control: max-age=86400, stale-while-revalidate=43200, stale-if-error=86400, public');
 	res.setHeader('Content-Type', 'application/json');
 
 	if (req.params.resource == "catalog") {

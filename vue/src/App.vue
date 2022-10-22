@@ -1,6 +1,5 @@
 <template>
     <div>
-
         <!-- Search modal -->
         <div id="searchModal" ref="searchModal" tabindex="-1" aria-hidden="true"
             class="hidden overflow-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full">
@@ -480,7 +479,7 @@
                             <span class="text-xs font-semibold text-gray-600 py-2">Your lists</span>
 
                             <draggable v-if="state.lists.length" v-model="state.lists" group="lists"
-                                item-key="list.slug" @start="state.drag=true" @end="state.drag=false"
+                                item-key="list.id" @start="state.drag=true" @end="state.drag=false"
                                 class="mt-5 w-full text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 <template #item="{element}">
                                     <div
