@@ -227,7 +227,7 @@ function sortList(items, sort) {
 		}else {
 			items = _.sortBy(items, function (item) { return item[item.type][sort[0]] });
 		}
-		if (sort[0] == 'title') {
+		if (sort[0].match( /(title||runtime)/g)) {
 			items = items.reverse();
 		}
 		if (sort[1] == 'asc') {

@@ -92,7 +92,8 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 	var catalog = [];
 	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, publiccache-control: max-age=86400, stale-while-revalidate=43200, stale-if-error=86400, public');
 	res.setHeader('Content-Type', 'application/json');
-	const configuration = atob(req.params.configuration);
+	configuration = req.params.configuration;
+	if(!configuration.startsWith('lists')) configuration = atob(req.params.configuration);
 
 	let lists, ids, access_token;
 	if (configuration.split('|')[0].split('=')[1]) {
