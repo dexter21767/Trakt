@@ -213,13 +213,16 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', (req, res) => {
 	}
 	let sort,username;
 	if (id.match(/trakt_list:([0-9]*||([\w]*:[\w]*))/i)) {
-		if(id.match(/trakt_list:\d*(:\w*,\w*)?/gi)){
-			list_id = id.split(':')[1];
-			sort = id.split(":")[2].split(',');
+		if(id.startsWith("trakt_list:")) id = id.replace('trakt_list:','') 
+		if(id.match(/\d*(:\w*,\w*)?/gi)){
+			list_id = id.split(':')[0];
+			sort = id.split(":")[1];
+			if(sort) sort = sort.split(',');
 		}else{
-			list_id = id.split(':')[1];
-			username = id.split(':')[2];
-			sort = id.split(":")[3].split(',');
+			list_id = id.split(':')[0];
+			username = id.split(':')[1];
+			sort = id.split(":")[2];
+			if(sort) sort = sort.split(',');
 			
 		}
 		if (genre == undefined && id.split(':').length == 4) {

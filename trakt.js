@@ -99,11 +99,10 @@ function list(list_ids, access_token) {
 		if(id.startsWith("trakt_list:")) id = id.replace('trakt_list:','') 
 		console.log("id",id)
 		if(id.match(/\d*(:\w*,\w*)?/gi)){
-			if(id.split(':').length>1){
-			list_id = id.split(':')[1];
-			sort = id.split(':')[2].split(',')
-		} else list_id = id; 
-		url = `${host}/lists/${id}/`;
+			list_id = id.split(':')[0];
+			sort = id.split(':')[1].split(',')
+			if(sort) sort = sort.split(',')
+			url = `${host}/lists/${id}/`;
 		} else {
 			user_id = id.split(':')[0];
 			list_id = id.split(':')[1];
