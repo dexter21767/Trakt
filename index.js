@@ -92,7 +92,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 	var catalog = [];
 	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, publiccache-control: max-age=86400, stale-while-revalidate=43200, stale-if-error=86400, public');
 	res.setHeader('Content-Type', 'application/json');
-	const configuration = req.params.configuration;
+	const configuration = atob(req.params.configuration);
 
 	let lists, ids, access_token;
 	if (configuration.split('|')[0].split('=')[1]) {
@@ -184,6 +184,8 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 		var { resource, type, id, extra } = req.params;
 	}
 	console.log('req.params', req.params);
+	let skip,genre;
+	skip=0;
 	if (extra) {
 		const params = new URLSearchParams(extra);
 		console.log('params', extra);
@@ -192,22 +194,26 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 			console.log('key', key, 'value', value);
 			if (key == "genre") {
 
-				var genre = value;
+				genre = value.split(' ');
 			} else if (key == "skip") {
 				if (value >= 100) {
-					var skip = (value / 100) + 1;
+					skip = Math.round(value / 100);
 				}
 				else {
-					var skip = 0;
+					skip = 0;
 				}
 
 			}
 		}
+	}else{
+		skip=0;
 	}
+	skip++;
 	console.log(configuration, resource, type, id);
 	console.log('extra: genre:', genre, 'skip:', skip);
 	let lists, ids, access_token;
 	if (configuration) {
+		configuration = atob(configuration);
 		if (configuration.split('|')[0].split('=')[1]) {
 			lists = configuration.split('|')[0].split('=')[1].split(',');
 		}
@@ -222,17 +228,25 @@ app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
 			access_token = configuration.split('|')[2].split('=')[1];
 		}
 	}
-
-	if (id.match(/trakt_list:[0-9]*/i)) {
-		list_id = id.split(':')[1];
-		let username = id.split(':')[2];
+	let sort,username;
+	if (id.match(/trakt_list:([0-9]*||([\w]*:[\w]*))/i)) {
+		if(id.match(/trakt_list:\d*(:\w*,\w*)?/gi)){
+			list_id = id.split(':')[1];
+			sort = id.split(":")[2].split(',');
+		}else{
+			list_id = id.split(':')[1];
+			username = id.split(':')[2];
+			sort = id.split(":")[3].split(',');
+			
+		}
 		if (genre == undefined && id.split(':').length == 4) {
 			genre = [id.split(':')[2], id.split(':')[3]]
 		}
-		console.log('list_id:', list_id, 'username', username);
+		console.log('list_id:', list_id, 'username', username,'sort',sort);
 		console.log(id);
-		list_catalog(list_id, username, access_token, genre, skip).then(metas => {
+		list_catalog({id:list_id, username, access_token, genre,sort, skip}).then(metas => {
 			if (metas) {
+				console.log(metas.length);
 				metas = metas.filter(function (element) {
 					return element !== undefined;
 				});
@@ -318,14 +332,15 @@ async function list_cat(ids, access_token) {
 		for (let i = 0; i < datas.length; i++) {
 			if (datas[i]) {
 				let data = datas[i].data
-				var name = data.name;
-				var id = data.ids.trakt;
-				var username = data.user.username;
+				let name = data.name;
+				let id = data.ids.trakt;
+				let username = data.user.username;
+				let sort = data.sort;
 				if (data.privacy == "private") {
-					promises.push(request(`${host}/users/${username}/lists/${id}/items`, access_token, id, name, username));
+					promises.push(request(`${host}/users/${username}/lists/${id}/items`, access_token, id, name, username).then(data=>{if(sort){data.id+=':'+sort};return data}));
 				}
 				else {
-					promises.push(request(`${host}/lists/${id}/items`, access_token, id, name));
+					promises.push(request(`${host}/lists/${id}/items`, access_token, id, name).then(data=>{if(sort){data.id+=':'+sort};return data}));
 				}
 			}
 		}

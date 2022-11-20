@@ -1,14 +1,17 @@
 const axios = require('axios').default;
-var _ = require('underscore');
+const _ = require('underscore');
+const config = require('./config.js');
+const NodeCache = require("node-cache");
+const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
 
 const count = 100;
-const host = "https://api.trakt.tv";
-//const myurl = "http://127.0.0.1:63355";
-const myurl = "https://2ecbbd610840-trakt.baby-beamup.club/";
+const host = config.host;
+const myurl = config.local;
+
 client = axios.create({
 	headers: {
-		"Content-type": "application/json",
-		"trakt-api-key": "18bde7dcd858c86f9593addf9f66528f8c1443ec1bef9ecee501d1c5177ce281",
+		"Content-type": "application/json", 
+		"trakt-api-key": config.API_KEY,
 		"trakt-api-version": 2
 	}
 });
@@ -30,25 +33,55 @@ async function request(url, header) {
 
 }
 
-function list_catalog(id, username, access_token, sort, skip) {
-
+function list_catalog(list) {
+	let {id, username, access_token, genre,sort, skip}=list;
+	genre = genre?genre:sort;
+	let cache_id,url,header;
 	if (username) {
 		if (access_token) {
-			var url = `${host}/users/${id}/lists/${username}/items?page=${skip}&limit=${count}&extended=full`;
-			var header = {
+			cache_id = username+'_'+id;
+			url = `${host}/users/${username}/lists/${id}/items?page=${skip}&limit=${count}&extended=full`;
+			header = {
 				headers: {
 					"Authorization": `Bearer ${access_token}`
 				}
 			}
-			return request(url, header).then(data => { if (data !== undefined) { return sortList(data.data, sort) } }).then(items => { if (items !== undefined) { return getMeta(items) } });
-
-		}
-	} else {
-		var url = `${host}/lists/${id}/items/?page=${skip}&limit=${count}&extended=full`;
-		return request(url).then(data => { if (data !== undefined) { return sortList(data.data, sort) } }).then(items => { if (items !== undefined) { return getMeta(items) } });
+	}} else {
+		url = `${host}/lists/${id}/items/?page=${skip}&limit=${count}&extended=full`;
+		cache_id = id;
 	}
+		return request(url, header).then(data => { 
+			if (data != undefined) { 
+				var list = cache.get(cache_id);
+				console.log('list from cache',(list && list.length)?list.length:list)
+				if(list && list.length) {
+					list = list.concat(data.data);
+					list = filter(list);			
+					
+				}else{
+					list = data.data;
+				}
+				console.log('list length',data.data.length)
+				cache.set(cache_id,list)
+				console.log('total list length',list.length)
+				console.log("skip",skip)
+				//return list.slice((skip-1)*100, skip*100);
+				items= sortList(list, genre).slice((skip-1)*100, skip*100);
+				if (items !== undefined) { return getMeta(items)}
 
+			}
+		})
 }
+
+function filter(list) {	  
+	  let result = list.filter(
+		(element, index) => index === list.findIndex(
+		  other => element.id === other.id
+			//&& element.lastname === other.lastname
+		));	
+	return result;
+}
+
 // rab1t 
 function list(list_ids, access_token) {
 	console.log('list_ids', list_ids)
@@ -61,16 +94,25 @@ function list(list_ids, access_token) {
 	}
 	const promises = [];
 	for (let i = 0; i < list_ids.length; i++) {
-		if (list_ids[i].split(':').length > 1) {
-			var user_id = list_ids[i].split(':')[0];
-			var list_id = list_ids[i].split(':')[1];
-			var url = `${host}/users/${user_id}/lists/${list_id}/`;
+		console.log("list_ids",list_ids[i])
+		let list_id,user_id,sort,url;
+		if(list_ids[i].match(/trakt_list:\d*(:\w*,\w*)?/gi)){
+			
+			list_id = list_ids[i].split(':')[1];
+			sort = list_ids[i].split(':')[2].split(',')
+			url = `${host}/lists/${list_ids[i]}/`;
+
+		//if (list_ids[i].split(':').length > 1 && list_ids[i].split(':')[2].length) {
 		} else {
-			var url = `${host}/lists/${list_ids[i]}/`;
+			user_id = list_ids[i].split(':')[0];
+			list_id = list_ids[i].split(':')[1];
+			sort = list_ids[i].split(':')[2].split(',')
+			url = `${host}/users/${user_id}/lists/${list_id}/`;
+
 		}
 
 
-		promises.push(request(url, header));
+		promises.push(request(url, header).then(data=>{if(sort){data.data.sort=sort};return data}));
 
 	}
 	return promises;
@@ -176,16 +218,19 @@ function watchlist(access_token) { //working
 
 
 function sortList(items, sort) {
+	console.log('sorting',sort)
 	if (sort) {
-		sort = sort.split(' ');
-		if (sort[0] == "added") { sort[0] = "listed_at" }
-		console.log(sort)
-		if (sort[0] == "listed_at") {
-			items = _.sortBy(items, sort[0]);
-		} else {
+		//console.log(items)
+		//sort = sort.split(' ');
+		if (sort[0] == "added") {
+			items = _.sortBy(items, "listed_at" );
+		}else {
 			items = _.sortBy(items, function (item) { return item[item.type][sort[0]] });
 		}
-		if (sort[1] == 'desc') {
+		if (sort[0] == 'title') {
+			items = items.reverse();
+		}
+		if (sort[1] == 'asc') {
 			items = items.reverse();
 		}
 	}
@@ -195,7 +240,7 @@ function sortList(items, sort) {
 function getMeta(items) {
 	var metas = [];
 	var i = 0;
-	while (i < count && i < items.length) {
+	while (i < items.length) {
 		var item = items[i];
 		if (item.movie || item.show) {
 			if (item[item.type].ids.imdb) {
@@ -276,8 +321,8 @@ function recomendations(trakt_type, access_token, genre, skip) {
 async function getToken(code) { //working
 	const data = {
 		"code": code,
-		"client_id": "18bde7dcd858c86f9593addf9f66528f8c1443ec1bef9ecee501d1c5177ce281",
-		"client_secret": "d4214fec4f6f994b79f03430f19441120a44c67441c06cc1dd10dc92d7967b0c",
+		"client_id": config['client_id'],
+		"client_secret": config['client_secret'],
 		"redirect_uri": myurl,
 		"grant_type": "authorization_code"
 	};

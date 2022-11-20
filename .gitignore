@@ -3,5 +3,7 @@
 /res
 /node_modules
 beamup.json
+package-lock.json
 test.js
 Trakt.code-workspace
+.env

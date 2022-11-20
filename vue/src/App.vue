@@ -683,7 +683,7 @@ function generateInstallUrl() {
     }
     let configurationValue = Object.keys(data).map(key => key + '=' + data[key]).join('|');
     console.log(configurationValue);
-    const configuration = configurationValue && configurationValue.length ? '/' + configurationValue : '';
+    const configuration = configurationValue && configurationValue.length ? '/' + btoa(configurationValue) : '';
     const location = window.location.host + configuration + '/manifest.json'
     document.getElementById("install_button").href = 'stremio://' + location;
 }
