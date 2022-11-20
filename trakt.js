@@ -94,26 +94,24 @@ function list(list_ids, access_token) {
 	}
 	const promises = [];
 	for (let i = 0; i < list_ids.length; i++) {
-		console.log("list_ids",list_ids[i])
+		let id = list_ids[i];
 		let list_id,user_id,sort,url;
-		if(list_ids[i].match(/trakt_list:\d*(:\w*,\w*)?/gi)){
-			
-			list_id = list_ids[i].split(':')[1];
-			sort = list_ids[i].split(':')[2].split(',')
-			url = `${host}/lists/${list_ids[i]}/`;
-
-		//if (list_ids[i].split(':').length > 1 && list_ids[i].split(':')[2].length) {
+		if(id.startsWith("trakt_list:")) id = id.replace('trakt_list:','') 
+		console.log("id",id)
+		if(id.match(/\d*(:\w*,\w*)?/gi)){
+			if(id.split(':').length>1){
+			list_id = id.split(':')[1];
+			sort = id.split(':')[2].split(',')
+		} else list_id = id; 
+		url = `${host}/lists/${id}/`;
 		} else {
-			user_id = list_ids[i].split(':')[0];
-			list_id = list_ids[i].split(':')[1];
-			sort = list_ids[i].split(':')[2].split(',')
+			user_id = id.split(':')[0];
+			list_id = id.split(':')[1];
+			sort = id.split(':')[2]
+			if(sort) sort = sort.split(',')
 			url = `${host}/users/${user_id}/lists/${list_id}/`;
-
 		}
-
-
 		promises.push(request(url, header).then(data=>{if(sort){data.data.sort=sort};return data}));
-
 	}
 	return promises;
 }
