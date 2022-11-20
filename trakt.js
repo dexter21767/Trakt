@@ -220,7 +220,6 @@ function watchlist(access_token) { //working
 function sortList(items, sort) {
 	console.log('sorting',sort)
 	if (sort) {
-		//console.log(items)
 		//sort = sort.split(' ');
 		if (sort[0] == "added") {
 			items = _.sortBy(items, "listed_at" );

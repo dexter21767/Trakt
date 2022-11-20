@@ -5,6 +5,7 @@ const path = require('path');
 const { getToken, watchlist, recomendations, list, list_catalog, popular, trending, client, listOfLists } = require('./trakt.js');
 const manifest = require("./manifest.json");
 const { default: axios } = require('axios');
+const { isGeneratorFunction } = require('util/types');
 
 app.set('trust proxy', true)
 app.use(cors());
@@ -93,11 +94,12 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, publiccache-control: max-age=86400, stale-while-revalidate=43200, stale-if-error=86400, public');
 	res.setHeader('Content-Type', 'application/json');
 	configuration = req.params.configuration;
-	if(!configuration.startsWith('lists')) configuration = atob(req.params.configuration);
-
+	if(configuration){
+	if(!configuration.startsWith('lists')) configuration = atob(configuration);
+	console.log("configuration",configuration)
 	let lists, ids, access_token;
 	if (configuration.split('|')[0].split('=')[1]) {
-		lists = configuration.split('|')[0].split('=')[1].split(',');
+		lists = Object.fromEntries(new URLSearchParams(configuration.split('|')[0]));
 	}
 	if (configuration.split('|')[1].split('=')[1]) {
 		ids = configuration.split('|')[1].split('=')[1].split(',');
@@ -112,7 +114,6 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 	console.log(lists, ids, access_token);
 
 	var c = 0;
-
 	if (lists) {
 		for (let i = 0; i < lists.length; i++) {
 
@@ -149,6 +150,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 			}
 		}
 	}
+
 	if (ids) {
 		list_cat(ids, access_token).then((data) => {
 			manifest.catalogs = catalog.concat(data);
@@ -160,6 +162,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 			res.end();
 			console.error(error);
 		})
+	}
 	} else {
 		manifest.catalogs = catalog;
 		manifest.catalogs = manifest.catalogs.filter(Boolean);
@@ -169,48 +172,27 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 });
 
 
-app.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res) => {
+app.get('/:configuration?/catalog/:type/:id/:extra?.json', (req, res) => {
 
 	res.setHeader('Cache-Control', 'max-age=86400,staleRevalidate=stale-while-revalidate, staleError=stale-if-error, publiccache-control: max-age=86400, stale-while-revalidate=43200, stale-if-error=86400, public');
 	res.setHeader('Content-Type', 'application/json');
+	let { configuration, type, id, extra } = req.params;
 
-	if (req.params.resource == "catalog") {
-		var { configuration, resource, type, id, extra } = req.params;
-	} else if (req.params.resource == "trakt") {
-		//var { resource, type, id, extra } = req.params;
-		var type = req.params.resource;
-		var id = req.params.type;
-		var extra = req.params.id;
-	} else {
-		var { resource, type, id, extra } = req.params;
-	}
 	console.log('req.params', req.params);
 	let skip,genre;
 	skip=0;
 	if (extra) {
-		const params = new URLSearchParams(extra);
-		console.log('params', extra);
-		//extra = extra.split('=');
-		for (const [key, value] of params) {
-			console.log('key', key, 'value', value);
-			if (key == "genre") {
-
-				genre = value.split(' ');
-			} else if (key == "skip") {
-				if (value >= 100) {
-					skip = Math.round(value / 100);
-				}
-				else {
-					skip = 0;
-				}
-
-			}
-		}
-	}else{
-		skip=0;
+	if (extra) params = Object.fromEntries(new URLSearchParams(extra));
+	console.log(params)
+	if (params) genre = params['genre'];
+	if (genre) genre = genre.split(' ');
+	if (params) skip = params['skip'];
+	if (skip && skip >= 100) skip = Math.round(skip / 100);
+	if(!skip) skip = 0;
 	}
 	skip++;
-	console.log(configuration, resource, type, id);
+
+	console.log(configuration, type, id);
 	console.log('extra: genre:', genre, 'skip:', skip);
 	let lists, ids, access_token;
 	if (configuration) {
