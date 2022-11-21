@@ -22,12 +22,17 @@ app.get('/', (req, res) => {
 	if (req.query.code) {
 		console.log(req.query)
 		getToken(req.query.code).then(data => {
-			if(data.error) res.end(data);
-			else if (data && data.access_token) res.redirect('/configure/?access_token=' + data.access_token);
-			else res.redirect('/configure/?access_token_undefined');	
-		}
-		).catch(() => {
-			res.redirect('/configure/?error_getting_access_token');
+			if (data && data.access_token) res.redirect('/configure/?access_token=' + data.access_token);
+			else {
+				res.setHeader('content-type', 'text/html');
+				
+				res.send(JSON.stringify(data));// res.redirect('/configure/?access_token_undefined');	
+				res.end();
+			}
+	}
+		).catch((e) => {
+			res.end(e);
+			//res.redirect('/configure/?error_getting_access_token');
 		})
 	} else {
 		res.redirect('/configure/')

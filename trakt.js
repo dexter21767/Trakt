@@ -327,8 +327,8 @@ async function getToken(code) { //working
 		if(!res.data.access_token) throw res
 		return (res.data)
 	}).catch(error => {
-		console.error(error);
-		return {error:error}
+		//console.error(error);
+		return error
 	})
 }
 
