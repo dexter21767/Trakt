@@ -20,6 +20,7 @@ const sort = ["added asc", "added desc", "title asc", "title desc", "released as
 
 app.get('/', (req, res) => {
 	if (req.query.code) {
+		console.log(req.query)
 		getToken(req.query.code).then(data => {
 			if (data !== undefined) {
 				res.redirect('/configure/?access_token=' + data);
@@ -223,7 +224,6 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', (req, res) => {
 			username = id.split(':')[1];
 			sort = id.split(":")[2];
 			if(sort) sort = sort.split(',');
-			
 		}
 		if (genre == undefined && id.split(':').length == 4) {
 			genre = [id.split(':')[2], id.split(':')[3]]
