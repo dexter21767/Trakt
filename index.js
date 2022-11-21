@@ -22,11 +22,9 @@ app.get('/', (req, res) => {
 	if (req.query.code) {
 		console.log(req.query)
 		getToken(req.query.code).then(data => {
-			if (data !== undefined) {
-				res.redirect('/configure/?access_token=' + data);
-			} else {
-				res.redirect('/configure/?access_token_undefined');
-			}
+			if(data.error) res.end(data);
+			else if (data !== undefined) res.redirect('/configure/?access_token=' + data);
+			else res.redirect('/configure/?access_token_undefined');	
 		}
 		).catch(() => {
 			res.redirect('/configure/?error_getting_access_token');
