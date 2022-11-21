@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 			else {
 				res.setHeader('content-type', 'text/html');
 				
-				res.send(JSON.stringify(data));// res.redirect('/configure/?access_token_undefined');	
+				res.send(data);// res.redirect('/configure/?access_token_undefined');	
 				res.end();
 			}
 	}
