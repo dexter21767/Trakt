@@ -324,6 +324,7 @@ async function getToken(code) { //working
 	};
 	const url = 'https://api.trakt.tv/oauth/token';
 	return axios.post(url, data).then(res => {
+		return res;
 		if(!res.data.access_token) throw res
 		return (res.data)
 	}).catch(error => {

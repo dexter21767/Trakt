@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 	if (req.query.code) {
 		console.log(req.query)
 		getToken(req.query.code).then(data => {
-			if (data && data.access_token) res.redirect('/configure/?access_token=' + data.access_token);
+			if (data && data.data && data.data.access_token) res.redirect('/configure/?access_token=' + data.data.access_token);
 			else {
 				res.setHeader('content-type', 'text/html');
 				
