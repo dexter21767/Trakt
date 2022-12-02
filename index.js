@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const path = require('path');
-const { getToken, watchlist, recomendations, list, list_catalog, popular, trending, client, listOfLists } = require('./trakt.js');
+const { getToken, watchlist, recomendations, list, list_catalog, popular, trending, client, listOfLists } = require('./trakt-api.js');
 const manifest = require("./manifest.json");
 const { default: axios } = require('axios');
 const { isGeneratorFunction } = require('util/types');
@@ -101,7 +101,11 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 	if(configuration){
 	if(!configuration.startsWith('lists')) configuration = atob(configuration);
 	console.log("configuration",configuration)
-	let lists, ids, access_token;
+	let {lists, ids, access_token} = JSON.parse(configuration);
+	console.log(lists, ids, access_token);
+	
+	/*
+	console.log(configuration)
 	if (configuration.split('|')[0].split('=')[1]) {
 		lists = Object.fromEntries(new URLSearchParams(configuration.split('|')[0]));
 	}
@@ -114,14 +118,14 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 	}
 	if (configuration.split('|')[2]) {
 		access_token = configuration.split('|')[2].split('=')[1];
-	}
+	}*/
 	console.log(lists, ids, access_token);
 
 	var c = 0;
 	if (lists) {
 		for (let i = 0; i < lists.length; i++) {
 
-			if ((lists[i] == 'trakt_trending' || lists[i] == 'trakt_popular') || (access_token.length > 0 && lists[i] == 'trakt_rec')) {
+			if ((lists[i] == 'trakt_trending' || lists[i] == 'trakt_popular') || (access_token && access_token.length > 0 && lists[i] == 'trakt_rec')) {
 				catalog[c] = {
 					"type": 'trakt',
 
@@ -142,7 +146,7 @@ app.get('/:configuration?/manifest.json', (req, res) => {
 					"extra": [{ "name": "genre", "isRequired": false, "options": genres }, { "name": "skip", "isRequired": false }]
 				};
 				c++;
-			} else if (access_token.length > 0 && lists[i] == 'trakt_watchlist') {
+			} else if (access_token && access_token.length > 0 && lists[i] == 'trakt_watchlist') {
 				catalog[c] = {
 					"type": 'trakt',
 
@@ -182,6 +186,7 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', (req, res) => {
 	res.setHeader('Content-Type', 'application/json');
 	let { configuration, type, id, extra } = req.params;
 
+	
 	console.log('req.params', req.params);
 	let skip,genre;
 	skip=0;
@@ -198,38 +203,36 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', (req, res) => {
 
 	console.log(configuration, type, id);
 	console.log('extra: genre:', genre, 'skip:', skip);
-	let lists, ids, access_token;
-	if (configuration) {
-		configuration = atob(configuration);
-		if (configuration.split('|')[0].split('=')[1]) {
-			lists = configuration.split('|')[0].split('=')[1].split(',');
-		}
-		if (configuration.split('|')[1].split('=')[1]) {
-			ids = configuration.split('|')[1].split('=')[1].split(',');
-			ids = ids.filter(Boolean);
-			ids = ids.filter((c, index) => {
-				return ids.indexOf(c) === index;
-			});
-		}
-		if (configuration.split('|')[2]) {
-			access_token = configuration.split('|')[2].split('=')[1];
-		}
+
+
+	if(configuration){
+	if(!configuration.startsWith('lists')) configuration = atob(configuration);
+	console.log("configuration",configuration)
+	configuration= JSON.parse(configuration);
 	}
+	let {lists, ids, access_token}= configuration;
+	console.log(lists, ids, access_token);
+
+	
 	let sort,username;
 	if (id.match(/trakt_list:([0-9]*||([\w]*:[\w]*))/i)) {
 		if(id.startsWith("trakt_list:")) id = id.replace('trakt_list:','') 
 		if(id.match(/\d*(:\w*,\w*)?/gi)){
 			list_id = id.split(':')[0];
-			sort = id.split(":")[1];
-			if(sort) sort = sort.split(',');
+			
+			sort = id.split(':')[1].split(',');
+			//sort = id.split(":")[1];
+			//if(sort) sort = sort.split(',');
 		}else{
 			list_id = id.split(':')[0];
 			username = id.split(':')[1];
-			sort = id.split(":")[2];
-			if(sort) sort = sort.split(',');
+
+			sort = id.split(':')[2].split(',');
+			//sort = id.split(":")[2];
+			//if(sort) sort = sort.split(',');
 		}
 		if (genre == undefined && id.split(':').length == 4) {
-			genre = [id.split(':')[2], id.split(':')[3]]
+			genre = id.split(':')[2].split(',');
 		}
 		console.log('list_id:', list_id, 'username', username,'sort',sort);
 		console.log(id);
@@ -255,6 +258,8 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', (req, res) => {
 		console.log(list_id);
 
 		if (list_id == "rec") {
+			console.log(list_id,access_token);
+
 			if (access_token) {
 				recomendations(trakt_type, access_token, genre, skip).then(metas => {
 					metas = metas.filter(function (element) {
@@ -316,11 +321,11 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', (req, res) => {
 
 async function list_cat(ids, access_token) {
 	const host = "https://api.trakt.tv";
-	return Promise.all(list(ids, access_token)).then(datas => {
+	return Promise.allSettled(list(ids, access_token)).then(datas => {
 		const promises = [];
 		for (let i = 0; i < datas.length; i++) {
-			if (datas[i]) {
-				let data = datas[i].data
+			if (datas[i] && datas[i].status == 'fulfilled') {
+				let data = datas[i].value.data
 				let name = data.name;
 				let id = data.ids.trakt;
 				let username = data.user.username;

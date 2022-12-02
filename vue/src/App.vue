@@ -612,18 +612,15 @@ onMounted(() => {
 
 
 async function getListsOflists() {
-    var list = (await axios.get(import.meta.env.VITE_APP_URL + '/lists/popular'))?.data || [];
-    state.lists_popular = list;
-
-    var list = (await axios.get(import.meta.env.VITE_APP_URL + '/lists/trending'))?.data || [];
-    state.lists_trending = list;
+    state.lists_popular = (await axios.get(state.currentUrl + '/lists/popular'))?.data || [];
+    state.lists_trending = (await axios.get(state.currentUrl + '/lists/trending'))?.data || [];
 }
 
 function generateInstallUrl() {
-    const data = [];
+    let data = {};
     const lists = [];
-    var generic = [];
-    var query = window.location.search.substring(1);
+    let generic = [];
+    let query = window.location.search.substring(1);
     if (query) {
         if(query.split('=')[0] == "access_token" && query.split('=')[1] !== "undefined"){
             var access_token = query.split('=')[1];
@@ -666,23 +663,24 @@ function generateInstallUrl() {
             })
         }
     }
-    for (let list in state.lists) {
-        console.log(state.lists[list])
-        if (state.lists[list].id) {
-            lists.push(state.lists[list].id)
-        } else if (state.lists[list].sort) {
-            lists.push(`${state.lists[list].username}:${state.lists[list].slug}:${state.lists[list].sort[0]}:${state.lists[list].sort[1]}`)
+    for (let index in state.lists) {
+        let list = state.lists[index];
+        console.log("list",list)
+        if (list.username) {
+            if(list.sort) lists.push(`${list.username}:${list.slug}:${list.sort}`)
+            else lists.push(`${list.username}:${list.slug}`)
         } else {
-            lists.push(`${state.lists[list].username}:${state.lists[list].slug}`)
+            lists.push(`${list.id}`)
         }
     }
     console.log(lists);
-    data['lists'] = generic.join(',');
-    data['ids'] = lists.join(',');
+    data['lists'] = generic//.join(',');
+    data['ids'] = lists//.join(',');
     if (access_token) {
         data['access_token'] = access_token;
     }
-    let configurationValue = Object.keys(data).map(key => key + '=' + data[key]).join('|');
+    let configurationValue = JSON.stringify(data); 
+    //let configurationValue = Object.keys(data).map(key => key + '=' + data[key]).join('|');
     console.log(configurationValue);
     const configuration = configurationValue && configurationValue.length ? '/' + btoa(configurationValue) : '';
     const location = window.location.host + configuration + '/manifest.json'
@@ -698,7 +696,7 @@ function addListUrl() {
         return;
     }
     if (sort.split('?')[1]) {
-        sort = sort.split('?')[1].split('=')[1].split(',');
+        sort = sort.split('?')[1].split('=')[1];
     }
 
 
@@ -719,8 +717,9 @@ async function searchLists() {
 function addList(list) {
     state.lists.push({
         name: list.name,
-        slug: list.id,
+        slug: list.slug,
         username: list.user,
+        sort:list.sort,
         id: list.id
     });
 }

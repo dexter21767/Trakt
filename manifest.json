@@ -1,6 +1,6 @@
 {
     "id": "community.trakt-tv",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "name": "Trakt Tv",
     "description": "Addon for getting Trakt's public and user lists, recommendations and watch list.",
     "logo": "https://i.imgur.com/zPqau8y.png",

@@ -98,16 +98,17 @@ function list(list_ids, access_token) {
 		let list_id,user_id,sort,url;
 		if(id.startsWith("trakt_list:")) id = id.replace('trakt_list:','') 
 		console.log("id",id)
-		if(id.match(/\d*(:\w*,\w*)?/gi)){
+		if(id.match(/\d*(:\w*:\w*)?/gi)){
 			list_id = id.split(':')[0];
-			sort = id.split(':')[1].split(',')
-			if(sort) sort = sort.split(',')
+			sort = [id.split(':')[1],id.split(':')[2]]
+			//sort = id.split(':')[1]
+			//if(sort) sort = sort.split(',')
 			url = `${host}/lists/${id}/`;
 		} else {
 			user_id = id.split(':')[0];
 			list_id = id.split(':')[1];
-			sort = id.split(':')[2]
-			if(sort) sort = sort.split(',')
+			sort = [id.split(':')[2],id.split(':')[3]]
+			//if(sort) sort = sort.split(',')
 			url = `${host}/users/${user_id}/lists/${list_id}/`;
 		}
 		promises.push(request(url, header).then(data=>{if(sort){data.data.sort=sort};return data}));
