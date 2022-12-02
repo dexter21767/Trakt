@@ -7,40 +7,44 @@
                 <!-- Modal content -->
                 <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 overflow-y-auto h-full">
                     <!-- Modal header -->
-                    <div class="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600">
-                        <h3 class="w-full text-xl font-semibold text-gray-900 dark:text-white mr-4">
-                            <form @submit.prevent="getLists" class="w-full">
-                                <label for="searchModalInput"
-                                    class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-gray-300">Search
-                                    Trakt lists</label>
-                                <div class="relative">
-                                    <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
-                                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                        </svg>
+                    <div class="modal-header">
+
+                        <div class="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600">
+                            <h3 class="w-full text-xl font-semibold text-gray-900 dark:text-white mr-4">
+                                <form @submit.prevent="getLists" class="w-full">
+                                    <label for="searchModalInput"
+                                        class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-gray-300">Search
+                                        Trakt lists</label>
+                                    <div class="relative">
+                                        <div
+                                            class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                                            <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <input v-model="state.searchQuery" type="search" id="searchModalInput"
+                                            class="block p-4 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            placeholder="Search Trakt lists" required>
+                                        <button type="submit"
+                                            class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
                                     </div>
-                                    <input v-model="state.searchQuery" type="search" id="searchModalInput"
-                                        class="block p-4 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Search Trakt lists" required>
-                                    <button type="submit"
-                                        class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
-                                </div>
-                            </form>
-                        </h3>
-                        <button type="button"
-                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                            @click="state.modal.toggle">
-                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span class="sr-only">Close modal</span>
-                        </button>
+                                </form>
+                            </h3>
+                            <button type="button"
+                                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                @click="state.modal.toggle">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
                     </div>
                     <!-- Modal body -->
                     <div class="p-6 space-y-6">
@@ -49,21 +53,23 @@
                                 class="p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
                                 <a href="#">
                                     <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                        {{item.name}} <small>by {{item.user}}</small>
+                                        {{ item.name }} <small>by {{ item.user }}</small>
                                         <span
-                                            class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{item.likes}}
+                                            class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{
+                                                    item.likes
+                                            }}
                                             likes</span>
                                         <span
                                             class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">Items
-                                            count: {{item.item_count}}</span>
+                                            count: {{ item.item_count }}</span>
                                     </h5>
                                 </a>
                                 <p :id="`${item.id}_less`" class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                                    {{item.description.slice(0,100)}} <button class="readmore"
-                                        @click=" readmore(item.id)">read more</button></p>
+                                    {{ item.description.slice(0, 100) }} <button class="readmore"
+                                        @click="readmore(item.id)">read more</button></p>
                                 <p :id="`${item.id}_more`"
                                     class="hidden mb-3 font-normal text-gray-700 dark:text-gray-400">
-                                    {{item.description}} <button class="readless" @click=" readless(item.id)">read
+                                    {{ item.description }} <button class="readless" @click="readless(item.id)">read
                                         less</button></p>
                                 <button @click="addList(item)"
                                     class="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -89,19 +95,22 @@
                 <!-- Modal content -->
                 <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 overflow-y-auto h-full">
                     <!-- Modal header -->
-                    <div class="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600">
-                        <h3 class="w-full text-xl font-semibold text-gray-900 dark:text-white mr-4">Trakt popular Lists
-                        </h3>
-                        <button @click="state.popularModal.toggle" type="button"
-                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
-                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span class="sr-only">Close modal</span>
-                        </button>
+                    <div class="modal-header">
+                        <div class="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600">
+                            <h3 class="w-full text-xl font-semibold text-gray-900 dark:text-white mr-4">Trakt popular
+                                Lists
+                            </h3>
+                            <button @click="state.popularModal.toggle" type="button"
+                                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
                     </div>
                     <!-- Modal body -->
                     <div class="p-6 space-y-6">
@@ -110,21 +119,23 @@
                                 class="p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
                                 <a href="#">
                                     <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                        {{item.name}} <small>by {{item.user}}</small>
+                                        {{ item.name }} <small>by {{ item.user }}</small>
                                         <span
-                                            class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{item.likes}}
+                                            class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{
+                                                    item.likes
+                                            }}
                                             likes</span>
                                         <span
                                             class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">Items
-                                            count: {{item.item_count}}</span>
+                                            count: {{ item.item_count }}</span>
                                     </h5>
                                 </a>
                                 <p :id="`${item.id}_less`" class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                                    {{item.description.slice(0,100)}} <button class="readmore"
-                                        @click=" readmore(item.id)">read more</button></p>
+                                    {{ item.description.slice(0, 100) }} <button class="readmore"
+                                        @click="readmore(item.id)">read more</button></p>
                                 <p :id="`${item.id}_more`"
                                     class="hidden mb-3 font-normal text-gray-700 dark:text-gray-400">
-                                    {{item.description}} <button class="readless" @click=" readless(item.id)">read
+                                    {{ item.description }} <button class="readless" @click="readless(item.id)">read
                                         less</button></p>
                                 <button @click="addList(item)"
                                     class="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -151,19 +162,23 @@
                 <!-- Modal content -->
                 <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 overflow-y-auto h-full">
                     <!-- Modal header -->
-                    <div class="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600">
-                        <h3 class="w-full text-xl font-semibold text-gray-900 dark:text-white mr-4">Trakt popular Lists
-                        </h3>
-                        <button @click="state.trendingModal.toggle" type="button"
-                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
-                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span class="sr-only">Close modal</span>
-                        </button>
+                    <div class="modal-header">
+
+                        <div class="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600">
+                            <h3 class="w-full text-xl font-semibold text-gray-900 dark:text-white mr-4">Trakt popular
+                                Lists
+                            </h3>
+                            <button @click="state.trendingModal.toggle" type="button"
+                                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
                     </div>
                     <!-- Modal body -->
                     <div class="p-6 space-y-6">
@@ -172,21 +187,23 @@
                                 class="p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
                                 <a href="#">
                                     <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                        {{item.name}} <small>by {{item.user}}</small>
+                                        {{ item.name }} <small>by {{ item.user }}</small>
                                         <span
-                                            class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{item.likes}}
+                                            class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{
+                                                    item.likes
+                                            }}
                                             likes</span>
                                         <span
                                             class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">Items
-                                            count: {{item.item_count}}</span>
+                                            count: {{ item.item_count }}</span>
                                     </h5>
                                 </a>
                                 <p :id="`${item.id}_less`" class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                                    {{item.description.slice(0,100)}} <button class="readmore"
-                                        @click=" readmore(item.id)">read more</button></p>
+                                    {{ item.description.slice(0, 100) }} <button class="readmore"
+                                        @click="readmore(item.id)">read more</button></p>
                                 <p :id="`${item.id}_more`"
                                     class="hidden mb-3 font-normal text-gray-700 dark:text-gray-400">
-                                    {{item.description}} <button class="readless" @click=" readless(item.id)">read
+                                    {{ item.description }} <button class="readless" @click="readless(item.id)">read
                                         less</button></p>
                                 <button @click="addList(item)"
                                     class="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -212,22 +229,25 @@
                 <!-- Modal content -->
                 <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
                     <!-- Modal header -->
-                    <div class="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600">
-                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                            Install the addon
-                        </h3>
-                        <button @click="state.install.hide();" type="button"
-                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                            data-modal-toggle="defaultModal">
-                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg" data-darkreader-inline-fill=""
-                                style="--darkreader-inline-fill:currentColor;">
-                                <path fill-rule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span class="sr-only">Close modal</span>
-                        </button>
+                    <div class="modal-header">
+
+                        <div class="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                                Install the addon
+                            </h3>
+                            <button @click="state.install.hide();" type="button"
+                                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                data-modal-toggle="defaultModal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg" data-darkreader-inline-fill=""
+                                    style="--darkreader-inline-fill:currentColor;">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
                     </div>
                     <!-- Modal body -->
                     <div class="p-6 space-y-6">
@@ -264,7 +284,8 @@
                             <img class="logo" :src="manifest.logo">
                             <h1 class="font-semibold text-lg mr-auto">{{ manifest.name }}</h1>
                             <h2 class="font-semibold text-lg mr-auto" style="text-align: right;">Version: {{
-                            manifest.version }}</h2>
+                                    manifest.version
+                            }}</h2>
                             <p class="mt-5">{{ manifest.description }}</p>
                         </div>
 
@@ -286,8 +307,8 @@
                                 login)</span>
                             <div class="mt-5 flex flex-col items-center">
                                 <a
-                                :href="`https://trakt.tv/oauth/authorize?client_id=18bde7dcd858c86f9593addf9f66528f8c1443ec1bef9ecee501d1c5177ce281&redirect_uri=${encodeURIComponent(state.currentUrl)}&response_type=code`">
-                                    <button type="button"  id="Auth"
+                                    :href="`https://trakt.tv/oauth/authorize?client_id=18bde7dcd858c86f9593addf9f66528f8c1443ec1bef9ecee501d1c5177ce281&redirect_uri=${encodeURIComponent(state.currentUrl)}&response_type=code`">
+                                    <button type="button" id="Auth"
                                         class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Login
                                         to Trakt.tv</button></a>
                             </div>
@@ -478,16 +499,19 @@
                         <div class="mt-10">
                             <span class="text-xs font-semibold text-gray-600 py-2">Your lists</span>
 
-                            <draggable v-if="state.lists.length" v-model="state.lists" group="lists"
-                                item-key="list.id" @start="state.drag=true" @end="state.drag=false"
+                            <draggable v-if="state.lists.length" v-model="state.lists" group="lists" item-key="list.id"
+                                @start="state.drag = true" @end="state.drag = false"
                                 class="mt-5 w-full text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                <template #item="{element}">
+                                <template #item="{ element }">
                                     <div
                                         class="grabbable py-2 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600 flex">
-                                        <span class="mr-2" style="line-height: 32px;">{{element.name ||
-                                        element.slug}}</span>
+                                        <span class="mr-2" style="line-height: 32px;">{{ element.name ||
+                                                element.slug
+                                        }}</span>
                                         <span style="line-height: 32px;"
-                                            class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-auto mr-2">{{element.username}}</span>
+                                            class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-auto mr-2">{{
+                                                    element.username
+                                            }}</span>
                                         <button type="button"
                                             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
                                             @click="removeList(element)">
@@ -524,7 +548,7 @@
                         </div> -->
 
                         <div class="mt-10 flex flex-col">
-                            <button @click="state.install.show();  generateInstallUrl();" type="button"
+                            <button @click="state.install.show(); generateInstallUrl();" type="button"
                                 class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Install
                                 Addon</button>
                         </div>
@@ -590,9 +614,9 @@ const state = reactive({
     install: null,
     popularModal: null,
     trendingModal: null,
-    currentUrl: window.location.origin
+    currentUrl: (window.location.origin == "http://localhost:5173") ? 'http://127.0.0.1:63355' : window.location.origin
 });
-
+console.log(window.location.origin)
 const searchModal = ref();
 const generic_Button = ref();
 const generic_Menu = ref();
@@ -622,16 +646,16 @@ function generateInstallUrl() {
     let generic = [];
     let query = window.location.search.substring(1);
     if (query) {
-        if(query.split('=')[0] == "access_token" && query.split('=')[1] !== "undefined"){
+        if (query.split('=')[0] == "access_token" && query.split('=')[1] !== "undefined") {
             var access_token = query.split('=')[1];
         }
     } else {
         var access_token = 0;
     }
-    if(access_token){
-            document.getElementById('Auth').style.background = 'blue';
-            document.getElementById('Auth').innerHTML = 'Autherized';
-         }
+    if (access_token) {
+        document.getElementById('Auth').style.background = 'blue';
+        document.getElementById('Auth').innerHTML = 'Autherized';
+    }
 
     if ($('#trakt_trending').is(':checked')) {
         generic.push($('#trakt_trending').val());
@@ -665,9 +689,9 @@ function generateInstallUrl() {
     }
     for (let index in state.lists) {
         let list = state.lists[index];
-        console.log("list",list)
+        console.log("list", list)
         if (list.username) {
-            if(list.sort) lists.push(`${list.username}:${list.slug}:${list.sort}`)
+            if (list.sort) lists.push(`${list.username}:${list.slug}:${list.sort}`)
             else lists.push(`${list.username}:${list.slug}`)
         } else {
             lists.push(`${list.id}`)
@@ -679,7 +703,7 @@ function generateInstallUrl() {
     if (access_token) {
         data['access_token'] = access_token;
     }
-    let configurationValue = JSON.stringify(data); 
+    let configurationValue = JSON.stringify(data);
     //let configurationValue = Object.keys(data).map(key => key + '=' + data[key]).join('|');
     console.log(configurationValue);
     const configuration = configurationValue && configurationValue.length ? '/' + btoa(configurationValue) : '';
@@ -719,7 +743,7 @@ function addList(list) {
         name: list.name,
         slug: list.slug,
         username: list.user,
-        sort:list.sort,
+        sort: list.sort,
         id: list.id
     });
 }
@@ -777,5 +801,16 @@ h1 {
     background-size: cover;
     background-position: center center;
     background-repeat: repeat-y;
+}
+
+
+/* Header fixed to the top of the modal */
+.modal-header {
+    position: sticky;
+    top: 0;
+    background-color: inherit;
+    /* [1] */
+    z-index: 1055;
+    /* [2] */
 }
 </style>
