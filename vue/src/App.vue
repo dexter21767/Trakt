@@ -361,56 +361,6 @@
                                 </ul>
                             </div>
                         </div>
-                        <!--                            <div class="mt-5">
-                                <label class="inline-flex relative items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" v-model="checkRecommendations" disabled>
-                                    <div
-                                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-                                    </div>
-                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Your
-                                        Recommendations</span>
-                                </label>
-                            </div>
-                            <div class="mt-5">
-                                <label class="inline-flex relative items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" v-model="checkWatchlist" disabled>
-                                    <div
-                                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-                                    </div>
-                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Your
-                                        Watchlist</span>
-                                </label>
-                            </div>
-                        </div> -->
-
-
-                        <!-- <div class="flex items-center justify-center space-x-2 mt-10">
-                            <span class="h-px w-full bg-gray-200"></span>
-                        </div>
-
-                        <div class="mt-10">
-                            <span class="text-xs font-semibold text-gray-600 py-2">Add special lists</span>
-                            <div class="mt-5">
-                                <label class="inline-flex relative items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" v-model="checkTrending" checked>
-                                    <div
-                                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-                                    </div>
-                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Trakt
-                                        Trending</span>
-                                </label>
-                            </div>
-                            <div class="mt-5">
-                                <label class="inline-flex relative items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" v-model="checkPopular" checked>
-                                    <div
-                                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-                                    </div>
-                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Trakt
-                                        Popular</span>
-                                </label>
-                            </div>
-                        </div> -->
 
                         <div class="flex items-center justify-center space-x-2 mt-10">
                             <span class="h-px w-full bg-gray-200"></span>
@@ -560,7 +510,8 @@
                                     class="text-purple-700">dexter21767</a>
                                 and
                                 <a href="https://github.com/rleroi" target="_blank" class="text-purple-700">rab1t</a>
-                                .
+                                .<br> Background by:
+                                <a href="https://twitter.com/art_pengu" target="_blank" class="text-purple-700">Bahadır Parıldar</a>
                             </p>
                         </div>
                     </div>
