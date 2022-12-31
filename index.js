@@ -298,7 +298,7 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', (req, res) => {
 
 		}
 		else if (list_id == "popular") {
-			popular(type, genre, skip).then(metas => {
+			popular(trakt_type, genre, skip).then(metas => {
 				metas = metas.filter(function (element) {
 					return element !== undefined;
 				});
