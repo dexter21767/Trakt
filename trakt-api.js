@@ -34,13 +34,9 @@ async function request(url = String, header = Object) {
 
 }
 
-async function popular(type, genre, skip) {
+async function popular(trakt_type = String, genre, skip) {
 	try {
-		if (type == "movies") {
-			var url = `${host}/movies/popular?page=${skip}&limit=${count}&extended=full`;
-		} else if (type == "series") {
-			var url = `${host}/shows/popular?page=${skip}&limit=${count}&extended=full`;
-		}
+		var url = `${host}/${trakt_type}s/popular?page=${skip}&limit=${count}&extended=full`;
 
 		if (genre !== undefined) url += `&genres=${genre}`;
 
@@ -48,7 +44,7 @@ async function popular(type, genre, skip) {
 
 		if (!data || !data.data) throw "error getting data (recommended list)";
 
-		let items = ConvertToStremio(NormalizeLists(data.data));
+		let items = ConvertToStremio(NormalizeLists(data.data, trakt_type));
 		return items;
 	} catch (e) {
 		console.error(e);
