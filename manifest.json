@@ -1,0 +1,16 @@
+{
+    "id": "community.trakt-tv",
+    "version": "0.2.2",
+    "name": "Trakt Tv",
+    "description": "Addon for getting Trakt's public and user lists, recommendations and watch list.",
+    "logo": "https://i.imgur.com/zPqau8y.png",
+    "background": "https://blog.stremio.com/wp-content/uploads/2022/01/Bahad%C4%B1r-Par%C4%B1ldar-1024x576.png",
+    "catalogs": [],
+    "resources": [{ "name": "meta", "types": [ "series","movie" ], "idPrefixes": [ "trakt:" ] }],
+    "types": [], 
+    "idPrefixes": [ "trakt" ],
+    "behaviorHints": {
+        "configurable": true,
+        "configurationRequired": false
+    }
+}
