@@ -300,12 +300,12 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 			console.log("list_id",list_id);
 			const data = { trakt_type: trakt_type, type: type, access_token: access_token, genre: genre, skip: skip }
 
-			if (list_id && generic_lists[list_id]) {
-				metas = await generic_lists[list_id](data)
-					if(metas) metas = metas.filter(Boolean);
-					res.send(JSON.stringify({ metas: metas }));
+			if (list_id && generic_lists.hasOwnProperty(list_id)) {
+				metas = await generic_lists[list_id](data);
+				if(metas) metas = metas.filter(Boolean);
+				res.send(JSON.stringify({ metas: metas }));
 			} else if (list_id && list_id == "search" && search_query) {
-				metas = await search(trakt_type, search_query)
+				metas = await search(trakt_type, search_query);
 				if(metas) metas = metas.filter(Boolean);
 				res.send(JSON.stringify({ metas: metas }));
 			}

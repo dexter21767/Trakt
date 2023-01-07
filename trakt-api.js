@@ -8,7 +8,6 @@ const Cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
 
 const { sort_array, host, count, local: myurl } = config;
 
-
 client = axios.create({
 	baseURL:host,
 	headers: {
@@ -44,12 +43,9 @@ async function request(url = String, header = Object) {
 
 async function popular(user_data = Object) {
 	try {
-		const { trakt_type: trakt_type, type: type, access_token: access_token, genre: genre, skip: skip } = user_data;
+		const { trakt_type, type, access_token, genre, skip } = user_data;
 
-		let url;
-
-		if (type == "movies") url = `${host}/movies/popular?extended=full`;
-		else if (type == "series") url = `${host}/shows/popular?extended=full`;
+		let url = `${host}/${trakt_type}s/popular/?extended=full`;
 
 		if (!url) throw "error getting url";
 		if (skip) url += `&page=${skip}`;
@@ -60,7 +56,7 @@ async function popular(user_data = Object) {
 
 		if (!data || !data.data) throw "error getting data (recommended list)";
 
-		const items = await ConvertToStremio(NormalizeLists(data.data));
+		const items = await ConvertToStremio(NormalizeLists(data.data, trakt_type));
 		return items;
 	} catch (e) {
 		console.error(e);
@@ -69,7 +65,7 @@ async function popular(user_data = Object) {
 
 async function trending(user_data = Object) {
 	try {
-		const { trakt_type: trakt_type, type: type, access_token: access_token, genre: genre, skip: skip } = user_data;
+		const { trakt_type,type, access_token, genre, skip } = user_data;
 
 		let url = `${host}/${trakt_type}s/trending/?extended=full`;
 
@@ -92,7 +88,7 @@ async function trending(user_data = Object) {
 	}
 }
 
-async function watchlist(user_data = Object) { //working
+async function watchlist(user_data = Object) { 
 	try {
 
 		const { trakt_type: trakt_type, type: type, access_token: access_token, genre: genre, skip: skip } = user_data;
@@ -232,59 +228,6 @@ async function list_catalog(list = Object) {
 	}
 
 }
-
-/*
-async function list_catalog(list = Object) {
-	try {
-		let { id, username, access_token, genre, sort, skip } = list;
-		const cached_id = username ? `${id}:${username}` : id;
-		genre = genre ? genre : sort;
-		let url, header,list_elements;
-		if (username) {
-			url = `${host}/users/${username}/lists/${id}/items?page=${skip}&limit=${count}&extended=full`;
-			if (access_token) {
-				header = {
-					headers: {
-						"Authorization": `Bearer ${access_token}`
-					}
-				}
-			}
-		}
-		else url = `${host}/lists/${id}/items/?page=${skip}&limit=${count}&extended=full`;
-
-		if(!url) throw "no url";
-		const data = await request(url, header);
-		if (!data || !data.data) throw "error getting data (recommended list)";
-		const NormalizedItems = NormalizeLists(data.data);
-		const headers = data.headers; 
-		let {'x-pagination-page':page,'x-pagination-page-count':pagesCount} = data.headers;
-		console.log(page,pagesCount);
-		const Cached = Cache.get(cached_id);
-		
-		if (Cached && Cached.length && Cached.length != pagesCount) Cache.del(cached_id)
-	
-		list_elements = [];
-		list_elements.length = pagesCount - 1;
-		list_elements[page] = NormalizedItems;
-
-		Cache.set(cached_id, list_elements);
-		list = list_elements.flat(1)
-
-		listFiltered = filter(list);
-
-		items = SortList(listFiltered, genre);
-
-		if (items && items.length > 100) {
-			if ((skip * 100) < itmes.length) items = items.slice((skip - 1) * 100, skip * 100);
-			else items = items.slice(itmes.length - 100, itmes.length);
-		}
-		if (items) return ConvertToStremio(items)
-		return ConvertToStremio(NormalizedItems)
-	} catch (e) {
-		console.error(e);
-	}
-
-}*/
 
 function SortList(items = Array, sort = Array) {
 	console.log('sorting', sort)
