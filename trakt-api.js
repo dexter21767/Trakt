@@ -270,6 +270,7 @@ function SortList(items = Array, sort = Array) {
 
 async function ConvertToStremio(items = Array) {
 	const metas = [];
+	console.log(items)
 	for (let i = 0; i < items.length; i++) {
 		const item = items[i];
 
@@ -281,7 +282,7 @@ async function ConvertToStremio(items = Array) {
 				"name": item.title,
 				"poster": item.ids.imdb ? `https://images.metahub.space/poster/small/${item.ids.imdb}/img` : "",
 				"background": item.ids.imdb ? `https://images.metahub.space/background/medium/${item.ids.imdb}/img` : "",
-				"releaseInfo": item.year ? item.year.toString() : "N/A",
+				"releaseInfo": item.year ? item.year.toString() : (item.released?.split('-')[0] ? item.released.split('-')[0]:"N/A"),
 				"description": item.overview || '',
 				"genres": item.genres || [],
 				"trailers": item.trailer ? [{ source: item.trailer.split('?v=')[1], type: "Trailer" }] : []
