@@ -241,6 +241,11 @@ function SortList(items = Array, sort = Array) {
 			return  new Date(item['listed_at'])
 		});
 	}
+	else if (sort_by == "released"){
+		items = _.sortBy(items, function (item) {
+			return  new Date(item['released'])
+		});
+	} 
 	else if (sort_by == "rank") items = _.sortBy(items, "rank");
 	else if (sort_by == "title") {
 		items = _.sortBy(items, function (item) {
@@ -252,7 +257,6 @@ function SortList(items = Array, sort = Array) {
 			return str;
 		});
 	}
-	else if (sort_by == "released") items =  _.sortBy(items, "released");
 	else if (sort_by == "runtime") items = items = _.sortBy(items, "runtime");
 	else if (sort_by == "votes") items = items = _.sortBy(items, "votes");
 	else if (sort_by == "rating") items = items = _.sortBy(items, "rating");
@@ -260,7 +264,7 @@ function SortList(items = Array, sort = Array) {
 	if (sort_how == 'asc') {
 		items = items.reverse();
 	}
-
+	console.log(items)
 	return items;
 }
 
@@ -518,7 +522,7 @@ async function getImages(type = String, ids = Object) {
 	let meta = {};
 	if (ids.tmdb) {
 		const images = await tmdb(type, ids.tmdb);
-		console.log(images)
+		//console.log(images)
 		if(images){
 		if (images.poster) meta.poster = images.poster;
 		if (images.background) meta.background = images.background;
