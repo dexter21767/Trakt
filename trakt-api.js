@@ -14,7 +14,7 @@ client = axios.create({
 		"Content-type": "application/json",
 		"trakt-api-key": config.API_KEY,
 		"trakt-api-version": 2,
-		"Accept-Encoding": "gzip,deflate,compress"
+		"Accept-Encoding": "*"
 	}, 
 	timeout: 50000,
 });
