@@ -133,7 +133,7 @@
                                     </h5>
                                 </a>
                                 <p :id="`${item.id}_less`" class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                                    {{ item.description.slice(0, 100) }} <button class="readmore"
+                                    {{ item.description?.slice(0, 100) }} <button class="readmore"
                                         @click="readmore(item.id)">read more</button></p>
                                 <p :id="`${item.id}_more`"
                                     class="hidden mb-3 font-normal text-gray-700 dark:text-gray-400">

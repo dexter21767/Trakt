@@ -337,7 +337,7 @@ async function getToken(code = String) {
 
 	const url = `/oauth/token`;
 
-	return axios.post(url, data).catch(error => { return error });
+	return client.post(url, data).catch(error => { return error });
 }
 
 async function listOfLists(query = String, token) {
