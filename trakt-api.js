@@ -45,7 +45,7 @@ async function popular(user_data = Object) {
 	try {
 		const { trakt_type, type, access_token, genre, skip } = user_data;
 
-		let url = `${host}/${trakt_type}s/popular/?extended=full`;
+		let url = `/${trakt_type}s/popular/?extended=full`;
 
 		if (!url) throw "error getting url";
 		if (skip) url += `&page=${skip}`;
@@ -67,7 +67,7 @@ async function trending(user_data = Object) {
 	try {
 		const { trakt_type,type, access_token, genre, skip } = user_data;
 
-		let url = `${host}/${trakt_type}s/trending/?extended=full`;
+		let url = `/${trakt_type}s/trending/?extended=full`;
 
 		if (!url) throw "error getting url";
 		if (skip) url += `&page=${skip}`;
@@ -99,7 +99,7 @@ async function watchlist(user_data = Object) {
 				"Authorization": `Bearer ${access_token}`
 			}
 		};
-		const url = `${host}/sync/watchlist/?extended=full`;
+		const url = `/sync/watchlist/?extended=full`;
 		const data = await request(url, header);
 
 		if (!data || !data.data) throw "error getting data (recommended list)";
@@ -134,7 +134,7 @@ async function recomendations(user_data = Object) {
 			}
 		};
 
-		let url = `${host}/recommendations/${trakt_type}s?limit=${count}&extended=full`;
+		let url = `/recommendations/${trakt_type}s?limit=${count}&extended=full`;
 		if (skip !== undefined) url += `&page=${skip}`;
 		if (genre !== undefined) url += `&genres=${genre}`;
 
@@ -154,7 +154,7 @@ async function recomendations(user_data = Object) {
 async function search(trakt_type = String, query = String) {
 	try {
 
-		let url = `${host}/search/${trakt_type}?query=${encodeURIComponent(query)}&extended=full`;
+		let url = `/search/${trakt_type}?query=${encodeURIComponent(query)}&extended=full`;
 
 		const data = await request(url);
 		if (!data || !data.data) throw "error getting data (search)";
@@ -180,7 +180,7 @@ async function list_catalog(list = Object) {
 		else {
 			let url, header;
 			if (username) {
-				url = `${host}/users/${username}/lists/${id}/items?extended=full`;
+				url = `/users/${username}/lists/${id}/items?extended=full`;
 				if (access_token) {
 					header = {
 						headers: {
@@ -189,7 +189,7 @@ async function list_catalog(list = Object) {
 					}
 				}
 			}
-			else url = `${host}/lists/${id}/items/?extended=full`;
+			else url = `/lists/${id}/items/?extended=full`;
 			console.log(url)
 			if (!url) throw "no url";
 
@@ -335,7 +335,7 @@ async function getToken(code = String) {
 		"grant_type": "authorization_code"
 	};
 
-	const url = `${host}/oauth/token`;
+	const url = `/oauth/token`;
 
 	return axios.post(url, data).catch(error => { return error });
 }
@@ -344,15 +344,15 @@ async function listOfLists(query = String, token) {
 	try {
 		const popular = [];
 		let url, header;
-		if (query == 'trending' || query == 'popular') url = `${host}/lists/${query}/?limit=20`;
+		if (query == 'trending' || query == 'popular') url = `/lists/${query}/?limit=20`;
 		else if (query == 'personal') {
 			if (token) {
-				url = `${host}/users/me/lists`;
+				url = `/users/me/lists`;
 				header = { headers: { "Authorization": `Bearer ${token}` } }
 			}
 			else return;
 		}
-		else url = `${host}/search/list/?query=${query}`;
+		else url = `/search/list/?query=${query}`;
 		console.log(url, header)
 
 		data = await request(url, header);
@@ -405,7 +405,7 @@ function idSplit(id = String) {
 	user_id = id.split(':')[0];
 	list_id = id.split(':')[1];
 	sort = id.split(':')[2].split(',');
-	url = `${host}/users/${user_id}/lists/${list_id}/`;
+	url = `/users/${user_id}/lists/${list_id}/`;
 	console.log(id, sort)
 	return { list_id: list_id, user_id: user_id, sort: sort || [], url: url }
 
@@ -431,8 +431,8 @@ async function list_cat(ids, access_token) {
 				let username = data.user.username;
 				let sort = data.sort;
 				let url, header;
-				if (data.privacy == "private") url = `${host}/users/${username}/lists/${id}/items`;
-				else url = `${host}/lists/${id}/items`;
+				if (data.privacy == "private") url = `/users/${username}/lists/${id}/items`;
+				else url = `/lists/${id}/items`;
 				if (access_token) header = { headers: { "Authorization": `Bearer ${access_token}` } }
 
 				promises.push(request(url, header).then(data => {
@@ -474,8 +474,8 @@ async function getMeta(type = String, id = String) {
 	try {
 		console.log(type, id);
 		let url;
-		if (type == "movie") url = `${host}/movies/${id}?extended=full`
-		if (type == "series") url = `${host}/shows/${id}?extended=full`
+		if (type == "movie") url = `/movies/${id}?extended=full`
+		if (type == "series") url = `/shows/${id}?extended=full`
 		if (!url) throw "error creating url";
 
 		const data = await request(url);
@@ -502,7 +502,7 @@ async function getMeta(type = String, id = String) {
 		}
 		if (type == "series") {
 			const videos = [];
-			const url = `${host}/shows/${id}/seasons?extended=episodes`;
+			const url = `/shows/${id}/seasons?extended=episodes`;
 			const data = await request(url);
 			if (!data || !data.data) throw "error getting data (getMeta)";
 			data.data.forEach(function (season, index, array) {
