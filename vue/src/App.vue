@@ -734,7 +734,10 @@ function loadConfig(){
 async function getListsOflists() {
     state.lists_popular = (await axios.get(Consts.currentUrl + '/lists/popular'))?.data || [];
     state.lists_trending = (await axios.get(Consts.currentUrl + '/lists/trending'))?.data || [];
-    if(state.accessToken) state.lists_personal = (await axios.get(Consts.currentUrl + '/lists/personal?token='+state.accessToken))?.data || [];
+    if(state.accessToken) {
+        let lists_personal = await axios.get(Consts.currentUrl + '/lists/personal?token='+state.accessToken).catch(e=>{console.error(e)});
+        state.lists_personal = lists_personal?.data || [];
+    }
     console.log("state.lists_personal",state.lists_personal)
 }
  
