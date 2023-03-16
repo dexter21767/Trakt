@@ -330,7 +330,7 @@
                             </div>
                                 <div style="margin: auto">
                                     <p>Ko-fi.com</p>
-                                    <a href='https://ko-fi.com/G2G0H5KL5' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi3.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+                                    <a href='https://ko-fi.com/G2G0H5KL5' target='_blank'><img height='36' style="border:0px;height:36px;" src='https://storage.ko-fi.com/cdn/kofi3.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
                                 </div>
                         </div>
                     </div>
@@ -536,30 +536,44 @@
                         <div class="mt-10">
                             <span class="text-xs font-semibold text-gray-600 py-2">Your lists</span>
 
-                            <draggable v-if="state.lists.length" v-model="state.lists" group="lists" item-key="list.id"
-                                @start="state.drag = true" @end="state.drag = false"
+                            <draggable v-if="state.lists.length" 
+                                v-model="state.lists" 
+                                group="lists" 
+                                item-key="list.id"
+                                @start="state.drag = true" 
+                                @end="state.drag = false"
                                 class="mt-5 w-full text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 <template #item="{ element }">
                                     <div
                                         class="grabbable py-2 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600 flex">
-                                        <span class="mr-2" style="line-height: 32px;">{{ element.name ||
-                                                element.slug
-                                        }}</span>
-                                        <span style="line-height: 32px;"
-                                            class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-auto mr-2">{{
-                                                    element.username
-                                            }}</span>
-                                        <button type="button"
-                                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                                            @click="removeList(element)">
-                                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor"
-                                                viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            <span class="sr-only">Remove list</span>
-                                        </button>
+                                        <div class="flex">
+                                            <span class="mr-2 dragable-title">
+                                                {{ element.name || element.slug}}
+                                            </span>
+                                            <span style="line-height: 32px;"
+                                                class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 mr-2">
+                                                    {{element.username}}
+                                            </span>
+                                            <button type="button"
+                                                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                                @click="removeList(element)">
+                                                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor"
+                                                    viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd"
+                                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                        clip-rule="evenodd">
+                                                    </path>
+                                                </svg>
+                                                <span class="sr-only">Remove list</span>
+                                            </button>
+                                        </div>
+                                        <dropdown class="sorting-dropdown"
+                                            :options="Consts.SortOptions" 
+                                            :selected="{name:getSorting(element.sort),value:element.sort}" 
+                                            v-on:updateOption="updateSorting($event,element)"
+                                            :placeholder="'Select default sorting'"
+                                            :closeOnOutsideClick="true">
+                                        </dropdown>
                                     </div>
                                 </template>
                             </draggable>
@@ -620,6 +634,8 @@ import Dropdown from 'flowbite/src/components/dropdown';
 import { useHead } from "@vueuse/head";
 import $ from 'jquery'
 import * as manifest from '../../manifest.json';
+import dropdown from 'vue-dropdowns';
+
 // import SearchModal from './components/SearchModal.vue';
 
 const stylizedTypes = manifest.types.map(t => t[0].toUpperCase() + t.slice(1));
@@ -667,15 +683,18 @@ const popularModal = ref();
 const trendingModal = ref();
 const personalModal = ref();
 
+Consts.SortOptions = [{name: "Added Ascendent", value: "added,asc" }, {name: "Added Descendent", value: "added,desc" }, {name: "Title Ascendent", value: "title,asc" }, {name: "Title Descendent", value: "title,desc" }, {name: "Released Ascendent", value: "released,asc" }, {name: "Released Descendent", value: "released,desc" }, {name: "Runtime Ascendent", value: "runtime,asc" }, {name: "Runtime Descendent", value: "runtime,desc" }, {name: "Votes Ascendent", value: "votes,asc" }, {name: "Votes Descendent", value: "votes,desc" }, {name: "Rating Ascendent", value: "rating,asc" }, {name: "Rating Descendent", value: "rating,desc" }, {name: "Rank Ascendent", value: "rank,asc" }, {name: "Rank Descendent", value: "rank,desc" }];
+
+Consts.currentUrl = (window.location.origin == "http://localhost:5173") ? 'http://127.0.0.1:63355' : window.location.origin;
+
 const client = axios.create({
     baseURL : Consts.currentUrl,
     timeout : 10000,
 });
 
 onMounted(() => {
-    Consts.currentUrl = (window.location.origin == "http://localhost:5173") ? 'http://127.0.0.1:63355' : window.location.origin;
     Consts.Config = (window.location.pathname && window.location.pathname.split('/'))?Consts.Config = window.location.pathname.replace('configure','').replaceAll('/',''):undefined;
-
+    console.log(Consts.Config)
     loadConfig();
     getListsOflists()
     generateInstallUrl()
@@ -734,6 +753,19 @@ function loadConfig(){
     
     
 
+}
+
+function getSorting(sort){
+    for(let option in Consts.SortOptions){
+        if(Consts.SortOptions[option].value == sort) return Consts.SortOptions[option].name;
+    }
+    return;
+}
+
+function updateSorting(sort,list){
+    console.log("sort",sort,"list",list)
+    const index = state.lists.indexOf(list);
+    state.lists[index].sort=sort.value
 }
 
 async function getListsOflists() {
@@ -830,7 +862,7 @@ function addListUrl() {
         alert('Invalid Trakt list URL, make sure it starts with https://trakt.tv/');
         return;
     }
-    if (sort.split('?')[1]) {
+    if (sort?.split('?')[1]) {
         sort = sort.split('?')[1].split('=')[1];
     }
 
@@ -839,7 +871,7 @@ function addListUrl() {
         name: slug,
         slug: slug,
         username: username,
-        sort: sort
+        sort: sort || 'title,asc'
     });
 
 }
@@ -893,6 +925,9 @@ h1 {
 }
 
 .grabbable {
+    
+    display: flex;
+    flex-direction: column;
     cursor: move;
     /* fallback if grab cursor is unsupported */
     cursor: grab;
@@ -923,5 +958,16 @@ h1 {
     /* [1] */
     z-index: 1055;
     /* [2] */
+}
+
+.dragable-title{    
+    margin-top: auto;
+    margin-bottom: auto;
+    font-size: medium;
+    flex: 1;
+    padding-left: 5%;
+}
+.sorting-dropdown{
+    font-weight: bold;
 }
 </style>
