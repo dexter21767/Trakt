@@ -179,7 +179,7 @@ async function list_catalog(list = {}) {
 
 		const Cached = Cache.get(cached_id);
 
-		if (Cached) list_elements = Cached;
+		if (Cached) return await ConvertToStremio(Cached,RPDBkey);
 		else {
 			let url, header;
 			if (username) {
@@ -199,33 +199,10 @@ async function list_catalog(list = {}) {
 			const data = await request(url, header);
 			if (!data || !data.data) throw "error getting data (recommended list)";
 			const NormalizedItems = NormalizeLists(data.data);
-			const headers = data.headers;
-			let { 'x-pagination-page': page, 'x-pagination-page-count': pagesCount } = data.headers;
-			console.log(page, pagesCount);
-			if (Cached && Cached.length && Cached.length != pagesCount) Cache.del(cached_id)
-
-			list_elements = [];
-			list_elements.length = pagesCount - 1;
-			list_elements[page] = NormalizedItems;
-			Cache.set(cached_id, list_elements);
-
+			Cache.set(cached_id, NormalizedItems);
+			const items = await ConvertToStremio(NormalizedItems,RPDBkey);
+			return items;
 		}
-
-
-
-
-		list = list_elements.flat(1)
-
-		listFiltered = filter(list);
-
-		items = SortList(listFiltered, genre);
-
-		if (items && items.length > 100) {
-			if ((skip * 100) < items.length) items = items.slice((skip - 1) * 100, skip * 100);
-			else items = items.slice(items.length - 100, items.length);
-		}
-		if (items) return await ConvertToStremio(items,RPDBkey)
-		return await ConvertToStremio(list_elements,RPDBkey)
 	} catch (e) {
 		console.error(e);
 	}
@@ -275,7 +252,7 @@ async function ConvertToStremio(items = [], RPDBkey) {
 	let ValidateRPDB = false;
 	if(RPDBkey) ValidateRPDB = checkRPDB(RPDBkey);
 	const metas = [];
-	console.log(items)
+	console.log('ConvertToStremio',items.length)
 	for (let i = 0; i < items.length; i++) {
 		const item = items[i];
 
@@ -285,7 +262,7 @@ async function ConvertToStremio(items = [], RPDBkey) {
 				"id": item.ids.imdb || ("trakt:" + item.ids.trakt),
 				"type": type,
 				"name": item.title,
-				"poster": getPoster(item.ids, RPDBkey),
+				"poster": getPoster(item.ids, RPDBkey,ValidateRPDB),
 				"background": item.ids.imdb ? `https://images.metahub.space/background/medium/${item.ids.imdb}/img` : "",
 				"releaseInfo": item.year ? item.year.toString() : (item.released?.split('-')[0] ? item.released.split('-')[0]:"N/A"),
 				"description": item.overview || '',
@@ -305,10 +282,10 @@ async function ConvertToStremio(items = [], RPDBkey) {
 	return metas;
 }
 
-function getPoster(IDs, RPDBkey){
+function getPoster(IDs, RPDBkey,ValidateRPDB){
 	const {trakt,imdb,tmdb,tvdb} = IDs;
 	posterType = 'poster-default';
-	if(RPDBkey) {
+	if(RPDBkey && ValidateRPDB) {
 		if(imdb) return `https://api.ratingposterdb.com/${RPDBkey}/imdb/${posterType}/${imdb}.jpg`;
 		else if(tmdb) return `https://api.ratingposterdb.com/${RPDBkey}/tmdb/${posterType}/${imdb}.jpg`;
 		else if(tvdb) return `https://api.ratingposterdb.com/${RPDBkey}/tvdb/${posterType}/${tvdb}.jpg`;
