@@ -134,7 +134,7 @@ app.get('/:configuration?/manifest.json', async (req, res) => {
 		configuration = req.params.configuration;
 		if (configuration) {
 			if (configuration.startsWith('lists')) throw "unsupported legacy config format"
-			configuration = atob(configuration);
+			configuration = Buffer.from(configuration, 'base64').toString();
 			try {
 				parsedConfig = JSON.parse(configuration);
 			} catch (e) {
@@ -260,15 +260,15 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 
 		if (configuration){
 		if (configuration.startsWith('lists')) throw "unsupported legacy config format"
-		 configuration = atob(configuration);
+		 configuration = Buffer.from(configuration, 'base64').toString();
 		try {
 			 parsedConfig = JSON.parse(configuration);
 		} catch (e) {
 			throw "config isn't a valid json";
 		}
 		}
-		let { lists, ids, access_token } = parsedConfig||{};
-		console.log(lists, ids, access_token);
+		let { lists, ids, access_token,RPDBkey } = parsedConfig||{};
+		console.log(lists, ids, access_token, RPDBkey);
 
 		let sort, username, trakt_type;
 		if (id.startsWith("trakt_list:")) {
@@ -285,7 +285,7 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 			}
 			console.log('list_id:', list_id, 'username', username, 'sort', sort);
 			console.log(id);
-			metas = await list_catalog({ id: list_id, username, access_token, genre, sort, skip })
+			metas = await list_catalog({ id: list_id, username, access_token, genre, sort, skip, RPDBkey })
 			if(metas) metas = metas.filter(Boolean);
 			res.send(JSON.stringify({ metas: metas }));
 			
@@ -298,7 +298,7 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 				trakt_type = "show";
 			}
 			console.log("list_id",list_id);
-			const data = { trakt_type: trakt_type, type: type, access_token: access_token, genre: genre, skip: skip }
+			const data = { trakt_type: trakt_type, type: type, access_token: access_token, genre: genre, skip: skip, RPDBkey }
 
 			if (list_id && generic_lists.hasOwnProperty(list_id)) {
 				metas = await generic_lists[list_id](data);

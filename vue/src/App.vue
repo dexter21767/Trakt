@@ -533,6 +533,26 @@
                             <span class="h-px w-full bg-gray-200"></span>
                         </div>
 
+                        <div class="mt-5">
+                            <small><b>RPDB key:</b></small>   
+                            <form @submit.prevent="ValidateRPDB">
+
+                                <div class="relative flex">
+                                    <input v-model="state.RPDBkey.key"  id="RPDB"
+                                        class="block p-4 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="RPDB key" required>
+                                        <button type="submit"
+                                        class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Validate key</button>
+                                </div>
+                                <small v-if="state.RPDBkey.valid !== null">key is: <b v-if="state.RPDBkey.valid" style="color: green;">Valid</b><b v-if="!state.RPDBkey.valid" style="color: red;">Invalid</b></small>
+                            </form>
+
+                        </div>
+
+                        <div class="flex items-center justify-center space-x-2 mt-10">
+                            <span class="h-px w-full bg-gray-200"></span>
+                        </div>
+                        
                         <div class="mt-10">
                             <span class="text-xs font-semibold text-gray-600 py-2">Your lists</span>
 
@@ -626,6 +646,7 @@
 </template>
 
 <script setup>
+import { Buffer } from 'buffer';
 import draggable from 'vuedraggable';
 import axios from 'axios';
 import { reactive, ref, onMounted } from 'vue';
@@ -673,6 +694,7 @@ const state = reactive({
     trendingModal: null,
     personalModal: null,
     accessToken: null,
+    RPDBkey: {key:null, valid:null},
 });
 
 const searchModal = ref();
@@ -713,7 +735,7 @@ function loadConfig(){
 
     console.log(configuration);
 
-    if(!configuration.startsWith('lists')) configuration = atob(configuration);
+    if(!configuration.startsWith('lists')) configuration = Buffer.from(configuration, 'base64').toString();
 
 	console.log("configuration",configuration)
 
@@ -790,7 +812,7 @@ function generateInstallUrl() {
     if (query) {
         if (query.split('=')[0] == "access_token" && query.split('=')[1] !== "undefined") {
             var access_token = query.split('=')[1];
-            state.accessToken =access_token; 
+            state.accessToken = access_token; 
         }
     } else {
         var access_token = state.accessToken;
@@ -843,13 +865,14 @@ function generateInstallUrl() {
     console.log(lists);
     data['lists'] = generic//.join(',');
     data['ids'] = lists//.join(',');
-    if (access_token) {
-        data['access_token'] = access_token;
-    }
+    if (access_token) data['access_token'] = access_token;
+    if(state.RPDBkey.valid) data['RPDBkey'] = state.RPDBkey.key;
+
+    
     let configurationValue = JSON.stringify(data);
     //let configurationValue = Object.keys(data).map(key => key + '=' + data[key]).join('|');
     console.log(configurationValue);
-    const configuration = configurationValue && configurationValue.length ? '/' + btoa(configurationValue) : '';
+    const configuration = configurationValue && configurationValue.length ? '/' + Buffer.from(configurationValue).toString('base64') : '';
     const location = window.location.host + configuration + '/manifest.json'
     document.getElementById("install_button").href = 'stremio://' + location;
 }
@@ -908,6 +931,19 @@ function readless(id) {
     document.getElementById(`${id}_less`).classList.remove('hidden');
     document.getElementById(`${id}_more`).classList.add('hidden');
 }
+
+async function ValidateRPDB(){
+    state.RPDBkey.valid = null;
+    console.log(state.RPDBkey)
+    try{
+        let validate = await client.get(`https://api.ratingposterdb.com/${state.RPDBkey.key}/isValid`)
+        if(validate?.data?.valid) state.RPDBkey.valid = validate.data.valid;
+        else state.RPDBkey.valid = false;
+    }catch(e){
+        state.RPDBkey.valid = false;
+    }
+    console.log(state.RPDBkey)
+}
 </script>
 
 
@@ -949,6 +985,9 @@ h1 {
     background-repeat: repeat-y;
 }
 
+#RPDB {
+    width: -webkit-fill-available
+}
 
 /* Header fixed to the top of the modal */
 .modal-header {
