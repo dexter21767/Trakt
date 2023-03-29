@@ -302,7 +302,7 @@ function getPoster(IDs, RPDBkey = {}) {
 
 	if (key && valid) {
 		if (imdb) return `https://api.ratingposterdb.com/${key}/imdb/${posterType}/${imdb}.jpg?fallback=true`;
-		else if (tmdb) return `https://api.ratingposterdb.com/${key}/tmdb/${posterType}/${imdb}.jpg?fallback=true`;
+		else if (tmdb) return `https://api.ratingposterdb.com/${key}/tmdb/${posterType}/${tmdb}.jpg?fallback=true`;
 		else if (tvdb) return `https://api.ratingposterdb.com/${key}/tvdb/${posterType}/${tvdb}.jpg?fallback=true`;
 	} else if (imdb) return `https://images.metahub.space/poster/small/${imdb}/img`;
 
