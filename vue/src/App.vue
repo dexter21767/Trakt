@@ -534,17 +534,32 @@
                         </div>
 
                         <div class="mt-5">
-                            <small><b>RPDB key:</b></small>   
+                            <small><b>RPDB key:</b> <a href="https://ratingposterdb.com/api-key/" target="_blank"
+                                class="text-xs font-semibold text-gray-600 py-2">RPDB API (?)</a></small>   
+                            
+
                             <form @submit.prevent="ValidateRPDB">
 
                                 <div class="relative flex">
                                     <input v-model="state.RPDBkey.key"  id="RPDB"
                                         class="block p-4 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="RPDB key" required>
+                                        placeholder="Paste RPDB API Key (optional)" required>
                                         <button type="submit"
                                         class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Validate key</button>
                                 </div>
                                 <small v-if="state.RPDBkey.valid !== null">key is: <b v-if="state.RPDBkey.valid" style="color: green;">Valid</b><b v-if="!state.RPDBkey.valid" style="color: red;">Invalid</b></small>
+
+                                
+                                <div class="relative" v-if="state.RPDBkey.valid">
+                                    <small>Poster type:</small>
+                                    <dropdown class="sorting-dropdown"
+                                            :options="state.RPDBkey.posters" 
+                                            :selected="{name: state.RPDBkey.poster}" 
+                                            v-on:updateOption="RPDBposter"
+                                            :placeholder="'Select poster type'"
+                                            :closeOnOutsideClick="true">
+                                    </dropdown>
+                                </div>
                             </form>
 
                         </div>
@@ -605,18 +620,6 @@
                         <div class="flex items-center justify-center space-x-2 mt-10">
                             <span class="h-px w-full bg-gray-200"></span>
                         </div>
-
-                        <!-- <div class="mt-10">
-                            <a href="https://ratingposterdb.com/api-key/" target="_blank"
-                                class="text-xs font-semibold text-gray-600 py-2">RPDB API (?)</a>
-                            <input type="text" id="company"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mt-5"
-                                placeholder="Paste RPDB API Key (optional)">
-                        </div>
-
-                        <div class="flex items-center justify-center space-x-2 mt-10">
-                            <span class="h-px w-full bg-gray-200"></span>
-                        </div> -->
 
                         <div class="mt-10 flex flex-col">
                             <button @click="state.install.show(); generateInstallUrl();" type="button"
@@ -694,7 +697,7 @@ const state = reactive({
     trendingModal: null,
     personalModal: null,
     accessToken: null,
-    RPDBkey: {key:null, valid:null},
+    RPDBkey: {key:null, valid:null, poster:'poster-default',posters:null, tier:null},
 });
 
 const searchModal = ref();
@@ -866,7 +869,7 @@ function generateInstallUrl() {
     data['lists'] = generic//.join(',');
     data['ids'] = lists//.join(',');
     if (access_token) data['access_token'] = access_token;
-    if(state.RPDBkey.valid) data['RPDBkey'] = state.RPDBkey.key;
+    if(state.RPDBkey.valid) data['RPDBkey'] = state.RPDBkey;
 
     
     let configurationValue = JSON.stringify(data);
@@ -942,7 +945,16 @@ async function ValidateRPDB(){
     }catch(e){
         state.RPDBkey.valid = false;
     }
+    if(state.RPDBkey.valid)state.RPDBkey.tier = parseInt(state.RPDBkey.key[1]);
     console.log(state.RPDBkey)
+
+    if(state.RPDBkey.tier > 1) state.RPDBkey.posters = [{name: "poster-default" }, {name: "textless-default"},{name: "poster-certs" }, {name: "poster-mc"},{name: "poster-rt" }];
+    else state.RPDBkey.posters = [{name: "poster-default" }, {name: "textless-default"}];
+}
+function RPDBposter(val){
+    state.RPDBkey.poster = val.name;
+    //console.log('RPDBkey',state.RPDBkey)
+    //console.log('val',val)
 }
 </script>
 

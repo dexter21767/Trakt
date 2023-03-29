@@ -175,7 +175,6 @@ async function list_catalog(list = {}) {
 		let { id, username, access_token, genre, sort, skip,RPDBkey } = list;
 		const cached_id = username ? `${id}:${username}` : id;
 		genre = genre ? genre : sort;
-		let list_elements;
 
 		const Cached = Cache.get(cached_id);
 
@@ -194,14 +193,28 @@ async function list_catalog(list = {}) {
 			}
 			else url = `/lists/${id}/items/?extended=full`;
 			console.log(url)
-			if (!url) throw "no url";
 
 			const data = await request(url, header);
 			if (!data || !data.data) throw "error getting data (recommended list)";
+
+
+
+
+			let items = NormalizeLists(data.data);
+
+			if (genre && genre.length) items = SortList(items, genre);
+	
+			if (items && items.length > 100) {
+				if ((skip * 100) < items.length) items = items.slice((skip - 1) * 100, skip * 100);
+				else items = items.slice(items.length - 100, items.length);
+			}
+	
+			if (items) return await ConvertToStremio(items,RPDBkey)
+			/*
 			const NormalizedItems = NormalizeLists(data.data);
 			Cache.set(cached_id, NormalizedItems);
-			const items = await ConvertToStremio(NormalizedItems,RPDBkey);
-			return items;
+			const items = SortList(await ConvertToStremio(NormalizedItems,RPDBkey),genre);
+			return items;*/
 		}
 	} catch (e) {
 		console.error(e);
@@ -249,20 +262,19 @@ function SortList(items = [], sort = []) {
 }
 
 async function ConvertToStremio(items = [], RPDBkey) {
-	let ValidateRPDB = false;
-	if(RPDBkey) ValidateRPDB = checkRPDB(RPDBkey);
+	if(RPDBkey) RPDBkey.valid = checkRPDB(RPDBkey);
 	const metas = [];
 	console.log('ConvertToStremio',items.length)
 	for (let i = 0; i < items.length; i++) {
 		const item = items[i];
 
-		if (item.ids) {
+		if (item.ids && item.type == "movie" || item.type == "show") {
 			let type = item.type == "movie" ? "movie" : "series"
 			let meta = {
 				"id": item.ids.imdb || ("trakt:" + item.ids.trakt),
 				"type": type,
 				"name": item.title,
-				"poster": getPoster(item.ids, RPDBkey,ValidateRPDB),
+				"poster": getPoster(item.ids, RPDBkey),
 				"background": item.ids.imdb ? `https://images.metahub.space/background/medium/${item.ids.imdb}/img` : "",
 				"releaseInfo": item.year ? item.year.toString() : (item.released?.split('-')[0] ? item.released.split('-')[0]:"N/A"),
 				"description": item.overview || '',
@@ -282,16 +294,33 @@ async function ConvertToStremio(items = [], RPDBkey) {
 	return metas;
 }
 
-function getPoster(IDs, RPDBkey,ValidateRPDB){
+function getPoster(IDs, RPDBkey){
 	const {trakt,imdb,tmdb,tvdb} = IDs;
-	posterType = 'poster-default';
-	if(RPDBkey && ValidateRPDB) {
-		if(imdb) return `https://api.ratingposterdb.com/${RPDBkey}/imdb/${posterType}/${imdb}.jpg`;
-		else if(tmdb) return `https://api.ratingposterdb.com/${RPDBkey}/tmdb/${posterType}/${imdb}.jpg`;
-		else if(tvdb) return `https://api.ratingposterdb.com/${RPDBkey}/tvdb/${posterType}/${tvdb}.jpg`;
+	const {key, valid, poster,posters, tier} = RPDBkey;
+	console.log('RPDBkey',RPDBkey)
+	posterType = poster || 'poster-default';
+
+	if(key && valid) {
+		if(imdb) return `https://api.ratingposterdb.com/${key}/imdb/${posterType}/${imdb}.jpg`;
+		else if(tmdb) return `https://api.ratingposterdb.com/${key}/tmdb/${posterType}/${imdb}.jpg`;
+		else if(tvdb) return `https://api.ratingposterdb.com/${key}/tvdb/${posterType}/${tvdb}.jpg`;
 	}else if(imdb) return `https://images.metahub.space/poster/small/${imdb}/img`;
 	
 	return '';
+}
+
+async function checkRPDB(RPDBkey){
+	let valid = false;
+	try{
+        validate = await client.get(`https://api.ratingposterdb.com/${RPDBkey.key}/isValid`)
+        if(validate?.data?.valid) valid = validate.data.valid;
+        else valid = false;
+    }catch(e){
+        valid = false;
+    }
+
+	return valid;
+	
 }
 
 function NormalizeLists(list = [], type = String) {
@@ -301,7 +330,7 @@ function NormalizeLists(list = [], type = String) {
 		let new_element = {};
 		const element = list[i];
 		const keys = Object.keys(element);
-		for (let keyid = 0; keyid < keys.length; keyid++) {
+		for(let keyid in keys){
 			let key = keys[keyid];
 			if (key == element.type || key == type) {
 				let subelement = element[key];
@@ -320,19 +349,6 @@ function NormalizeLists(list = [], type = String) {
 	return new_list;
 }
 
-async function checkRPDB(RPDBkey){
-	let validate
-	try{
-        validate = await client.get(`https://api.ratingposterdb.com/${state.RPDBkey.key}/isValid`)
-        if(validate?.data?.valid) validate = validate.data.valid;
-        else validate = false;
-    }catch(e){
-        validate = false;
-    }
-
-	return validate;
-	
-}
 async function getToken(code = String) {
 	const data = {
 		"code": code,
