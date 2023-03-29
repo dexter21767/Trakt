@@ -9,13 +9,13 @@ const Cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
 const { sort_array, host, count, local: myurl } = config;
 
 client = axios.create({
-	baseURL:host,
+	baseURL: host,
 	headers: {
 		"Content-type": "application/json",
 		"trakt-api-key": config.API_KEY,
 		"trakt-api-version": 2,
 		"Accept-Encoding": "*"
-	}, 
+	},
 	timeout: 50000,
 });
 
@@ -30,7 +30,7 @@ async function request(url = String, header = {}) {
 		return res;
 	})
 		.catch(error => {
-			
+
 			console.error(error);
 			if (error.response) {
 				console.error('error on trakt-api.js request:', error.response.status, error.response.statusText, error.config.url);
@@ -43,7 +43,7 @@ async function request(url = String, header = {}) {
 
 async function popular(user_data = {}) {
 	try {
-		const { trakt_type, type, access_token, genre, skip,RPDBkey } = user_data;
+		const { trakt_type, type, access_token, genre, skip, RPDBkey } = user_data;
 
 		let url = `/${trakt_type}s/popular/?extended=full`;
 
@@ -56,7 +56,7 @@ async function popular(user_data = {}) {
 
 		if (!data || !data.data) throw "error getting data (recommended list)";
 
-		const items = await ConvertToStremio(NormalizeLists(data.data, trakt_type),RPDBkey);
+		const items = await ConvertToStremio(NormalizeLists(data.data, trakt_type), RPDBkey);
 		return items;
 	} catch (e) {
 		console.error(e);
@@ -65,7 +65,7 @@ async function popular(user_data = {}) {
 
 async function trending(user_data = {}) {
 	try {
-		const { trakt_type,type, access_token, genre, skip ,RPDBkey} = user_data;
+		const { trakt_type, type, access_token, genre, skip, RPDBkey } = user_data;
 
 		let url = `/${trakt_type}s/trending/?extended=full`;
 
@@ -79,7 +79,7 @@ async function trending(user_data = {}) {
 
 		if (!data || !data.data) throw "error getting data (recommended list)";
 
-		const items = await ConvertToStremio(NormalizeLists(data.data, trakt_type),RPDBkey);
+		const items = await ConvertToStremio(NormalizeLists(data.data, trakt_type), RPDBkey);
 
 		return items;
 	}
@@ -88,10 +88,10 @@ async function trending(user_data = {}) {
 	}
 }
 
-async function watchlist(user_data = {}) { 
+async function watchlist(user_data = {}) {
 	try {
 
-		const { trakt_type, type, access_token, genre, skip,RPDBkey } = user_data;
+		const { trakt_type, type, access_token, genre, skip, RPDBkey } = user_data;
 
 		if (!access_token) throw "access_token is required"
 		const header = {
@@ -113,9 +113,9 @@ async function watchlist(user_data = {}) {
 			else items = items.slice(items.length - 100, items.length);
 		}
 
-		if (items) return await ConvertToStremio(items,RPDBkey)
+		if (items) return await ConvertToStremio(items, RPDBkey)
 
-		return await ConvertToStremio(items,RPDBkey);
+		return await ConvertToStremio(items, RPDBkey);
 	} catch (e) {
 		console.error(e)
 	}
@@ -143,7 +143,7 @@ async function recomendations(user_data = {}) {
 		const data = await request(url, header);
 		if (!data || !data.data) throw "error getting data (recommended list)";
 
-		const items = await ConvertToStremio(NormalizeLists(data.data, trakt_type),RPDBkey);
+		const items = await ConvertToStremio(NormalizeLists(data.data, trakt_type), RPDBkey);
 		return items;
 
 	} catch (e) {
@@ -151,14 +151,14 @@ async function recomendations(user_data = {}) {
 	}
 }
 
-async function search(trakt_type = String, query = String,RPDBkey) {
+async function search(trakt_type = String, query = String, RPDBkey) {
 	try {
 
 		let url = `/search/${trakt_type}?query=${encodeURIComponent(query)}&extended=full`;
 
 		const data = await request(url);
 		if (!data || !data.data) throw "error getting data (search)";
-		const items = await ConvertToStremio(NormalizeLists(data.data, trakt_type),RPDBkey);
+		const items = await ConvertToStremio(NormalizeLists(data.data, trakt_type), RPDBkey);
 
 		return items;
 
@@ -169,16 +169,16 @@ async function search(trakt_type = String, query = String,RPDBkey) {
 
 async function list_catalog(list = {}) {
 	try {
-		
+
 		//const { trakt_type, type, access_token, genre, skip, RPDBkey } = user_data;
 
-		let { id, username, access_token, genre, sort, skip,RPDBkey } = list;
+		let { id, username, access_token, genre, sort, skip, RPDBkey } = list;
 		const cached_id = username ? `${id}:${username}` : id;
 		genre = genre ? genre : sort;
 
 		const Cached = Cache.get(cached_id);
 
-		if (Cached) return await ConvertToStremio(Cached,RPDBkey);
+		if (Cached) return await ConvertToStremio(Cached, RPDBkey);
 		else {
 			let url, header;
 			if (username) {
@@ -203,13 +203,13 @@ async function list_catalog(list = {}) {
 			let items = NormalizeLists(data.data);
 
 			if (genre && genre.length) items = SortList(items, genre);
-	
+
 			if (items && items.length > 100) {
 				if ((skip * 100) < items.length) items = items.slice((skip - 1) * 100, skip * 100);
 				else items = items.slice(items.length - 100, items.length);
 			}
-	
-			if (items) return await ConvertToStremio(items,RPDBkey)
+
+			if (items) return await ConvertToStremio(items, RPDBkey)
 			/*
 			const NormalizedItems = NormalizeLists(data.data);
 			Cache.set(cached_id, NormalizedItems);
@@ -231,14 +231,14 @@ function SortList(items = [], sort = []) {
 
 	if (sort_by == "added") {
 		items = _.sortBy(items, function (item) {
-			return  new Date(item['listed_at'])
+			return new Date(item['listed_at'])
 		});
 	}
-	else if (sort_by == "released"){
+	else if (sort_by == "released") {
 		items = _.sortBy(items, function (item) {
-			return  new Date(item['released'])
+			return new Date(item['released'])
 		});
-	} 
+	}
 	else if (sort_by == "rank") items = _.sortBy(items, "rank");
 	else if (sort_by == "title") {
 		items = _.sortBy(items, function (item) {
@@ -261,10 +261,10 @@ function SortList(items = [], sort = []) {
 	return items;
 }
 
-async function ConvertToStremio(items = [], RPDBkey) {
-	if(RPDBkey) RPDBkey.valid = checkRPDB(RPDBkey);
+async function ConvertToStremio(items = [], RPDBkey = {}) {
+	if (RPDBkey) RPDBkey.valid = await checkRPDB(RPDBkey);
 	const metas = [];
-	console.log('ConvertToStremio',items.length)
+	console.log('ConvertToStremio', items.length)
 	for (let i = 0; i < items.length; i++) {
 		const item = items[i];
 
@@ -276,7 +276,7 @@ async function ConvertToStremio(items = [], RPDBkey) {
 				"name": item.title,
 				"poster": getPoster(item.ids, RPDBkey),
 				"background": item.ids.imdb ? `https://images.metahub.space/background/medium/${item.ids.imdb}/img` : "",
-				"releaseInfo": item.year ? item.year.toString() : (item.released?.split('-')[0] ? item.released.split('-')[0]:"N/A"),
+				"releaseInfo": item.year ? item.year.toString() : (item.released?.split('-')[0] ? item.released.split('-')[0] : "N/A"),
 				"description": item.overview || '',
 				"genres": item.genres || [],
 				"trailers": item.trailer ? [{ source: item.trailer.split('?v=')[1], type: "Trailer" }] : []
@@ -294,33 +294,33 @@ async function ConvertToStremio(items = [], RPDBkey) {
 	return metas;
 }
 
-function getPoster(IDs, RPDBkey){
-	const {trakt,imdb,tmdb,tvdb} = IDs;
-	const {key, valid, poster,posters, tier} = RPDBkey;
-	console.log('RPDBkey',RPDBkey)
+function getPoster(IDs, RPDBkey = {}) {
+	const { trakt, imdb, tmdb, tvdb } = IDs;
+	const { key, valid, poster, posters, tier } = RPDBkey;
+	console.log('RPDBkey', RPDBkey)
 	posterType = poster || 'poster-default';
 
-	if(key && valid) {
-		if(imdb) return `https://api.ratingposterdb.com/${key}/imdb/${posterType}/${imdb}.jpg`;
-		else if(tmdb) return `https://api.ratingposterdb.com/${key}/tmdb/${posterType}/${imdb}.jpg`;
-		else if(tvdb) return `https://api.ratingposterdb.com/${key}/tvdb/${posterType}/${tvdb}.jpg`;
-	}else if(imdb) return `https://images.metahub.space/poster/small/${imdb}/img`;
-	
+	if (key && valid) {
+		if (imdb) return `https://api.ratingposterdb.com/${key}/imdb/${posterType}/${imdb}.jpg?fallback=true`;
+		else if (tmdb) return `https://api.ratingposterdb.com/${key}/tmdb/${posterType}/${imdb}.jpg?fallback=true`;
+		else if (tvdb) return `https://api.ratingposterdb.com/${key}/tvdb/${posterType}/${tvdb}.jpg?fallback=true`;
+	} else if (imdb) return `https://images.metahub.space/poster/small/${imdb}/img`;
+
 	return '';
 }
 
-async function checkRPDB(RPDBkey){
+async function checkRPDB(RPDBkey = {}) {
 	let valid = false;
-	try{
-        validate = await client.get(`https://api.ratingposterdb.com/${RPDBkey.key}/isValid`)
-        if(validate?.data?.valid) valid = validate.data.valid;
-        else valid = false;
-    }catch(e){
-        valid = false;
-    }
+	try {
+		validate = await client.get(`https://api.ratingposterdb.com/${RPDBkey.key}/isValid`)
+		if (validate?.data?.valid) valid = validate.data.valid;
+		else valid = false;
+	} catch (e) {
+		valid = false;
+	}
 
 	return valid;
-	
+
 }
 
 function NormalizeLists(list = [], type = String) {
@@ -330,7 +330,7 @@ function NormalizeLists(list = [], type = String) {
 		let new_element = {};
 		const element = list[i];
 		const keys = Object.keys(element);
-		for(let keyid in keys){
+		for (let keyid in keys) {
 			let key = keys[keyid];
 			if (key == element.type || key == type) {
 				let subelement = element[key];
@@ -547,10 +547,11 @@ async function getImages(type = String, ids = Object) {
 	if (ids.tmdb) {
 		const images = await tmdb(type, ids.tmdb);
 		//console.log(images)
-		if(images){
-		if (images.poster) meta.poster = images.poster;
-		if (images.background) meta.background = images.background;
-	}}
+		if (images) {
+			if (images.poster) meta.poster = images.poster;
+			if (images.background) meta.background = images.background;
+		}
+	}
 	return meta
 }
 
