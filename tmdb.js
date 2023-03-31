@@ -4,7 +4,7 @@ const NodeCache = require("node-cache");
 const Cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
 
 const BaseURL = 'https://api.themoviedb.org/3';
-const imagePath= 'https://image.tmdb.org/t/p/original/';
+const imagePath = 'https://image.tmdb.org/t/p/original/';
 
 
 async function request(url, header) {
@@ -24,30 +24,40 @@ async function request(url, header) {
 
 }
 async function getMeta(type, id) {
-    try{
-    const Cached = Cache.get(id)
-    if(Cached) return Cached
-    let data;
-    let meta = {};
-    if (type == "movie") {
-        const url = `${BaseURL}/movie/${id}?api_key=${config.tmdb}`
-        const res = await request(url);
-        data = res.data
-    } else if (type == "series") {
-        const url = `${BaseURL}/find/${id}?api_key=${config.tmdb}&external_source=imdb_id`
-        const res = await request(url);
-        data = res.data.tv_results;
+    try {
+        console.log('getMeta', type, id)
+        const Cached = Cache.get(id)
+        if (Cached) return Cached
+        let data;
+        let meta = {};
+
+        if (typeof id == 'string' && id.startsWith('tt')) {
+            if (type == "movie") {
+                const url = `${BaseURL}/movie/${id}?api_key=${config.tmdb}`
+                const res = await request(url);
+                data = res.data
+            } else if (type == "series") {
+                const url = `${BaseURL}/find/${id}?api_key=${config.tmdb}&external_source=imdb_id`
+                const res = await request(url);
+                data = res.data.tv_results[0];
+            }
+        }
+        else {
+            type = type == 'series' ? 'tv' : 'movie';
+            const url = `${BaseURL}/${type}/${id}?api_key=${config.tmdb}`
+            const res = await request(url);
+            data = res.data;
+        }
+        if (!data) throw "error getting data"
+        if (data.backdrop_path) meta.background = imagePath + data.backdrop_path;
+        if (data.poster_path) meta.poster = imagePath + data.poster_path;
+        Cache.set(id, meta);
+        return meta
+    } catch (e) {
+        console.error(e)
     }
-    if(!data) throw "error getting data"
-    //console.log(data)
-    if(data.backdrop_path) meta.background = imagePath + data.backdrop_path; 
-    if(data.poster_path) meta.poster = imagePath + data.poster_path; 
-    Cache.set(id,meta);
-    return meta 
-}catch(e){
-    console.error(e)
 }
-}
+//getMeta("movie", 786836).then(meta => (console.log(meta)))
 
 //getMeta("series", 'tt0903747').then(meta => (console.log(meta)))
 

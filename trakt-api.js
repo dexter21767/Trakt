@@ -1,6 +1,6 @@
 const axios = require('axios').default;
 const config = require('./config.js');
-const tmdb = require('./tmdb.js');
+const tmdbMeta = require('./tmdb.js');
 const _ = require('underscore');
 
 const NodeCache = require("node-cache");
@@ -151,7 +151,7 @@ async function recomendations(user_data = {}) {
 	}
 }
 
-async function search(trakt_type = String, query = String, RPDBkey) {
+async function search(trakt_type = String, query = String, RPDBkey = {}) {
 	try {
 
 		let url = `/search/${trakt_type}?query=${encodeURIComponent(query)}&extended=full`;
@@ -269,45 +269,77 @@ async function ConvertToStremio(items = [], RPDBkey = {}) {
 		const item = items[i];
 
 		if (item.ids && item.type == "movie" || item.type == "show") {
-			let type = item.type == "movie" ? "movie" : "series"
+			const type = item.type == "movie" ? "movie" : "series";
+			const images = await getPoster(type, item.ids, RPDBkey);
 			let meta = {
 				"id": item.ids.imdb || ("trakt:" + item.ids.trakt),
 				"type": type,
 				"name": item.title,
-				"poster": getPoster(item.ids, RPDBkey),
-				"background": item.ids.imdb ? `https://images.metahub.space/background/medium/${item.ids.imdb}/img` : "",
+				"poster": images.poster || '',
+				"background": images.background || '',
 				"releaseInfo": item.year ? item.year.toString() : (item.released?.split('-')[0] ? item.released.split('-')[0] : "N/A"),
 				"description": item.overview || '',
 				"genres": item.genres || [],
 				"trailers": item.trailer ? [{ source: item.trailer.split('?v=')[1], type: "Trailer" }] : []
 			}
             if(meta.type =="movie") meta.behaviorHints={"defaultVideoId": meta.id}
-			const ids = item.ids;
-			if (!ids.imdb && ids.tmdb) {
-				const images = await getImages(type, ids);
-				if (images.poster) meta.poster = images.poster;
-				if (images.background) meta.background = images.background;
-			}
-
 			metas.push(meta);
 		}
 	}
 	return metas;
 }
 
-function getPoster(IDs, RPDBkey = {}) {
+async function getImages(type = String, ids = Object) {
+	let meta = {};
+	if (ids.tmdb) {
+		const images = await tmdb(type, ids.tmdb);
+		//console.log(images)
+		if (images) {
+			if (images.poster) meta.poster = images.poster;
+			if (images.background) meta.background = images.background;
+		}
+	}
+	return meta
+}
+
+async function getPoster(type, IDs = {}, RPDBkey = {}) {
+	console.log('getPoster',type, IDs,RPDBkey)
+
 	const { trakt, imdb, tmdb, tvdb } = IDs;
 	const { key, valid, poster, posters, tier } = RPDBkey;
-	console.log('RPDBkey', RPDBkey)
 	const posterType = poster || 'poster-default';
 
-	if (key && valid) {
-		if (imdb) return `https://api.ratingposterdb.com/${key}/imdb/${posterType}/${imdb}.jpg?fallback=true`;
-		else if (tmdb) return `https://api.ratingposterdb.com/${key}/tmdb/${posterType}/${tmdb}.jpg?fallback=true`;
-		else if (tvdb) return `https://api.ratingposterdb.com/${key}/tvdb/${posterType}/${tvdb}.jpg?fallback=true`;
-	} else if (imdb) return `https://images.metahub.space/poster/small/${imdb}/img`;
+	let meta = {
+		poster:'',
+		background:'',
+	}
+	let idType;
+	if (imdb) idType = 'imdb';
+	else if (tmdb) idType = 'tmdb';
+	else if (tvdb) idType = 'tvdb';
+	//console.log('idType',idType)
+	if(!idType) return meta;
 
-	return '';
+	if (key && valid) {
+		meta.poster = `https://api.ratingposterdb.com/${key}/${idType}/${posterType}/${IDs[idType]}.jpg?fallback=true`;
+		if(tier > 2){
+			meta.background = `https://api.ratingposterdb.com/${key}/${idType}/backdrop-default/${IDs[idType]}.jpg?fallback=true`
+		}
+	} 
+	if (imdb) {
+		if(!meta.poster) meta.poster = `https://images.metahub.space/poster/small/${imdb}/img`;
+		if(!meta.background) meta.background = `https://images.metahub.space/background/medium/${imdb}/img`;
+	}
+	console.log('trakt',trakt,'tmdb',tmdb&&(!meta.poster || !meta.background))
+	if(tmdb &&(!meta.poster || !meta.background)){
+		const images = await tmdbMeta(type, tmdb);
+		console.log(images);
+		if (images) {
+			if (!meta.poster && images.poster) meta.poster = images.poster;
+			if (!meta.background && images.background) meta.background = images.background;
+		}
+	}
+	return meta;
 }
 
 async function checkRPDB(RPDBkey = {}) {
@@ -519,11 +551,6 @@ async function getMeta(type = String, id = String) {
 			website: item.homepage
 		}
 		const ids = item.ids;
-		if (!ids.imdb && ids.tmdb) {
-			const images = await getImages(type, ids);
-			if (images.poster) meta.poster = images.poster;
-			if (images.background) meta.background = images.background;
-		}
 		if (type == "series") {
 			const videos = [];
 			const url = `/shows/${id}/seasons?extended=episodes`;
@@ -543,17 +570,5 @@ async function getMeta(type = String, id = String) {
 	}
 }
 
-async function getImages(type = String, ids = Object) {
-	let meta = {};
-	if (ids.tmdb) {
-		const images = await tmdb(type, ids.tmdb);
-		//console.log(images)
-		if (images) {
-			if (images.poster) meta.poster = images.poster;
-			if (images.background) meta.background = images.background;
-		}
-	}
-	return meta
-}
 
 module.exports = { getToken, generic_lists: { watchlist, rec: recomendations, popular, trending }, list_catalog, list_cat, listOfLists, getMeta, search };

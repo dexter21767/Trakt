@@ -305,7 +305,7 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 				if(metas) metas = metas.filter(Boolean);
 				res.send(JSON.stringify({ metas: metas }));
 			} else if (list_id && list_id == "search" && search_query) {
-				metas = await search(trakt_type, search_query);
+				metas = await search(trakt_type, search_query,RPDBkey);
 				if(metas) metas = metas.filter(Boolean);
 				res.send(JSON.stringify({ metas: metas }));
 			}
