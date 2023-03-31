@@ -281,6 +281,7 @@ async function ConvertToStremio(items = [], RPDBkey = {}) {
 				"genres": item.genres || [],
 				"trailers": item.trailer ? [{ source: item.trailer.split('?v=')[1], type: "Trailer" }] : []
 			}
+            if(meta.type =="movie") meta.behaviorHints={"defaultVideoId": meta.id}
 			const ids = item.ids;
 			if (!ids.imdb && ids.tmdb) {
 				const images = await getImages(type, ids);
@@ -298,7 +299,7 @@ function getPoster(IDs, RPDBkey = {}) {
 	const { trakt, imdb, tmdb, tvdb } = IDs;
 	const { key, valid, poster, posters, tier } = RPDBkey;
 	console.log('RPDBkey', RPDBkey)
-	posterType = poster || 'poster-default';
+	const posterType = poster || 'poster-default';
 
 	if (key && valid) {
 		if (imdb) return `https://api.ratingposterdb.com/${key}/imdb/${posterType}/${imdb}.jpg?fallback=true`;
