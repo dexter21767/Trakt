@@ -10,9 +10,11 @@ const config = require('./config.js');
 // create monitoring stats routes using swagger-stats
 
 const swStats = require('swagger-stats');
+const apiSpec = require('./swagger-specs.json');
 
 app.use(swStats.getMiddleware(
 	{
+		swaggerSpec:apiSpec,
 		name: manifest.name,
 		version: manifest.version,
 		authentication: true,
@@ -45,8 +47,9 @@ app.use(function (req, res, next) {
 
 app.get('/', (req, res) => {
 	if (req.query.code) {
-		console.log(req.query)
+		//console.log(req.query)
 		getToken(req.query.code).then(data => {
+			//console.log("data",data)
 			if (data && data.data && data.data.access_token) res.redirect('/configure/?access_token=' + data.data.access_token);
 			else {
 				res.send(data);// res.redirect('/configure/?access_token_undefined');	
@@ -242,6 +245,8 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 
 
 		console.log('req.params', req.params);
+		if(type != "trakt") return res.status(404).end();
+		
 		let skip, genre, search_query,parsedConfig={};
 		skip = 0;
 		if (extra) {

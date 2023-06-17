@@ -1,0 +1,194 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Trakt Tv",
+      "version": "0.2.4"
+    },
+    "paths": {
+      "/": {
+        "get": {
+          "summary": "Redirects to the configure route",
+          "responses": {
+            "302": {
+              "description": "Found"
+            }
+          }
+        }
+      },
+      "/configure": {
+        "get": {
+          "summary": "Serves the configuration page",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          }
+        }
+      },
+      "/manifest.json": {
+        "get": {
+          "summary": "Serves the manifest JSON",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          }
+        }
+      },
+      "/lists/{query}": {
+        "get": {
+          "summary": "Retrieves a list of lists",
+          "parameters": [
+            {
+              "name": "query",
+              "in": "path",
+              "description": "Query parameter",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          }
+        }
+      },
+      "/{configuration?}/manifest.json": {
+        "get": {
+          "summary": "Serves the manifest JSON based on the configuration",
+          "parameters": [
+            {
+              "name": "configuration",
+              "in": "path",
+              "description": "Configuration parameter",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK"
+            },
+            "400": {
+              "description": "Bad Request"
+            }
+          }
+        }
+      },
+      "/{configuration?}/catalog/{type}/{id}/{extra?.json}": {
+        "get": {
+          "summary": "Retrieves catalog data",
+          "parameters": [
+            {
+              "name": "configuration",
+              "in": "path",
+              "description": "Configuration parameter",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "type",
+              "in": "path",
+              "description": "Type parameter",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "id",
+              "in": "path",
+              "description": "ID parameter",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "extra",
+              "in": "path",
+              "description": "Extra parameter",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "400": {
+              "description": "Bad Request"
+            }
+          }
+        }
+      },
+      "/{configuration?}/meta/{type}/{id}/{extra?.json}": {
+        "get": {
+          "summary": "Retrieves meta data",
+          "parameters": [
+            {
+              "name": "configuration",
+              "in": "path",
+              "description": "Configuration parameter",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "type",
+              "in": "path",
+              "description": "Type parameter",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "id",
+              "in": "path",
+              "description": "ID parameter",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "extra",
+              "in": "path",
+              "description": "Extra parameter",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "400": {
+              "description": "Bad Request"
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  
