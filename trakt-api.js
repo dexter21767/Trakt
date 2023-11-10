@@ -20,7 +20,7 @@ client = axios.create({
 });
 
 async function request(url = String, header = {}) {
-	console.log(header)
+	//console.log(header)
 
 	return await client({
 		method: 'get',
@@ -138,7 +138,7 @@ async function recomendations(user_data = {}) {
 		if (skip !== undefined) url += `&page=${skip}`;
 		if (genre !== undefined) url += `&genres=${genre}`;
 
-		console.log("access_token", access_token)
+		//console.log("access_token", access_token)
 
 		const data = await request(url, header);
 		if (!data || !data.data) throw "error getting data (recommended list)";
@@ -192,7 +192,7 @@ async function list_catalog(list = {}) {
 				}
 			}
 			else url = `/lists/${id}/items/?extended=full`;
-			console.log(url)
+			//console.log(url)
 
 			const data = await request(url, header);
 			if (!data || !data.data) throw "error getting data (recommended list)";
@@ -223,8 +223,7 @@ async function list_catalog(list = {}) {
 }
 
 function SortList(items = [], sort = []) {
-	console.log('sorting', sort)
-
+	//console.log('sorting', sort)
 	if (!sort || !sort.length || sort[0] == ',') return items;
 
 	let [sort_by, sort_how] = sort;
@@ -239,6 +238,12 @@ function SortList(items = [], sort = []) {
 			return new Date(item['released'])
 		});
 	}
+	/*
+	else if (sort_by == "popularity") {
+		items = _.sortBy(items, function (item) {
+			return (item.rating * item.votes);
+		});
+	}*/
 	else if (sort_by == "rank") items = _.sortBy(items, "rank");
 	else if (sort_by == "title") {
 		items = _.sortBy(items, function (item) {
@@ -257,7 +262,7 @@ function SortList(items = [], sort = []) {
 	if (sort_how == 'asc') {
 		items = items.reverse();
 	}
-	console.log(items)
+	//console.log(items.slice(0,5));
 	return items;
 }
 
@@ -303,7 +308,7 @@ async function getImages(type = String, ids = Object) {
 }
 
 async function getPoster(type, IDs = {}, RPDBkey = {}) {
-	console.log('getPoster',type, IDs,RPDBkey)
+	//console.log('getPoster',type, IDs,RPDBkey)
 
 	const { trakt, imdb, tmdb, tvdb } = IDs;
 	const { key, valid, poster, posters, tier } = RPDBkey;
@@ -330,10 +335,10 @@ async function getPoster(type, IDs = {}, RPDBkey = {}) {
 		if(!meta.poster) meta.poster = `https://images.metahub.space/poster/small/${imdb}/img`;
 		if(!meta.background) meta.background = `https://images.metahub.space/background/medium/${imdb}/img`;
 	}
-	console.log('trakt',trakt,'tmdb',tmdb&&(!meta.poster || !meta.background))
+	//console.log('trakt',trakt,'tmdb',tmdb&&(!meta.poster || !meta.background))
 	if(tmdb &&(!meta.poster || !meta.background)){
 		const images = await tmdbMeta(type, tmdb);
-		console.log(images);
+		//console.log(images);
 		if (images) {
 			if (!meta.poster && images.poster) meta.poster = images.poster;
 			if (!meta.background && images.background) meta.background = images.background;
@@ -437,14 +442,14 @@ async function listOfLists(query = String, token) {
 
 function list(list_ids = [], access_token) {
 	let header;
-	console.log("list_ids", list_ids)
+	//console.log("list_ids", list_ids)
 	if (access_token) header = { headers: { "Authorization": `Bearer ${access_token}` } }
 	const promises = [];
 
 	for (let i = 0; i < list_ids.length; i++) {
 		let id = list_ids[i];
 		if (id.startsWith("trakt_list:")) id = id.replace('trakt_list:', '')
-		console.log("id", id)
+		//console.log("id", id)
 		const { url, sort } = idSplit(id);
 
 		if (url) promises.push(request(url, header).then(data => { if (sort) { data.data.sort = sort }; return data }));
@@ -462,7 +467,7 @@ function idSplit(id = String) {
 	list_id = id.split(':')[1];
 	sort = id.split(':')[2].split(',');
 	url = `/users/${user_id}/lists/${list_id}/`;
-	console.log(id, sort)
+	//console.log(id, sort)
 	return { list_id: list_id, user_id: user_id, sort: sort || [], url: url }
 
 }
@@ -477,14 +482,14 @@ function filter(list = Array) {
 }
 
 async function list_cat(ids, access_token) {
-	return Promise.allSettled(list(ids, access_token)).then(datas => {
+	return Promise.allSettled(list(ids, access_token)).then(responses => {
 		const promises = [];
-		for (let i = 0; i < datas.length; i++) {
-			if (datas[i] && datas[i].status == 'fulfilled') {
-				let data = datas[i].value.data
+		responses.forEach(res=>{
+			if (res?.status == 'fulfilled') {
+				let data = res.value.data;
 				let name = data.name;
 				let id = data.ids.trakt;
-				let username = data.user.username;
+				let username = data.user.ids.slug || data.user.username;
 				let sort = data.sort;
 				let url, header;
 				if (data.privacy == "private") url = `/users/${username}/lists/${id}/items`;
@@ -508,7 +513,7 @@ async function list_cat(ids, access_token) {
 					}
 				}));
 			}
-		}
+		})
 
 		return Promise.allSettled(promises).then(catalogs => {
 
