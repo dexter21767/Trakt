@@ -1047,8 +1047,17 @@ h1 {
     padding-left: 5%;
 }
 
-.sorting-dropdown > li {  
-    color: black !important;
-    font-weight: bold !important;
+.sorting-dropdown {
+  border-radius: 5px;
+ 
+  :deep(.dropdown-toggle) {
+    color: rgb(26 86 219 / var(--tw-bg-opacity));
+    font-weight: bold;
+    /*font-size: 25px;*/
+  }
+ 
+  :deep(.dropdown-toggle-placeholder) {
+    color: #c4c4c4;
+  }
 }
 </style>
