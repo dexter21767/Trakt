@@ -1047,7 +1047,8 @@ h1 {
     padding-left: 5%;
 }
 
-.sorting-dropdown {
-    font-weight: bold;
+.sorting-dropdown > li {  
+    color: black !important;
+    font-weight: bold !important;
 }
 </style>
