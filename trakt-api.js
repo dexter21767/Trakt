@@ -387,18 +387,24 @@ function NormalizeLists(list = [], type = String) {
 	return new_list;
 }
 
-async function getToken(code = String) {
-	const data = {
-		"code": code,
+async function getToken({code ,refresh_token}) {
+	let data = {
 		"client_id": config['client_id'],
 		"client_secret": config['client_secret'],
 		"redirect_uri": myurl,
-		"grant_type": "authorization_code"
 	};
-
-	const url = `/oauth/token`;
-
-	return client.post(url, data).catch(error => { return error });
+	if(code) {
+		data.code = code;
+		data.grant_type = 'authorization_code';
+	}
+	else if(refresh_token){
+		data.refresh_token = refresh_token;
+		data.grant_type = 'refresh_token';
+	}else{
+		throw "code or refresh_token is required";
+	}
+	
+	return client.post(`/oauth/token`, data)
 }
 
 async function listOfLists(query = String, token) {

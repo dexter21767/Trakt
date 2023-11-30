@@ -1,10 +1,12 @@
 {
 	"name": "community.trakt-tv",
-	"version": "0.2.4",
+	"version": "0.2.5",
 	"description": "Addon for getting Trakt's public and user lists, recommendations and watch list.",
 	"main": "server.js",
 	"scripts": {
-		"prestart": "bash deploy.sh",
+		"prebuild": "node manifest.js",
+		"build": "cd vue && npm i && npm run build",
+		"prestart": "node manifest.js",
 		"start": "node server.js",
 		"dev": "nodemon server.js"
 	},

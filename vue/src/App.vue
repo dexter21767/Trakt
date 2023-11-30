@@ -16,21 +16,20 @@
                                         class="relative mb-2 text-sm font-medium text-gray-900 sr-only dark:text-gray-300">Search
                                         Trakt lists</label>
                                     <div class="relative">
-                                        <div
-                                            class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                                        <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                                             <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400"
                                                 fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                                 xmlns="http://www.w3.org/2000/svg">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                             </svg>
+                                        </div>
+                                        <input v-model="state.searchQuery" type="search" id="searchInput"
+                                            class="block p-4 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            placeholder="Search Trakt lists" required>
+                                        <button type="submit"
+                                            class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
                                     </div>
-                                    <input v-model="state.searchQuery" type="search" id="searchInput"
-                                        class="block p-4 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Search Trakt lists" required>
-                                    <button type="submit"
-                                        class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
-                                </div>
                                 </form>
                             </h3>
                             <!-- Close Modal button -->
@@ -57,7 +56,7 @@
                                         {{ item.name }} <small>by {{ item.user }}</small>
                                         <span
                                             class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{
-                                                    item.likes
+                                                item.likes
                                             }}
                                             likes</span>
                                         <span
@@ -68,8 +67,7 @@
                                 <p :id="`${item.id}_less`" class="mb-3 font-normal text-gray-700 dark:text-gray-400">
                                     {{ item.description.slice(0, 100) }} <button class="readmore"
                                         @click="readmore(item.id)">read more</button></p>
-                                <p :id="`${item.id}_more`"
-                                    class="hidden mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                <p :id="`${item.id}_more`" class="hidden mb-3 font-normal text-gray-700 dark:text-gray-400">
                                     {{ item.description }} <button class="readless" @click="readless(item.id)">read
                                         less</button></p>
                                 <button @click="addList(item)"
@@ -124,7 +122,7 @@
                                         {{ item.name }} <small>by {{ item.user }}</small>
                                         <span
                                             class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{
-                                                    item.likes
+                                                item.likes
                                             }}
                                             likes</span>
                                         <span
@@ -135,8 +133,7 @@
                                 <p :id="`${item.id}_less`" class="mb-3 font-normal text-gray-700 dark:text-gray-400">
                                     {{ item.description?.slice(0, 100) }} <button class="readmore"
                                         @click="readmore(item.id)">read more</button></p>
-                                <p :id="`${item.id}_more`"
-                                    class="hidden mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                <p :id="`${item.id}_more`" class="hidden mb-3 font-normal text-gray-700 dark:text-gray-400">
                                     {{ item.description }} <button class="readless" @click="readless(item.id)">read
                                         less</button></p>
                                 <button @click="addList(item)"
@@ -191,7 +188,7 @@
                                         {{ item.name }} <small>by {{ item.user }}</small>
                                         <span
                                             class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{
-                                                    item.likes
+                                                item.likes
                                             }}
                                             likes</span>
                                         <span
@@ -202,8 +199,7 @@
                                 <p :id="`${item.id}_less`" class="mb-3 font-normal text-gray-700 dark:text-gray-400">
                                     {{ item.description.slice(0, 100) }} <button class="readmore"
                                         @click="readmore(item.id)">read more</button></p>
-                                <p :id="`${item.id}_more`"
-                                    class="hidden mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                <p :id="`${item.id}_more`" class="hidden mb-3 font-normal text-gray-700 dark:text-gray-400">
                                     {{ item.description }} <button class="readless" @click="readless(item.id)">read
                                         less</button></p>
                                 <button @click="addList(item)"
@@ -259,7 +255,7 @@
                                         {{ item.name }} <small>by {{ item.user }}</small>
                                         <span
                                             class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{{
-                                                    item.likes
+                                                item.likes
                                             }}
                                             likes</span>
                                         <span
@@ -270,8 +266,7 @@
                                 <p :id="`${item.id}_less`" class="mb-3 font-normal text-gray-700 dark:text-gray-400">
                                     {{ item.description.slice(0, 100) }} <button class="readmore"
                                         @click="readmore(item.id)">read more</button></p>
-                                <p :id="`${item.id}_more`"
-                                    class="hidden mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                <p :id="`${item.id}_more`" class="hidden mb-3 font-normal text-gray-700 dark:text-gray-400">
                                     {{ item.description }} <button class="readless" @click="readless(item.id)">read
                                         less</button></p>
                                 <button @click="addList(item)"
@@ -321,26 +316,31 @@
                     <!-- Modal body -->
                     <div class="p-6 space-y-6">
                         <div>
-                        <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                            Hello guys, if you enjoy this addon and want to keep working, and want new features to be added <br>Then please consider donating.</p>
+                            <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                                Hello guys, if you enjoy this addon and want to keep working, and want new features to be
+                                added <br>Then please consider donating.</p>
                             <div style="align-items: center; display: flex; justify-content: center;">
-                                <div style="margin: auto"> 
+                                <div style="margin: auto">
                                     <p>Buymeacoffee.com</p>
-                                <a href="https://www.buymeacoffee.com/dexter21767"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=dexter21767&button_colour=FF5F5F&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
-                            </div>
+                                    <a href="https://www.buymeacoffee.com/dexter21767"><img
+                                            src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=dexter21767&button_colour=FF5F5F&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
+                                </div>
                                 <div style="margin: auto">
                                     <p>Ko-fi.com</p>
-                                    <a href='https://ko-fi.com/G2G0H5KL5' target='_blank'><img height='36' style="border:0px;height:36px;" src='https://storage.ko-fi.com/cdn/kofi3.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+                                    <a href='https://ko-fi.com/G2G0H5KL5' target='_blank'><img height='36'
+                                            style="border:0px;height:36px;"
+                                            src='https://storage.ko-fi.com/cdn/kofi3.png?v=3' border='0'
+                                            alt='Buy Me a Coffee at ko-fi.com' /></a>
                                 </div>
-                        </div>
-                    </div>
-                    <div><p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                            huge thanks to Rab1t for histremendous help.</p>
                             </div>
                         </div>
+                        <div>
+                            <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                                huge thanks to Rab1t for histremendous help.</p>
+                        </div>
+                    </div>
                     <!-- Modal footer -->
-                    <div
-                        class="flex items-center p-6 space-x-2 rounded-b border-t border-gray-200 dark:border-gray-600">
+                    <div class="flex items-center p-6 space-x-2 rounded-b border-t border-gray-200 dark:border-gray-600">
                         <a id="install_button" href="#"><button type="button"
                                 class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Install
                                 Addon</button></a>
@@ -363,7 +363,7 @@
                             <img class="logo" :src="manifest.logo">
                             <h1 class="font-semibold text-lg mr-auto">{{ manifest.name }}</h1>
                             <h2 class="font-semibold text-lg mr-auto" style="text-align: right;">Version: {{
-                                    manifest.version
+                                manifest.version
                             }}</h2>
                             <p class="mt-5">{{ manifest.description }}</p>
                         </div>
@@ -399,9 +399,8 @@
                             <div class="flex items-center justify-center space-x-2 mt-5">
                                 <button id="generic_Button" ref="generic_Button"
                                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                                    type="button">Generic Lists: <svg aria-hidden="true" class="ml-2 w-4 h-4"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
+                                    type="button">Generic Lists: <svg aria-hidden="true" class="ml-2 w-4 h-4" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 9l-7 7-7-7"></path>
                                     </svg></button>
@@ -409,8 +408,8 @@
                             <!-- Dropdown menu -->
                             <div id="generic_Menu" ref="generic_Menu"
                                 class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
-                                <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
-                                    aria-labelledby="generic_Button" style="width: max-content;">
+                                <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="generic_Button"
+                                    style="width: max-content;">
                                     <li>
                                         <input id="trakt_popular" type="checkbox" checked value="trakt_popular"
                                             class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
@@ -451,14 +450,14 @@
                         <div class="flex rounded-md shadow-sm mt-5 w-full" role="group" style="flex-direction: column;">
                             <div class="flex rounded-md shadow-sm mt-5 w-full" role="group">
 
-                            <button @click="state.popularModal.show()" type="button"
-                                class="grow py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-l-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
-                                Browse popular lists
-                            </button>
-                            <button @click="state.trendingModal.show()" type="button"
-                                class="grow py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-r-md border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
-                                Browse trending lists
-                            </button>
+                                <button @click="state.popularModal.show()" type="button"
+                                    class="grow py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-l-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+                                    Browse popular lists
+                                </button>
+                                <button @click="state.trendingModal.show()" type="button"
+                                    class="grow py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-r-md border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+                                    Browse trending lists
+                                </button>
                             </div>
 
                             <button @click="state.personalModal.show()" type="button"
@@ -480,9 +479,8 @@
                                     Trakt lists</label>
                                 <div class="relative">
                                     <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
-                                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg">
+                                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                         </svg>
@@ -535,29 +533,29 @@
 
                         <div class="mt-5">
                             <small><b>RPDB key:</b> <a href="https://ratingposterdb.com/api-key/" target="_blank"
-                                class="text-xs font-semibold text-gray-600 py-2">RPDB API (?)</a></small>   
-                            
+                                    class="text-xs font-semibold text-gray-600 py-2">RPDB API (?)</a></small>
+
 
                             <form @submit.prevent="ValidateRPDB">
 
                                 <div class="relative flex">
-                                    <input v-model="state.RPDBkey.key"  id="RPDB"
+                                    <input v-model="state.RPDBkey.key" id="RPDB"
                                         class="block p-4 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                         placeholder="Paste RPDB API Key (optional)" required>
-                                        <button type="submit"
-                                        class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Validate key</button>
+                                    <button type="submit"
+                                        class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Validate
+                                        key</button>
                                 </div>
-                                <small v-if="state.RPDBkey.valid !== null">key is: <b v-if="state.RPDBkey.valid" style="color: green;">Valid</b><b v-if="!state.RPDBkey.valid" style="color: red;">Invalid</b></small>
+                                <small v-if="state.RPDBkey.valid !== null">key is: <b v-if="state.RPDBkey.valid"
+                                        style="color: green;">Valid</b><b v-if="!state.RPDBkey.valid"
+                                        style="color: red;">Invalid</b></small>
 
-                                
+
                                 <div class="relative" v-if="state.RPDBkey.valid">
                                     <small>Poster type:</small>
-                                    <dropdown class="sorting-dropdown"
-                                            :options="state.RPDBkey.posters" 
-                                            :selected="{name: state.RPDBkey.poster}" 
-                                            v-on:updateOption="RPDBposter"
-                                            :placeholder="'Select poster type'"
-                                            :closeOnOutsideClick="true">
+                                    <dropdown class="sorting-dropdown" :options="state.RPDBkey.posters"
+                                        :selected="{ name: state.RPDBkey.poster }" v-on:updateOption="RPDBposter"
+                                        :placeholder="'Select poster type'" :closeOnOutsideClick="true">
                                     </dropdown>
                                 </div>
                             </form>
@@ -567,27 +565,23 @@
                         <div class="flex items-center justify-center space-x-2 mt-10">
                             <span class="h-px w-full bg-gray-200"></span>
                         </div>
-                        
+
                         <div class="mt-10">
                             <span class="text-xs font-semibold text-gray-600 py-2">Your lists</span>
 
-                            <draggable v-if="state.lists.length" 
-                                v-model="state.lists" 
-                                group="lists" 
-                                item-key="list.id"
-                                @start="state.drag = true" 
-                                @end="state.drag = false"
+                            <draggable v-if="state.lists.length" v-model="state.lists" group="lists" item-key="list.id"
+                                @start="state.drag = true" @end="state.drag = false"
                                 class="mt-5 w-full text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 <template #item="{ element }">
                                     <div
                                         class="grabbable py-2 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600 flex">
                                         <div class="flex">
                                             <span class="mr-2 dragable-title">
-                                                {{ element.name || element.slug}}
+                                                {{ element.name || element.slug }}
                                             </span>
                                             <span style="line-height: 32px;"
                                                 class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 mr-2">
-                                                    {{element.username}}
+                                                {{ element.username }}
                                             </span>
                                             <button type="button"
                                                 class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -602,12 +596,10 @@
                                                 <span class="sr-only">Remove list</span>
                                             </button>
                                         </div>
-                                        <dropdown class="sorting-dropdown"
-                                            :options="Consts.SortOptions" 
-                                            :selected="{name:getSorting(element.sort),value:element.sort}" 
-                                            v-on:updateOption="updateSorting($event,element)"
-                                            :placeholder="'Select default sorting'"
-                                            :closeOnOutsideClick="true">
+                                        <dropdown class="sorting-dropdown" :options="Consts.SortOptions"
+                                            :selected="{ name: getSorting(element.sort), value: element.sort }"
+                                            v-on:updateOption="updateSorting($event, element)"
+                                            :placeholder="'Select default sorting'" :closeOnOutsideClick="true">
                                         </dropdown>
                                     </div>
                                 </template>
@@ -634,8 +626,9 @@
                                     class="text-purple-700">dexter21767</a>
                                 and
                                 <a href="https://github.com/rleroi" target="_blank" class="text-purple-700">rab1t</a>
-                                .<br> Background by:
-                                <a href="https://twitter.com/art_pengu" target="_blank" class="text-purple-700">Bahadır Parıldar</a>
+                                .<!--<br> Background by:
+                                <a href="https://twitter.com/art_pengu" target="_blank" class="text-purple-700">Bahadır
+                                    Parıldar</a>-->
                             </p>
                         </div>
                     </div>
@@ -697,7 +690,10 @@ const state = reactive({
     trendingModal: null,
     personalModal: null,
     accessToken: null,
-    RPDBkey: {key:null, valid:null, poster:'poster-default',posters:null, tier:null},
+    refreshToken: null,
+    expires: null,
+    expired: false,
+    RPDBkey: { key: null, valid: null, poster: 'poster-default', posters: null, tier: null },
 });
 
 const searchModal = ref();
@@ -708,22 +704,22 @@ const popularModal = ref();
 const trendingModal = ref();
 const personalModal = ref();
 
-Consts.SortOptions = [{name: "Added Ascendent", value: "added,asc" }, {name: "Added Descendent", value: "added,desc" }, {name: "Title Ascendent", value: "title,asc" }, {name: "Title Descendent", value: "title,desc" }, {name: "Released Ascendent", value: "released,asc" }, {name: "Released Descendent", value: "released,desc" }, {name: "Runtime Ascendent", value: "runtime,asc" }, {name: "Runtime Descendent", value: "runtime,desc" }, {name: "Votes Ascendent", value: "votes,asc" }, {name: "Votes Descendent", value: "votes,desc" }, {name: "Rating Ascendent", value: "rating,asc" }, {name: "Rating Descendent", value: "rating,desc" }, {name: "Rank Ascendent", value: "rank,asc" }, {name: "Rank Descendent", value: "rank,desc" }];
+Consts.SortOptions = [{ name: "Added Ascendent", value: "added,asc" }, { name: "Added Descendent", value: "added,desc" }, { name: "Title Ascendent", value: "title,asc" }, { name: "Title Descendent", value: "title,desc" }, { name: "Released Ascendent", value: "released,asc" }, { name: "Released Descendent", value: "released,desc" }, { name: "Runtime Ascendent", value: "runtime,asc" }, { name: "Runtime Descendent", value: "runtime,desc" }, { name: "Votes Ascendent", value: "votes,asc" }, { name: "Votes Descendent", value: "votes,desc" }, { name: "Rating Ascendent", value: "rating,asc" }, { name: "Rating Descendent", value: "rating,desc" }, { name: "Rank Ascendent", value: "rank,asc" }, { name: "Rank Descendent", value: "rank,desc" }];
 
 Consts.currentUrl = (window.location.origin == "http://localhost:5173") ? 'http://127.0.0.1:63355' : window.location.origin;
 
 const client = axios.create({
-    baseURL : Consts.currentUrl,
-    timeout : 10000,
+    baseURL: Consts.currentUrl,
+    timeout: 10000,
 });
 
 onMounted(() => {
-    Consts.Config = (window.location.pathname && window.location.pathname.split('/'))?Consts.Config = window.location.pathname.replace('configure','').replaceAll('/',''):undefined;
+    Consts.Config = (window.location.pathname && window.location.pathname.split('/')) ? Consts.Config = window.location.pathname.replace('configure', '').replaceAll('/', '') : undefined;
     console.log(Consts.Config)
     loadConfig();
     getListsOflists()
     generateInstallUrl()
-    
+
     state.genericLists = new Dropdown(generic_Menu.value, generic_Button.value);
     state.modal = new Modal(searchModal.value);
     state.popularModal = new Modal(popularModal.value);
@@ -732,97 +728,124 @@ onMounted(() => {
     state.install = new Modal(installModal.value);
 });
 
-function loadConfig(){
+function loadConfig() {
     let configuration = Consts.Config;
-    if(!configuration) return;
+    if (!configuration) return;
 
-    console.log(configuration);
+    if (!configuration.startsWith('lists')) configuration = Buffer.from(configuration, 'base64').toString();
 
-    if(!configuration.startsWith('lists')) configuration = Buffer.from(configuration, 'base64').toString();
+    let { lists, ids, access_token } = JSON.parse(configuration);
 
-	console.log("configuration",configuration)
+    console.log("lists", lists, "ids", ids, "access_token", access_token);
 
-	let {lists, ids, access_token} = JSON.parse(configuration);
+    if (access_token) state.accessToken = access_token;
 
-	console.log("lists",lists, "ids",ids,"access_token", access_token);
-    
-    if(access_token) state.accessToken = access_token;
-    
-    for(let i = 0; i<ids.length ;i++){
+    for (let i = 0; i < ids.length; i++) {
 
         let id = ids[i];
-        let [username,slug,sort] = id.split(':'); 
+        let [username, slug, sort] = id.split(':');
         state.lists.push({
-        name: slug,
-        slug: slug,
-        username: username,
-        sort: sort
-    });
-        console.log("state.lists",state.lists)
+            name: slug,
+            slug: slug,
+            username: username,
+            sort: sort
+        });
+        console.log("state.lists", state.lists)
     }
 
-    if(lists && lists.length){ 
+    if (lists && lists.length) {
 
-        state.checkTrending = lists.includes('trakt_trending')?true:false;
-        $( "#trakt_trending" ).prop( "checked", state.checkTrending );
+        state.checkTrending = lists.includes('trakt_trending') ? true : false;
+        $("#trakt_trending").prop("checked", state.checkTrending);
 
-        state.checkPopular = lists.includes('trakt_popular')?true:false;
-        $( "#trakt_popular" ).prop( "checked", state.checkPopular );
+        state.checkPopular = lists.includes('trakt_popular') ? true : false;
+        $("#trakt_popular").prop("checked", state.checkPopular);
 
-        state.checkWatchlist = lists.includes('trakt_watchlist')?true:false;
-        $( "#trakt_watchlist" ).prop( "checked", state.checkWatchlist );
+        state.checkWatchlist = lists.includes('trakt_watchlist') ? true : false;
+        $("#trakt_watchlist").prop("checked", state.checkWatchlist);
 
-        state.checkRecommendations = lists.includes('trakt_rec')?true:false;
-        $( "#trakt_rec" ).prop( "checked", state.checkRecommendations );
+        state.checkRecommendations = lists.includes('trakt_rec') ? true : false;
+        $("#trakt_rec").prop("checked", state.checkRecommendations);
     }
-    
-    
+
+
 
 }
 
-function getSorting(sort){
-    for(let option in Consts.SortOptions){
-        if(Consts.SortOptions[option].value == sort) return Consts.SortOptions[option].name;
+function getSorting(sort) {
+    for (let option in Consts.SortOptions) {
+        if (Consts.SortOptions[option].value == sort) return Consts.SortOptions[option].name;
     }
     return;
 }
 
-function updateSorting(sort,list){
-    console.log("sort",sort,"list",list)
+function updateSorting(sort, list) {
+    console.log("sort", sort, "list", list)
     const index = state.lists.indexOf(list);
-    state.lists[index].sort=sort.value
+    state.lists[index].sort = sort.value
 }
 
 async function getListsOflists() {
-    try{
-    state.lists_popular = (await client.get('/lists/popular'))?.data || [];
-    state.lists_trending = (await client.get('/lists/trending'))?.data || [];
-    if(state.accessToken) {
-        let lists_personal = await client.get('/lists/personal?token='+state.accessToken).catch(e=>{console.error(e)});
-        state.lists_personal = lists_personal?.data || [];
-    }
-    console.log("state.lists_personal",state.lists_personal)
-    } catch(e){
+    try {
+        state.lists_popular = (await client.get('/lists/popular'))?.data || [];
+        state.lists_trending = (await client.get('/lists/trending'))?.data || [];
+        if (state.accessToken) {
+            let lists_personal = await client.get('/lists/personal?token=' + state.accessToken).catch(e => { console.error(e) });
+            state.lists_personal = lists_personal?.data || [];
+        }
+        console.log("state.lists_personal", state.lists_personal)
+    } catch (e) {
         console.error(e);
     }
 }
- 
+
+function setButton(expression) {
+    if(!expression) expression = 'auth';
+    if(expression === 'authed'){
+        document.getElementById('Auth').style.background = 'blue';
+        document.getElementById('Auth').innerHTML = 'Autherized';
+        document.getElementById('Auth').parentNode.href = '';
+        document.getElementById('Auth').disabled = true;
+    }else if(expression === 'reauth'){
+        document.getElementById('Auth').style.background = 'red';
+        document.getElementById('Auth').innerHTML = 'Re-autherized';
+        document.getElementById('Auth').parentNode.href = `${Consts.currentUrl}/?refresh_token=${state.refreshToken}`;
+        document.getElementById('Auth').disabled = false;
+    }else if(expression === 'auth'){
+        document.getElementById('Auth').style.background = 'red';
+        document.getElementById('Auth').innerHTML = 'Login to Trakt.tv';
+        document.getElementById('Auth').parentNode.href = `https://trakt.tv/oauth/authorize?client_id=18bde7dcd858c86f9593addf9f66528f8c1443ec1bef9ecee501d1c5177ce281&redirect_uri=${encodeURIComponent(Consts.currentUrl)}&response_type=code`;
+        document.getElementById('Auth').disabled = false;
+    }
+}
+
 function generateInstallUrl() {
     let data = {};
     const lists = [];
     let generic = [];
-    let query = window.location.search.substring(1);
-    if (query) {
-        if (query.split('=')[0] == "access_token" && query.split('=')[1] !== "undefined") {
-            var access_token = query.split('=')[1];
-            state.accessToken = access_token; 
-        }
-    } else {
-        var access_token = state.accessToken;
+    //let query = window.location.search.substring(1);
+    const searchParams = new URLSearchParams(window.location.search);
+
+    if (searchParams.has('access_token')) {
+        state.accessToken = searchParams.get('access_token');
     }
-    if (access_token) {
-        document.getElementById('Auth').style.background = 'blue';
-        document.getElementById('Auth').innerHTML = 'Autherized';
+
+    if (searchParams.has('refresh_token'))
+        state.refreshToken = searchParams.get('refresh_token');
+
+    if (searchParams.has('expires')) {
+        state.expires = parseInt(searchParams.get('expires'));
+        const currentTime = new Date().getTime() / 1000;
+        state.expired = currentTime > state.expires;
+        if (state.expired) state.accessToken = null;
+    }
+
+    if (state.accessToken && !state.expired) {
+        setButton('authed');
+    } else if (state.expired && state.refreshToken) {
+        setButton('reauth');
+    } else {
+        setButton('auth');
     }
 
     if ($('#trakt_trending').is(':checked')) {
@@ -839,7 +862,7 @@ function generateInstallUrl() {
             return value != $('#trakt_popular').val();
         })
     }
-    if (access_token) {
+    if (state.accessToken) {
         if ($('#trakt_watchlist').is(':checked')) {
             generic.push($('#trakt_watchlist').val());
         } else {
@@ -868,16 +891,18 @@ function generateInstallUrl() {
     console.log(lists);
     data['lists'] = generic//.join(',');
     data['ids'] = lists//.join(',');
-    if (access_token) data['access_token'] = access_token;
-    if(state.RPDBkey.valid) data['RPDBkey'] = state.RPDBkey;
+    if (state.accessToken) data['access_token'] = state.accessToken;
+    if (state.RPDBkey.valid) data['RPDBkey'] = state.RPDBkey;
 
-    
+
     let configurationValue = JSON.stringify(data);
     //let configurationValue = Object.keys(data).map(key => key + '=' + data[key]).join('|');
     console.log(configurationValue);
     const configuration = configurationValue && configurationValue.length ? '/' + Buffer.from(configurationValue).toString('base64') : '';
     const location = window.location.host + configuration + '/manifest.json'
     document.getElementById("install_button").href = 'stremio://' + location;
+
+    console.log('state', state);
 }
 
 function addListUrl() {
@@ -935,23 +960,23 @@ function readless(id) {
     document.getElementById(`${id}_more`).classList.add('hidden');
 }
 
-async function ValidateRPDB(){
+async function ValidateRPDB() {
     state.RPDBkey.valid = null;
     console.log(state.RPDBkey)
-    try{
+    try {
         let validate = await client.get(`https://api.ratingposterdb.com/${state.RPDBkey.key}/isValid`)
-        if(validate?.data?.valid) state.RPDBkey.valid = validate.data.valid;
+        if (validate?.data?.valid) state.RPDBkey.valid = validate.data.valid;
         else state.RPDBkey.valid = false;
-    }catch(e){
+    } catch (e) {
         state.RPDBkey.valid = false;
     }
-    if(state.RPDBkey.valid)state.RPDBkey.tier = parseInt(state.RPDBkey.key[1]);
+    if (state.RPDBkey.valid) state.RPDBkey.tier = parseInt(state.RPDBkey.key[1]);
     console.log(state.RPDBkey)
 
-    if(state.RPDBkey.tier > 1) state.RPDBkey.posters = [{name: "poster-default" }, {name: "textless-default"},{name: "poster-certs" }, {name: "poster-mc"},{name: "poster-rt" }];
-    else state.RPDBkey.posters = [{name: "poster-default" }, {name: "textless-default"}];
+    if (state.RPDBkey.tier > 1) state.RPDBkey.posters = [{ name: "poster-default" }, { name: "textless-default" }, { name: "poster-certs" }, { name: "poster-mc" }, { name: "poster-rt" }];
+    else state.RPDBkey.posters = [{ name: "poster-default" }, { name: "textless-default" }];
 }
-function RPDBposter(val){
+function RPDBposter(val) {
     state.RPDBkey.poster = val.name;
     //console.log('RPDBkey',state.RPDBkey)
     //console.log('val',val)
@@ -973,7 +998,7 @@ h1 {
 }
 
 .grabbable {
-    
+
     display: flex;
     flex-direction: column;
     cursor: move;
@@ -1011,14 +1036,15 @@ h1 {
     /* [2] */
 }
 
-.dragable-title{    
+.dragable-title {
     margin-top: auto;
     margin-bottom: auto;
     font-size: medium;
     flex: 1;
     padding-left: 5%;
 }
-.sorting-dropdown{
+
+.sorting-dropdown {
     font-weight: bold;
 }
 </style>
