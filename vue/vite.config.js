@@ -8,7 +8,8 @@ export default defineConfig({
     rollupOptions: {
       external: [
         // other external modules
-        'flowbite/src/components/modal'
+        'flowbite/src/components/modal',
+        'flowbite/src/components/dropdown',
       ]
     }
   }
