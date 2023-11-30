@@ -5,7 +5,7 @@
 	"main": "server.js",
 	"scripts": {
 		"preBuild": "node manifest.js",
-		"Build": "cd vue && npm i vb&& npm run build",
+		"Build": "cd vue && npm i && npm run build",
 		"prestart": "node manifest.js",
 		"start": "node server.js",
 		"dev": "nodemon server.js"

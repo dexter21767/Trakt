@@ -316,7 +316,10 @@
                     <!-- Modal body -->
                     <div class="p-6 space-y-6">
                         <div>
-                            <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                            <b class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                                From the river to the sea, Palestine will be free. 
+                            </b>
+                                <!--
                                 Hello guys, if you enjoy this addon and want to keep working, and want new features to be
                                 added <br>Then please consider donating.</p>
                             <div style="align-items: center; display: flex; justify-content: center;">
@@ -332,7 +335,7 @@
                                             src='https://storage.ko-fi.com/cdn/kofi3.png?v=3' border='0'
                                             alt='Buy Me a Coffee at ko-fi.com' /></a>
                                 </div>
-                            </div>
+                            </div>-->
                         </div>
                         <div>
                             <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
