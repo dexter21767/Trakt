@@ -5,3 +5,4 @@ beamup.json
 package-lock.json
 /old
 .env
+/manifest.json
