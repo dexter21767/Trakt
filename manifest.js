@@ -1,5 +1,5 @@
 const fs = require('fs');
-const config = require('./config.js');
+const config = require('./config.js')('beamup');
 
 let manifest = {
     "id": "community.trakt-tv",

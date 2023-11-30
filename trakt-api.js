@@ -1,5 +1,5 @@
 const axios = require('axios').default;
-const config = require('./config.js');
+const config = require('./config.js')();
 const tmdbMeta = require('./tmdb.js');
 const _ = require('underscore');
 
@@ -403,7 +403,7 @@ async function getToken({code ,refresh_token}) {
 	}else{
 		throw "code or refresh_token is required";
 	}
-	
+
 	return client.post(`/oauth/token`, data)
 }
 

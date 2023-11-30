@@ -4,7 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const { getToken, generic_lists, list_catalog, list_cat, listOfLists, getMeta, search } = require('./trakt-api.js');
 const manifest = require("./manifest.json");
-const config = require('./config.js');
+const config = require('./config.js')();
 
 
 // create monitoring stats routes using swagger-stats

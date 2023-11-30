@@ -1,7 +1,7 @@
 // require serverless version
 const app = require('./index.js')
 const { publishToCentral } = require("stremio-addon-sdk")
-const config = require('./config.js');
+const config = require('./config.js')();
 
 
 // create local server
