@@ -33,6 +33,7 @@ app.use(cors());
 
 app.use('/configure', express.static(path.join(__dirname, 'vue', 'dist')));
 app.use('/assets', express.static(path.join(__dirname, 'vue', 'dist', 'assets')));
+app.use('/public', express.static(path.join(__dirname, 'vue', 'public')));
 
 const { lists_array, genres, sort_array, host, count } = config;
 
