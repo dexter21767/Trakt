@@ -11,5 +11,5 @@ app.listen((config.port), function () {
 });
 
 if(process.env.NODE_ENV){
-    publishToCentral(`${config.local}/manifest.json`)
+    publishToCentral(`${config.local}/manifest.json`).catch(e=>console.error(e))
 }
