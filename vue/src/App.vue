@@ -696,6 +696,7 @@ const state = reactive({
     refreshToken: null,
     expires: null,
     expired: false,
+    timeLeft: null,
     RPDBkey: { key: null, valid: null, poster: 'poster-default', posters: null, tier: null },
 });
 
@@ -842,12 +843,13 @@ function generateInstallUrl() {
         state.expires = parseInt(searchParams.get('expires'));
         const currentTime = new Date().getTime() / 1000;
         state.expired = currentTime > state.expires;
+        state.timeLeft = currentTime - state.expires;
         if (state.expired) state.accessToken = null;
     }
 
     if (state.accessToken && state.expires && !state.expired) {
         setButton('authed');
-    } else if (state.expired && state.refreshToken) {
+    } else if ((state.expired || state.timeLeft < 604800) && state.refreshToken) {
         setButton('reauth');
     } else {
         setButton('auth');
