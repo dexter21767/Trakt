@@ -737,11 +737,13 @@ function loadConfig() {
 
     if (!configuration.startsWith('lists')) configuration = Buffer.from(configuration, 'base64').toString();
 
-    let { lists, ids, access_token } = JSON.parse(configuration);
+    let { lists, ids, access_token, refresh_token, expires } = JSON.parse(configuration);
 
-    console.log("lists", lists, "ids", ids, "access_token", access_token);
+    console.log("lists", lists, "ids", ids, "access_token", access_token, "refresh_token", refresh_token, "expires", expires);
 
     if (access_token) state.accessToken = access_token;
+    if (refresh_token) state.refreshToken = refresh_token;
+    if (expires) state.expires = expires;
 
     for (let i = 0; i < ids.length; i++) {
 
@@ -753,7 +755,7 @@ function loadConfig() {
             username: username,
             sort: sort
         });
-        console.log("state.lists", state.lists)
+        //console.log("state.lists", state.lists)
     }
 
     if (lists && lists.length) {
@@ -812,7 +814,7 @@ function setButton(expression) {
     }else if(expression === 'reauth'){
         document.getElementById('Auth').style.background = 'red';
         document.getElementById('Auth').innerHTML = 'Re-autherized';
-        document.getElementById('Auth').parentNode.href = `${Consts.currentUrl}/?refresh_token=${state.refreshToken}`;
+        document.getElementById('Auth').parentNode.href = Consts.Config ? `${Consts.currentUrl}/${Consts.Config}/?refresh_token=${state.refreshToken}`:`${Consts.currentUrl}/?refresh_token=${state.refreshToken}`;
         document.getElementById('Auth').disabled = false;
     }else if(expression === 'auth'){
         document.getElementById('Auth').style.background = 'red';
@@ -843,7 +845,7 @@ function generateInstallUrl() {
         if (state.expired) state.accessToken = null;
     }
 
-    if (state.accessToken && !state.expired) {
+    if (state.accessToken && state.expires && !state.expired) {
         setButton('authed');
     } else if (state.expired && state.refreshToken) {
         setButton('reauth');
@@ -883,7 +885,7 @@ function generateInstallUrl() {
     }
     for (let index in state.lists) {
         let list = state.lists[index];
-        console.log("list", list)
+        //console.log("list", list)
         if (list.username) {
             if (list.sort) lists.push(`${list.username}:${list.slug}:${list.sort}`)
             else lists.push(`${list.username}:${list.slug}`)
@@ -891,21 +893,23 @@ function generateInstallUrl() {
             lists.push(`${list.id}`)
         }
     }
-    console.log(lists);
+    //console.log(lists);
     data['lists'] = generic//.join(',');
     data['ids'] = lists//.join(',');
     if (state.accessToken) data['access_token'] = state.accessToken;
+    if (state.refreshToken) data['refresh_token'] = state.refreshToken;
+    if (state.expires) data['expires'] = state.expires;
     if (state.RPDBkey.valid) data['RPDBkey'] = state.RPDBkey;
 
 
     let configurationValue = JSON.stringify(data);
     //let configurationValue = Object.keys(data).map(key => key + '=' + data[key]).join('|');
-    console.log(configurationValue);
+    //console.log(configurationValue);
     const configuration = configurationValue && configurationValue.length ? '/' + Buffer.from(configurationValue).toString('base64') : '';
     const location = window.location.host + configuration + '/manifest.json'
     document.getElementById("install_button").href = 'stremio://' + location;
 
-    console.log('state', state);
+    //console.log('state', state);
 }
 
 function addListUrl() {
@@ -965,7 +969,7 @@ function readless(id) {
 
 async function ValidateRPDB() {
     state.RPDBkey.valid = null;
-    console.log(state.RPDBkey)
+    //console.log(state.RPDBkey)
     try {
         let validate = await client.get(`https://api.ratingposterdb.com/${state.RPDBkey.key}/isValid`)
         if (validate?.data?.valid) state.RPDBkey.valid = validate.data.valid;
@@ -974,7 +978,7 @@ async function ValidateRPDB() {
         state.RPDBkey.valid = false;
     }
     if (state.RPDBkey.valid) state.RPDBkey.tier = parseInt(state.RPDBkey.key[1]);
-    console.log(state.RPDBkey)
+    //console.log(state.RPDBkey)
 
     if (state.RPDBkey.tier > 1) state.RPDBkey.posters = [{ name: "poster-default" }, { name: "textless-default" }, { name: "poster-certs" }, { name: "poster-mc" }, { name: "poster-rt" }];
     else state.RPDBkey.posters = [{ name: "poster-default" }, { name: "textless-default" }];

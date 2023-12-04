@@ -46,13 +46,16 @@ app.use(function (req, res, next) {
 });
 
 
-app.get('/', (req, res) => {
+app.get('/:configuration?/', (req, res) => {
 	console.log('req.query',req.query)
 	if (req.query?.code || req.query?.refresh_token) {
 		getToken({ code: req.query.code, refresh_token: req.query.refresh_token }).then(data => {
 			let { access_token, refresh_token, created_at, expires_in } = data.data;
 			if (access_token) {
-				return res.redirect(`/configure/?access_token=${access_token}&refresh_token=${refresh_token}&expires=${created_at + expires_in}`);
+				if(req.params.configuration)
+					return res.redirect(`/${req.params.configuration}/configure/?access_token=${access_token}&refresh_token=${refresh_token}&expires=${created_at + expires_in}`);
+				else
+					return res.redirect(`/configure/?access_token=${access_token}&refresh_token=${refresh_token}&expires=${created_at + expires_in}`);
 				//return res.redirect('/configure/?access_token=' + data.data.access_token);
 			}
 			else {
@@ -66,7 +69,7 @@ app.get('/', (req, res) => {
 			res.redirect('/configure/?error_getting_access_token');
 		})
 	} else {
-		res.redirect('/configure/')
+		return res.redirect('/configure/')
 	}
 });
 
@@ -138,8 +141,9 @@ app.get('/:configuration?/manifest.json', async (req, res) => {
 	try {
 		console.log(req.params);
 		const catalog = [];
+		let newManifest = JSON.parse(JSON.stringify(manifest));
 		let parsedConfig = {};
-		configuration = req.params.configuration;
+		let configuration = req.params.configuration;
 		if (configuration) {
 			if (configuration.startsWith('lists')) throw "unsupported legacy config format"
 			configuration = Buffer.from(configuration, 'base64').toString();
@@ -148,7 +152,7 @@ app.get('/:configuration?/manifest.json', async (req, res) => {
 			} catch (e) {
 				throw "config isn't a valid json";
 			}
-			let { lists, ids, access_token } = parsedConfig || {};
+			let { lists, ids, access_token, refresh_token, expires } = parsedConfig || {};
 
 			console.log("configuration", configuration)
 			console.log(lists, ids, access_token);
@@ -188,11 +192,13 @@ app.get('/:configuration?/manifest.json', async (req, res) => {
 				}
 			}
 
+			if(expires) newManifest.description += `\n token expires on: ${new Date(expires * 1000).toLocaleString()}`  
+
 			if (ids) {
 				data = await list_cat(ids, access_token)
-				if (data) manifest.catalogs = catalog.concat(data);
-				manifest.catalogs = manifest.catalogs.filter(Boolean);
-				manifest.catalogs.push({
+				if (data) newManifest.catalogs = catalog.concat(data);
+				newManifest.catalogs = newManifest.catalogs.filter(Boolean);
+				newManifest.catalogs.push({
 					"type": "trakt",
 
 					"id": "trakt_search_movies",
@@ -209,12 +215,11 @@ app.get('/:configuration?/manifest.json', async (req, res) => {
 
 					"extra": [{ name: "search", isRequired: true }]
 				});
-				res.send(manifest);
-				res.end();
+				return res.json(newManifest);
 			}
 		} else {
-			manifest.catalogs = catalog;
-			manifest.catalogs.push({
+			newManifest.catalogs = catalog;
+			newManifest.catalogs.push({
 				"type": "trakt",
 
 				"id": "trakt_search_movies",
@@ -231,9 +236,8 @@ app.get('/:configuration?/manifest.json', async (req, res) => {
 
 				"extra": [{ name: "search", isRequired: true }]
 			});
-			manifest.catalogs = manifest.catalogs.filter(Boolean);
-			res.send(manifest);
-			res.end();
+			newManifest.catalogs = newManifest.catalogs.filter(Boolean);
+			return res.json(newManifest);
 		}
 	} catch (e) {
 		console.log(e)
