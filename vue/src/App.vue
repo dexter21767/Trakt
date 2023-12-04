@@ -808,12 +808,12 @@ function setButton(expression) {
     if(!expression) expression = 'auth';
     if(expression === 'authed'){
         document.getElementById('Auth').style.background = 'blue';
-        document.getElementById('Auth').innerHTML = 'Autherized';
+        document.getElementById('Auth').innerHTML = 'Authenticated';
         document.getElementById('Auth').parentNode.href = '';
         document.getElementById('Auth').disabled = true;
     }else if(expression === 'reauth'){
         document.getElementById('Auth').style.background = 'red';
-        document.getElementById('Auth').innerHTML = 'Re-autherized';
+        document.getElementById('Auth').innerHTML = 'Re-authenticate';
         document.getElementById('Auth').parentNode.href = Consts.Config ? `${Consts.currentUrl}/${Consts.Config}/?refresh_token=${state.refreshToken}`:`${Consts.currentUrl}/?refresh_token=${state.refreshToken}`;
         document.getElementById('Auth').disabled = false;
     }else if(expression === 'auth'){
