@@ -43,6 +43,8 @@ async function request(url = String, header = {}) {
 
 async function popular(user_data = {}) {
 	try {
+		
+		console.log('user_data',user_data);
 		const { trakt_type, type, access_token, genre, skip, RPDBkey } = user_data;
 
 		let url = `/${trakt_type}s/popular/?extended=full`;
@@ -90,7 +92,6 @@ async function trending(user_data = {}) {
 
 async function watchlist(user_data = {}) {
 	try {
-
 		const { trakt_type, type, access_token, genre, skip, RPDBkey } = user_data;
 
 		if (!access_token) throw "access_token is required"

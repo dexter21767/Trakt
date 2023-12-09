@@ -385,8 +385,7 @@
                         </div>
 
                         <div class="mt-10">
-                            <span class="text-xs font-semibold text-gray-600 py-2">Add personal lists (requires Trakt
-                                login)</span>
+                            <span class="text-xs font-semibold text-gray-600 py-2">Auth your trakt account to be able to get private lists, watchlist and recommendations</span>
                             <div class="mt-5 flex flex-col items-center">
                                 <a
                                     :href="`https://trakt.tv/oauth/authorize?client_id=18bde7dcd858c86f9593addf9f66528f8c1443ec1bef9ecee501d1c5177ce281&redirect_uri=${encodeURIComponent(Consts.currentUrl)}&response_type=code`">
@@ -394,54 +393,8 @@
                                         class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Login
                                         to Trakt.tv</button></a>
                             </div>
-
-                            <div class="flex items-center justify-center space-x-2 mt-5">
-                                <span class="h-px w-full bg-gray-200"></span>
-                            </div>
-
-                            <div class="flex items-center justify-center space-x-2 mt-5">
-                                <button id="generic_Button" ref="generic_Button"
-                                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                                    type="button">Generic Lists: <svg aria-hidden="true" class="ml-2 w-4 h-4" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 9l-7 7-7-7"></path>
-                                    </svg></button>
-                            </div>
-                            <!-- Dropdown menu -->
-                            <div id="generic_Menu" ref="generic_Menu"
-                                class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
-                                <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="generic_Button"
-                                    style="width: max-content;">
-                                    <li>
-                                        <input id="trakt_popular" type="checkbox" checked value="trakt_popular"
-                                            class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="trakt_popular"
-                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Popular</label>
-                                    </li>
-                                    <li>
-                                        <input id="trakt_trending" type="checkbox" checked value="trakt_trending"
-                                            class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="trakt_trending"
-                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Trending</label>
-                                    </li>
-                                    <li>
-                                        <input id="trakt_watchlist" type="checkbox" value="trakt_watchlist"
-                                            class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="trakt_watchlist"
-                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Watch List
-                                            (Requires Login)</label>
-                                    </li>
-                                    <li>
-                                        <input id="trakt_rec" type="checkbox" value="trakt_rec"
-                                            class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="trakt_rec"
-                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Recommendations
-                                            (Requires Login)</label>
-                                    </li>
-                                </ul>
-                            </div>
                         </div>
+                        <span v-if="state.expires" class="text-xs font-semibold text-gray-600 py-2">token expires on: {{ new Date(state.expires * 1000).toLocaleString()}}</span>
 
                         <div class="flex items-center justify-center space-x-2 mt-10">
                             <span class="h-px w-full bg-gray-200"></span>
@@ -570,9 +523,29 @@
                         </div>
 
                         <div class="mt-10">
-                            <span class="text-xs font-semibold text-gray-600 py-2">Your lists</span>
-
-                            <draggable v-if="state.lists.length" v-model="state.lists" group="lists" item-key="list.id"
+                            <span class="text-xs font-semibold text-gray-600 py-2">Generic lists</span>
+                            <draggable v-model="state.genericLists" group="generics" item-key="element.id"
+                                @start="state.genericDrag = true" @end="state.genericDrag = false"
+                                class="mt-5 w-full text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <template #item="{ element }">
+                                    <div
+                                        class="grabbable py-2 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600 flex">
+                                        <div class="flex">
+                                            <span class="mr-2 dragable-title">
+                                                {{ element.name }}
+                                            </span>
+                                            <VueToggles :value="element.value" @click="element.value = !element.value" />
+                                        </div>
+                                        <dropdown v-if="element.sortable" class="sorting-dropdown" :options="Consts.SortOptions"
+                                            :selected="{ name: getSorting(element.sort), value: element.sort }"
+                                            v-on:updateOption="updateSorting($event, element)"
+                                            :placeholder="'Select default sorting'" :closeOnOutsideClick="true">
+                                        </dropdown>
+                                    </div>
+                                </template>
+                            </draggable>
+                            <span class="text-xs font-semibold text-gray-600 py-2">Trakt lists</span>
+                            <draggable v-if="state.lists.length" v-model="state.lists" group="lists" item-key="element.id"
                                 @start="state.drag = true" @end="state.drag = false"
                                 class="mt-5 w-full text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 <template #item="{ element }">
@@ -652,11 +625,9 @@ import { reactive, ref, onMounted } from 'vue';
 import Modal from 'flowbite/src/components/modal';
 import Dropdown from 'flowbite/src/components/dropdown';
 import { useHead } from "@vueuse/head";
-import $ from 'jquery'
 import * as manifest from '../../manifest.json';
 import dropdown from 'vue-dropdowns';
-
-// import SearchModal from './components/SearchModal.vue';
+import { VueToggles } from "vue-toggles";
 
 const stylizedTypes = manifest.types.map(t => t[0].toUpperCase() + t.slice(1));
 
@@ -678,13 +649,10 @@ const state = reactive({
     searchQuery: '',
     listUrl: '',
     drag: false,
-    checkTrending: true,
-    checkPopular: true,
-    checkWatchlist: false,
-    checkRecommendations: false,
+    genericDrag: false,
     lists: [],
     modal: null,
-    genericLists: null,
+    genericLists: [],
     lists_popular: null,
     lists_trending: null,
     lists_personal: null,
@@ -701,8 +669,6 @@ const state = reactive({
 });
 
 const searchModal = ref();
-const generic_Button = ref();
-const generic_Menu = ref();
 const installModal = ref();
 const popularModal = ref();
 const trendingModal = ref();
@@ -719,12 +685,12 @@ const client = axios.create({
 
 onMounted(() => {
     Consts.Config = (window.location.pathname && window.location.pathname.split('/')) ? Consts.Config = window.location.pathname.replace('configure', '').replaceAll('/', '') : undefined;
-    console.log(Consts.Config)
+    state.genericLists = [{id:"trakt_popular",name:"Popular",value:true,order:0},{id:"trakt_trending",name:"Trending",value:true,order:1},{id:"trakt_watchlist",name:"WatchList",value:false,order:2,sortable:true},{id:"trakt_rec",name:"Recommendations",value:false,order:3},{id:"trakt_search",name:"Search",value:true,order:4}];
+
     loadConfig();
     getListsOflists()
     generateInstallUrl()
 
-    state.genericLists = new Dropdown(generic_Menu.value, generic_Button.value);
     state.modal = new Modal(searchModal.value);
     state.popularModal = new Modal(popularModal.value);
     state.trendingModal = new Modal(trendingModal.value);
@@ -760,22 +726,18 @@ function loadConfig() {
     }
 
     if (lists && lists.length) {
-
-        state.checkTrending = lists.includes('trakt_trending') ? true : false;
-        $("#trakt_trending").prop("checked", state.checkTrending);
-
-        state.checkPopular = lists.includes('trakt_popular') ? true : false;
-        $("#trakt_popular").prop("checked", state.checkPopular);
-
-        state.checkWatchlist = lists.includes('trakt_watchlist') ? true : false;
-        $("#trakt_watchlist").prop("checked", state.checkWatchlist);
-
-        state.checkRecommendations = lists.includes('trakt_rec') ? true : false;
-        $("#trakt_rec").prop("checked", state.checkRecommendations);
+        state.genericLists.forEach((list,index)=>{
+            const val = lists.find(l=>l.includes(list.id)) || '';
+            const [id,sort] = val.split(':');
+            if(id) list.value = true;
+            else list.value = false;
+            
+            list.sort = sort;
+            state.genericLists[index] = list;
+        })
     }
-
-
-
+    console.log("state.genericLists", JSON.stringify(state.genericLists));
+    console.log("state.lists", JSON.stringify(state.lists));
 }
 
 function getSorting(sort) {
@@ -786,9 +748,14 @@ function getSorting(sort) {
 }
 
 function updateSorting(sort, list) {
-    console.log("sort", sort, "list", list)
-    const index = state.lists.indexOf(list);
-    state.lists[index].sort = sort.value
+    console.log("sort", sort, "list", list.sort)
+    if(list.id?.startsWith('trakt_')){
+        const index = state.genericLists.indexOf(list);
+        state.genericLists[index].sort = sort.value;
+    }else{
+        const index = state.lists.indexOf(list);
+        state.lists[index].sort = sort.value
+    }
 }
 
 async function getListsOflists() {
@@ -799,25 +766,24 @@ async function getListsOflists() {
             let lists_personal = await client.get('/lists/personal?token=' + state.accessToken).catch(e => { console.error(e) });
             state.lists_personal = lists_personal?.data || [];
         }
-        console.log("state.lists_personal", state.lists_personal)
     } catch (e) {
         console.error(e);
     }
 }
 
-function setButton(expression) {
-    if(!expression) expression = 'auth';
-    if(expression === 'authed'){
+function updateAuthButton() {
+
+    if(state.accessToken && state.expires && !state.expired){
         document.getElementById('Auth').style.background = 'blue';
         document.getElementById('Auth').innerHTML = 'Authenticated';
         document.getElementById('Auth').parentNode.href = '';
         document.getElementById('Auth').disabled = true;
-    }else if(expression === 'reauth'){
+    }else if((state.expired || state.timeLeft < 604800) && state.refreshToken){
         document.getElementById('Auth').style.background = 'red';
         document.getElementById('Auth').innerHTML = 'Re-authenticate';
         document.getElementById('Auth').parentNode.href = Consts.Config ? `${Consts.currentUrl}/${Consts.Config}/?refresh_token=${state.refreshToken}`:`${Consts.currentUrl}/?refresh_token=${state.refreshToken}`;
         document.getElementById('Auth').disabled = false;
-    }else if(expression === 'auth'){
+    }else{
         document.getElementById('Auth').style.background = 'red';
         document.getElementById('Auth').innerHTML = 'Login to Trakt.tv';
         document.getElementById('Auth').parentNode.href = `https://trakt.tv/oauth/authorize?client_id=18bde7dcd858c86f9593addf9f66528f8c1443ec1bef9ecee501d1c5177ce281&redirect_uri=${encodeURIComponent(Consts.currentUrl)}&response_type=code`;
@@ -829,9 +795,9 @@ function generateInstallUrl() {
     let data = {};
     const lists = [];
     let generic = [];
-    //let query = window.location.search.substring(1);
+    
     const searchParams = new URLSearchParams(window.location.search);
-
+    console.log(state.genericLists);
     if (searchParams.has('access_token')) {
         state.accessToken = searchParams.get('access_token');
     }
@@ -847,44 +813,16 @@ function generateInstallUrl() {
         if (state.expired) state.accessToken = null;
     }
 
-    if (state.accessToken && state.expires && !state.expired) {
-        setButton('authed');
-    } else if ((state.expired || state.timeLeft < 604800) && state.refreshToken) {
-        setButton('reauth');
-    } else {
-        setButton('auth');
-    }
+    updateAuthButton();
+    state.genericLists.forEach(list=>{
+        if(!list.value) return;
+        if((list.id == 'trakt_watchlist' || list.id == 'trakt_rec') && !state.accessToken) return;
+        if(list.sort)
+            generic.push(`${list.id}:${list.sort}`);
+        else
+            generic.push(list.id);
+    })
 
-    if ($('#trakt_trending').is(':checked')) {
-        generic.push($('#trakt_trending').val());
-    } else {
-        generic = generic.filter(function (value, index, arr) {
-            return value != $('#trakt_trending').val();
-        })
-    }
-    if ($('#trakt_popular').is(':checked')) {
-        generic.push($('#trakt_popular').val());
-    } else {
-        generic = generic.filter(function (value, index, arr) {
-            return value != $('#trakt_popular').val();
-        })
-    }
-    if (state.accessToken) {
-        if ($('#trakt_watchlist').is(':checked')) {
-            generic.push($('#trakt_watchlist').val());
-        } else {
-            generic = generic.filter(function (value, index, arr) {
-                return value != $('#trakt_watchlist').val();
-            })
-        }
-        if ($('#trakt_rec').is(':checked')) {
-            generic.push($('#trakt_rec').val());
-        } else {
-            generic = generic.filter(function (value, index, arr) {
-                return value != $('#trakt_rec').val();
-            })
-        }
-    }
     for (let index in state.lists) {
         let list = state.lists[index];
         //console.log("list", list)

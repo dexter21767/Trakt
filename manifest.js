@@ -3,7 +3,7 @@ const config = require('./config.js')('beamup');
 
 let manifest = {
     "id": "community.trakt-tv",
-    "version": "0.2.5",
+    "version": "0.2.6",
     "name": "Trakt Tv",
     "description": "Addon for getting Trakt's public and user lists, recommendations and watch list.",
     "logo": `${config.local}/public/logo.png`,

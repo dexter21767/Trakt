@@ -11,6 +11,7 @@ const config = require('./config.js')();
 
 const swStats = require('swagger-stats');
 const apiSpec = require('./swagger-specs.json');
+const { access } = require('fs');
 
 app.use(swStats.getMiddleware(
 	{
@@ -47,12 +48,12 @@ app.use(function (req, res, next) {
 
 
 app.get('/:configuration?/', (req, res) => {
-	console.log('req.query',req.query)
+	console.log('req.query', req.query)
 	if (req.query?.code || req.query?.refresh_token) {
 		getToken({ code: req.query.code, refresh_token: req.query.refresh_token }).then(data => {
 			let { access_token, refresh_token, created_at, expires_in } = data.data;
 			if (access_token) {
-				if(req.params.configuration)
+				if (req.params.configuration)
 					return res.redirect(`/${req.params.configuration}/configure/?access_token=${access_token}&refresh_token=${refresh_token}&expires=${created_at + expires_in}`);
 				else
 					return res.redirect(`/configure/?access_token=${access_token}&refresh_token=${refresh_token}&expires=${created_at + expires_in}`);
@@ -158,84 +159,25 @@ app.get('/:configuration?/manifest.json', async (req, res) => {
 			console.log(lists, ids, access_token);
 
 			if (lists) {
-				for (let i = 0; i < lists.length; i++) {
-
-					if ((lists[i] == 'trakt_trending' || lists[i] == 'trakt_popular') || (access_token && access_token.length > 0 && lists[i] == 'trakt_rec')) {
-						catalog.push({
-							"type": 'trakt',
-
-							"id": lists[i] + "_movies",
-
-							"name": lists_array[lists[i]] + " movies",
-
-							"extra": [{ "name": "genre", "isRequired": false, "options": genres }, { "name": "skip", "isRequired": false }]
-						}, {
-							"type": "trakt",
-
-							"id": lists[i] + "_series",
-
-							"name": lists_array[lists[i]] + " series",
-
-							"extra": [{ "name": "genre", "isRequired": false, "options": genres }, { "name": "skip", "isRequired": false }]
-						});
-					} else if (access_token && access_token.length > 0 && lists[i] == 'trakt_watchlist') {
-						catalog.push({
-							"type": 'trakt',
-
-							"id": lists[i],
-
-							"name": lists_array[lists[i]],
-
-							"extra": [{ "name": "genre", "isRequired": false, "options": sort_array }, { "name": "skip", "isRequired": false }]
-						});
-					}
-				}
+				lists.forEach(list => {
+					let data = genericLists(list, access_token);
+					if (data.length)
+						data.forEach(item => catalog.push(item))
+					else
+						catalog.push(data)
+				});
 			}
 
-			if(expires) newManifest.description += `\n token expires on: ${new Date(expires * 1000).toLocaleString()}`  
+			if (expires) newManifest.description += `\n token expires on: ${new Date(expires * 1000).toLocaleString()}`;
 
 			if (ids) {
 				data = await list_cat(ids, access_token)
 				if (data) newManifest.catalogs = catalog.concat(data);
 				newManifest.catalogs = newManifest.catalogs.filter(Boolean);
-				newManifest.catalogs.push({
-					"type": "trakt",
-
-					"id": "trakt_search_movies",
-
-					"name": "trakt - search movies",
-
-					"extra": [{ name: "search", isRequired: true }]
-				}, {
-					"type": "trakt",
-
-					"id": "trakt_search_series",
-
-					"name": "trakt - search series",
-
-					"extra": [{ name: "search", isRequired: true }]
-				});
 				return res.json(newManifest);
 			}
 		} else {
 			newManifest.catalogs = catalog;
-			newManifest.catalogs.push({
-				"type": "trakt",
-
-				"id": "trakt_search_movies",
-
-				"name": "trakt - search movies",
-
-				"extra": [{ name: "search", isRequired: true }]
-			}, {
-				"type": "trakt",
-
-				"id": "trakt_search_series",
-
-				"name": "trakt - search series",
-
-				"extra": [{ name: "search", isRequired: true }]
-			});
 			newManifest.catalogs = newManifest.catalogs.filter(Boolean);
 			return res.json(newManifest);
 		}
@@ -243,15 +185,12 @@ app.get('/:configuration?/manifest.json', async (req, res) => {
 		console.log(e)
 		res.status(400).send(e);
 		res.end();
-
 	}
 });
-
 
 app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 	try {
 		let { configuration, type, id, extra } = req.params;
-
 
 		console.log('req.params', req.params);
 		if (type != "trakt") return res.status(404).end();
@@ -288,10 +227,8 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 		if (id.startsWith("trakt_list:")) {
 			id = id.replace('trakt_list:', '')
 
-			username = id.split(':')[0];
-			list_id = id.split(':')[1];
+			[username,list_id,sort] = id.split(':');
 
-			sort = id.split(':')[2];
 			if (sort) sort = sort.split(',');
 
 			if (genre == undefined && id.split(':').length == 4) {
@@ -306,6 +243,14 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 		} else if (id.startsWith("trakt")) {
 			list_id = id.split('_')[1];
 			type = id.split('_')[2];
+			
+			if(list_id === 'watchlist') {
+				sort = id.split('_')[2];
+				if (genre == undefined && sort) {
+					genre = sort.split(',');
+				}
+			}
+
 			if (type == "movies") {
 				trakt_type = "movie";
 			} else if (type == "series") {
@@ -332,7 +277,6 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 	}
 })
 
-
 app.get('/:configuration?/meta/:type/:id/:extra?.json', async (req, res) => {
 
 	let { configuration, type, id, extra } = req.params;
@@ -350,3 +294,55 @@ app.get('/:configuration?/meta/:type/:id/:extra?.json', async (req, res) => {
 })
 
 module.exports = app
+
+function genericLists(list, access_token) {
+	const [id, sort] = list.split(':');
+
+	if ((id == 'trakt_trending' || id == 'trakt_popular') || (access_token && access_token.length > 0 && id == 'trakt_rec')) {
+		return [{
+			"type": 'trakt',
+
+			"id": sort ? `${id}_movies_${sort}` : `${id}_movies`,
+
+			"name": lists_array[id] + " movies",
+
+			"extra": [{ "name": "genre", "isRequired": false, "options": genres }, { "name": "skip", "isRequired": false }]
+		}, {
+			"type": "trakt",
+
+			"id": sort ? `${id}_series_${sort}` : `${id}_series`,
+
+			"name": lists_array[id] + " series",
+
+			"extra": [{ "name": "genre", "isRequired": false, "options": genres }, { "name": "skip", "isRequired": false }]
+		}];
+	} else if (access_token && access_token.length > 0 && id == 'trakt_watchlist') {
+		return {
+			"type": 'trakt',
+
+			"id": sort ? `${id}_${sort}` : `${id}`,
+
+			"name": lists_array[id],
+
+			"extra": [{ "name": "genre", "isRequired": false, "options": sort_array }, { "name": "skip", "isRequired": false }]
+		};
+	} else if (id == 'trakt_search'){
+		return [{
+			"type": "trakt",
+
+			"id": "trakt_search_movies",
+
+			"name": "trakt - search movies",
+
+			"extra": [{ name: "search", isRequired: true }]
+		}, {
+			"type": "trakt",
+
+			"id": "trakt_search_series",
+
+			"name": "trakt - search series",
+
+			"extra": [{ name: "search", isRequired: true }]
+		}]
+	}
+}
