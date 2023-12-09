@@ -403,7 +403,7 @@
 
                         <span class="text-xs font-semibold text-gray-600 py-2 mt-10">Add lists</span>
 
-                        <div class="flex rounded-md shadow-sm mt-5 w-full" role="group" style="flex-direction: column;">
+                        <div class="column flex rounded-md shadow-sm mt-5 w-full" role="group">
                             <div class="flex rounded-md shadow-sm mt-5 w-full" role="group">
 
                                 <button @click="state.popularModal.show()" type="button"
@@ -534,7 +534,10 @@
                                             <span class="mr-2 dragable-title">
                                                 {{ element.name }}
                                             </span>
-                                            <VueToggles :value="element.value" @click="element.value = !element.value" />
+                                            <div class="flex">
+                                                <VueToggles class="separated-toggle" v-if="element.id ==='trakt_watchlist'" :value="element.separated" @click="element.separated = !element.separated" uncheckedText="Merged" checkedText="Divided"/>
+                                                <VueToggles :value="element.value" @click="element.value = !element.value" uncheckedText="Disabled" checkedText="Enabled"/>
+                                            </div>
                                         </div>
                                         <dropdown v-if="element.sortable" class="sorting-dropdown" :options="Consts.SortOptions"
                                             :selected="{ name: getSorting(element.sort), value: element.sort }"
@@ -685,7 +688,7 @@ const client = axios.create({
 
 onMounted(() => {
     Consts.Config = (window.location.pathname && window.location.pathname.split('/')) ? Consts.Config = window.location.pathname.replace('configure', '').replaceAll('/', '') : undefined;
-    state.genericLists = [{id:"trakt_popular",name:"Popular",value:true,order:0},{id:"trakt_trending",name:"Trending",value:true,order:1},{id:"trakt_watchlist",name:"WatchList",value:false,order:2,sortable:true},{id:"trakt_rec",name:"Recommendations",value:false,order:3},{id:"trakt_search",name:"Search",value:true,order:4}];
+    state.genericLists = [{id:"trakt_popular",name:"Popular",value:true,order:0},{id:"trakt_trending",name:"Trending",value:true,order:1},{id:"trakt_watchlist",name:"WatchList",value:false,order:2,sortable:true,separated:false},{id:"trakt_rec",name:"Recommendations",value:false,order:3},{id:"trakt_search",name:"Search",value:true,order:4}];
 
     loadConfig();
     getListsOflists()
@@ -728,11 +731,23 @@ function loadConfig() {
     if (lists && lists.length) {
         state.genericLists.forEach((list,index)=>{
             const val = lists.find(l=>l.includes(list.id)) || '';
-            const [id,sort] = val.split(':');
+            const [id,secondPart,thirdPart] = val.split(':');
+            
             if(id) list.value = true;
             else list.value = false;
+            if(id ==="trakt_watchlist"){
+                if(secondPart == "separated"){
+                    list.separated = true;
+                    list.sort = thirdPart;
+                }else{
+                    list.separated = false;
+                    list.sort = secondPart;
+                }
+            }else {
+                list.sort = secondPart;
+            }
+
             
-            list.sort = sort;
             state.genericLists[index] = list;
         })
     }
@@ -817,10 +832,16 @@ function generateInstallUrl() {
     state.genericLists.forEach(list=>{
         if(!list.value) return;
         if((list.id == 'trakt_watchlist' || list.id == 'trakt_rec') && !state.accessToken) return;
+        
+        let id = list.id;
+
+        if(list.separated)
+            id +=`:separated`;
+        
         if(list.sort)
-            generic.push(`${list.id}:${list.sort}`);
-        else
-            generic.push(list.id);
+            id +=`:${list.sort}`;
+        
+        generic.push(id);
     })
 
     for (let index in state.lists) {
@@ -991,6 +1012,12 @@ h1 {
     padding-left: 5%;
 }
 
+.separated-toggle {
+    margin-right: 10px;
+}
+.column {
+    flex-direction : column;
+}
 .sorting-dropdown {
   border-radius: 5px;
  

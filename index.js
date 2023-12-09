@@ -245,17 +245,27 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 			type = id.split('_')[2];
 			
 			if(list_id === 'watchlist') {
-				sort = id.split('_')[2];
+								regex = new RegExp(/^(movies|series)$/);
+				type = regex.test(id.split('_')[2])? id.split('_')[2] : null;
+				if(type){
+					trakt_type = type == "movies" ? "movies" : type == "series" ? "shows" : null;
+					sort = id.split('_')[3];
+					
+				}else{
+					id.split('_')[2];
+				}
+
 				if (genre == undefined && sort) {
 					genre = sort.split(',');
 				}
+			}else{
+				if (type == "movies") {
+					trakt_type = "movie";
+				} else if (type == "series") {
+					trakt_type = "show";
+				}
 			}
 
-			if (type == "movies") {
-				trakt_type = "movie";
-			} else if (type == "series") {
-				trakt_type = "show";
-			}
 			console.log("list_id", list_id);
 			const data = { trakt_type: trakt_type, type: type, access_token: access_token, genre: genre, skip: skip, RPDBkey }
 
@@ -296,7 +306,9 @@ app.get('/:configuration?/meta/:type/:id/:extra?.json', async (req, res) => {
 module.exports = app
 
 function genericLists(list, access_token) {
-	const [id, sort] = list.split(':');
+	const [id, secondPart, thirdPart] = list.split(':');
+	const separated = secondPart == "separated" ? true : false;
+	const sort = secondPart == "separated" ? thirdPart : secondPart;
 
 	if ((id == 'trakt_trending' || id == 'trakt_popular') || (access_token && access_token.length > 0 && id == 'trakt_rec')) {
 		return [{
@@ -317,15 +329,36 @@ function genericLists(list, access_token) {
 			"extra": [{ "name": "genre", "isRequired": false, "options": genres }, { "name": "skip", "isRequired": false }]
 		}];
 	} else if (access_token && access_token.length > 0 && id == 'trakt_watchlist') {
-		return {
-			"type": 'trakt',
+		if(separated){
+			return [{
+				"type": 'trakt',
+	
+				"id": sort ? `${id}_movies_${sort}` : `${id}_movies`,
+	
+				"name": lists_array[id] + " movies",
+	
+				"extra": [{ "name": "genre", "isRequired": false, "options": sort_array }, { "name": "skip", "isRequired": false }]
+			},{
+				"type": 'trakt',
+	
+				"id": sort ? `${id}_series_${sort}` : `${id}_series`,
+				
+				"name": lists_array[id] + " series",
+	
+				"extra": [{ "name": "genre", "isRequired": false, "options": sort_array }, { "name": "skip", "isRequired": false }]
+			}]
+		}
+		else{
+			return {
+				"type": 'trakt',
 
-			"id": sort ? `${id}_${sort}` : `${id}`,
+				"id": sort ? `${id}_${sort}` : `${id}`,
 
-			"name": lists_array[id],
+				"name": lists_array[id],
 
-			"extra": [{ "name": "genre", "isRequired": false, "options": sort_array }, { "name": "skip", "isRequired": false }]
-		};
+				"extra": [{ "name": "genre", "isRequired": false, "options": sort_array }, { "name": "skip", "isRequired": false }]
+			};
+		}
 	} else if (id == 'trakt_search'){
 		return [{
 			"type": "trakt",

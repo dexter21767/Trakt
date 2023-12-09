@@ -92,6 +92,7 @@ async function trending(user_data = {}) {
 
 async function watchlist(user_data = {}) {
 	try {
+		console.log(user_data);
 		const { trakt_type, type, access_token, genre, skip, RPDBkey } = user_data;
 
 		if (!access_token) throw "access_token is required"
@@ -100,7 +101,10 @@ async function watchlist(user_data = {}) {
 				"Authorization": `Bearer ${access_token}`
 			}
 		};
-		const url = `/sync/watchlist/?extended=full`;
+		let url = `/sync/watchlist`;
+		if(trakt_type) url += `/${trakt_type}`;
+
+		url += '/?extended=full';
 		const data = await request(url, header);
 
 		if (!data || !data.data) throw "error getting data (recommended list)";
