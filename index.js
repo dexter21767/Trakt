@@ -225,12 +225,11 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 
 		let sort, username, trakt_type;
 		if (id.startsWith("trakt_list:")) {
-			id = id.replace('trakt_list:', '')
+			id = id.replace('trakt_list:', '');
 
 			[username,list_id,sort] = id.split(':');
 
 			if (sort) sort = sort.split(',');
-
 			if (genre == undefined && id.split(':').length == 4) {
 				genre = id.split(':')[2].split(',');
 			}
