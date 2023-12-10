@@ -46,38 +46,6 @@ app.use(function (req, res, next) {
 	next();
 });
 
-
-app.get('/:configuration?/', (req, res) => {
-	console.log('req.query', req.query)
-	if (req.query?.code || req.query?.refresh_token) {
-		getToken({ code: req.query.code, refresh_token: req.query.refresh_token }).then(data => {
-			let { access_token, refresh_token, created_at, expires_in } = data.data;
-			if (access_token) {
-				if (req.params.configuration)
-					return res.redirect(`/${req.params.configuration}/configure/?access_token=${access_token}&refresh_token=${refresh_token}&expires=${created_at + expires_in}`);
-				else
-					return res.redirect(`/configure/?access_token=${access_token}&refresh_token=${refresh_token}&expires=${created_at + expires_in}`);
-				//return res.redirect('/configure/?access_token=' + data.data.access_token);
-			}
-			else {
-				res.send(data);// res.redirect('/configure/?access_token_undefined');	
-				res.end();
-			}
-		}
-		).catch((e) => {
-			console.error(e);
-			//res.end(e);
-			res.redirect('/configure/?error_getting_access_token');
-		})
-	} else {
-		return res.redirect('/configure/')
-	}
-});
-
-app.get('/:configuration?/configure', (req, res) => {
-	res.sendFile(path.join(__dirname, 'vue', 'dist', 'index.html'));
-});
-
 app.get('/manifest.json', (req, res) => {
 
 	manifest.catalogs = [{
@@ -133,6 +101,39 @@ app.get('/manifest.json', (req, res) => {
 	res.send(manifest);
 	res.end();
 });
+
+app.get('/:configuration?/', (req, res) => {
+	console.log('req.query', req.query)
+	if (req.query?.code || req.query?.refresh_token) {
+		getToken({ code: req.query.code, refresh_token: req.query.refresh_token }).then(data => {
+			let { access_token, refresh_token, created_at, expires_in } = data.data;
+			if (access_token) {
+				if (req.params.configuration)
+					return res.redirect(`/${req.params.configuration}/configure/?access_token=${access_token}&refresh_token=${refresh_token}&expires=${created_at + expires_in}`);
+				else
+					return res.redirect(`/configure/?access_token=${access_token}&refresh_token=${refresh_token}&expires=${created_at + expires_in}`);
+				//return res.redirect('/configure/?access_token=' + data.data.access_token);
+			}
+			else {
+				res.send(data);// res.redirect('/configure/?access_token_undefined');	
+				res.end();
+			}
+		}
+		).catch((e) => {
+			console.error(e);
+			//res.end(e);
+			res.redirect('/configure/?error_getting_access_token');
+		})
+	} else {
+		return res.redirect('/configure/')
+	}
+});
+
+app.get('/:configuration?/configure', (req, res) => {
+	res.sendFile(path.join(__dirname, 'vue', 'dist', 'index.html'));
+});
+
+
 
 app.get('/lists/:query', (req, res) => {
 	listOfLists(req.params.query, req.query.token).then(data => res.send(data)).catch(e => console.error(e));
@@ -227,7 +228,7 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 		if (id.startsWith("trakt_list:")) {
 			id = id.replace('trakt_list:', '');
 
-			[username,list_id,sort] = id.split(':');
+			[username, list_id, sort] = id.split(':');
 
 			if (sort) sort = sort.split(',');
 			if (genre == undefined && id.split(':').length == 4) {
@@ -242,22 +243,22 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 		} else if (id.startsWith("trakt")) {
 			list_id = id.split('_')[1];
 			type = id.split('_')[2];
-			
-			if(list_id === 'watchlist') {
-								regex = new RegExp(/^(movies|series)$/);
-				type = regex.test(id.split('_')[2])? id.split('_')[2] : null;
-				if(type){
+
+			if (list_id === 'watchlist') {
+				let regex = new RegExp(/^(movies|series)$/);
+				type = regex.test(id.split('_')[2]) ? id.split('_')[2] : null;
+				if (type) {
 					trakt_type = type == "movies" ? "movies" : type == "series" ? "shows" : null;
 					sort = id.split('_')[3];
-					
-				}else{
+
+				} else {
 					id.split('_')[2];
 				}
 
 				if (genre == undefined && sort) {
 					genre = sort.split(',');
 				}
-			}else{
+			} else {
 				if (type == "movies") {
 					trakt_type = "movie";
 				} else if (type == "series") {
@@ -328,26 +329,26 @@ function genericLists(list, access_token) {
 			"extra": [{ "name": "genre", "isRequired": false, "options": genres }, { "name": "skip", "isRequired": false }]
 		}];
 	} else if (access_token && access_token.length > 0 && id == 'trakt_watchlist') {
-		if(separated){
+		if (separated) {
 			return [{
 				"type": 'trakt',
-	
+
 				"id": sort ? `${id}_movies_${sort}` : `${id}_movies`,
-	
+
 				"name": lists_array[id] + " movies",
-	
+
 				"extra": [{ "name": "genre", "isRequired": false, "options": sort_array }, { "name": "skip", "isRequired": false }]
-			},{
+			}, {
 				"type": 'trakt',
-	
+
 				"id": sort ? `${id}_series_${sort}` : `${id}_series`,
-				
+
 				"name": lists_array[id] + " series",
-	
+
 				"extra": [{ "name": "genre", "isRequired": false, "options": sort_array }, { "name": "skip", "isRequired": false }]
 			}]
 		}
-		else{
+		else {
 			return {
 				"type": 'trakt',
 
@@ -358,7 +359,7 @@ function genericLists(list, access_token) {
 				"extra": [{ "name": "genre", "isRequired": false, "options": sort_array }, { "name": "skip", "isRequired": false }]
 			};
 		}
-	} else if (id == 'trakt_search'){
+	} else if (id == 'trakt_search') {
 		return [{
 			"type": "trakt",
 

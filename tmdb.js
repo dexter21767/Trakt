@@ -1,5 +1,5 @@
 const axios = require('axios').default;
-const config = require('./config');
+const config = require('./config')();
 const NodeCache = require("node-cache");
 const Cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
 
