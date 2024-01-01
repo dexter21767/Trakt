@@ -6,12 +6,10 @@ const { getToken, generic_lists, list_catalog, list_cat, listOfLists, getMeta, s
 const manifest = require("./manifest.json");
 const config = require('./config.js')();
 
-
 // create monitoring stats routes using swagger-stats
 
 const swStats = require('swagger-stats');
-const apiSpec = require('./swagger-specs.json');
-const { access } = require('fs');
+const apiSpec = require('./swagger-specs.json')
 
 app.use(swStats.getMiddleware(
 	{
@@ -133,8 +131,6 @@ app.get('/:configuration?/configure', (req, res) => {
 	res.sendFile(path.join(__dirname, 'vue', 'dist', 'index.html'));
 });
 
-
-
 app.get('/lists/:query', (req, res) => {
 	listOfLists(req.params.query, req.query.token).then(data => res.send(data)).catch(e => console.error(e));
 });
@@ -194,7 +190,7 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 		let { configuration, type, id, extra } = req.params;
 
 		console.log('req.params', req.params);
-		if (type != "trakt") return res.status(404).end();
+		if (type != "trakt") return res.json(updateAddon('catalog'));
 
 		let skip, genre, search_query, parsedConfig = {};
 		skip = 0;
@@ -218,6 +214,7 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 			try {
 				parsedConfig = JSON.parse(configuration);
 			} catch (e) {
+				res.json(updateAddon('catalog'));
 				throw "config isn't a valid json";
 			}
 		}
@@ -377,5 +374,28 @@ function genericLists(list, access_token) {
 
 			"extra": [{ name: "search", isRequired: true }]
 		}]
+	}
+}
+
+function updateAddon(resource){
+	if(resource == 'catalog'){
+		return [
+			{
+				id: 'trakt_updateAddon',
+				name: 'ERROR: update addon',
+				type: 'movie',
+				poster: 'https://trakt.tv/assets/placeholders/thumb/poster-2561df5a41a5cb55c1d4a6f02d6532cf327f175bda97f4f813c18dea3435430c.png',
+				description: "you're using an old version of this addon, please update it"
+			}
+		]
+	}
+	else if(resource == "meta"){
+		return {
+			id: 'trakt_updateAddon',
+			name: 'ERROR: update addon',
+			type: 'movie',
+			poster: 'https://trakt.tv/assets/placeholders/thumb/poster-2561df5a41a5cb55c1d4a6f02d6532cf327f175bda97f4f813c18dea3435430c.png',
+			description: "you're using an old version of this addon, please update it"
+		}
 	}
 }
