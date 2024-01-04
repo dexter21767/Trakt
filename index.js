@@ -209,13 +209,12 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 		console.log('extra: genre:', genre, 'skip:', skip);
 
 		if (configuration) {
-			if (configuration.startsWith('lists')) throw "unsupported legacy config format"
+			if (configuration.startsWith('lists')) return res.json(updateAddon('catalog'));
 			configuration = Buffer.from(configuration, 'base64').toString();
 			try {
 				parsedConfig = JSON.parse(configuration);
 			} catch (e) {
-				res.json(updateAddon('catalog'));
-				throw "config isn't a valid json";
+				return res.json(updateAddon('catalog'));
 			}
 		}
 		let { lists, ids, access_token, RPDBkey } = parsedConfig || {};
