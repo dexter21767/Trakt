@@ -299,8 +299,6 @@ app.get('/:configuration?/meta/:type/:id/:extra?.json', async (req, res) => {
 	}
 })
 
-module.exports = app
-
 function genericLists(list, access_token) {
 	const [id, secondPart, thirdPart] = list.split(':');
 	const separated = secondPart == "separated" ? true : false;
@@ -398,3 +396,7 @@ function updateAddon(resource){
 		}
 	}
 }
+
+
+
+module.exports = app
