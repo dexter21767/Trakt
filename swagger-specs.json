@@ -14,6 +14,53 @@
           }
         }
       }
+    },"/public/{file?}": {
+      "get": {
+        "summary": "public files",
+        "parameters": [
+          {
+            "name": "file",
+            "in": "path",
+            "description": "requested file",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/assets/{file?}": {
+      "get": {
+        "summary": "assets files",
+        "parameters": [
+          {
+            "name": "file",
+            "in": "path",
+            "description": "requested file",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
     },
     "/{configuration?}/configure": {
       "get": {
