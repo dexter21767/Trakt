@@ -15,7 +15,7 @@
         }
       }
     },
-    "/{configuration?}/configure{?params*}": {
+    "/{configuration?}/configure": {
       "get": {
         "summary": "Serves the configuration page",
         "parameters": [
@@ -23,6 +23,30 @@
             "name": "configuration",
             "in": "path",
             "description": "Configuration parameter",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "access_token",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "refresh_token",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "expires",
+            "in": "query",
             "required": false,
             "schema": {
               "type": "string"
