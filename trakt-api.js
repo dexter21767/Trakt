@@ -243,12 +243,9 @@ function SortList(items = [], sort = []) {
 			return new Date(item['released'])
 		});
 	}
-	/*
 	else if (sort_by == "popularity") {
-		items = _.sortBy(items, function (item) {
-			return (item.rating * item.votes);
-		});
-	}*/
+		items = _.sortBy(items, "votes");
+	}
 	else if (sort_by == "rank") items = _.sortBy(items, "rank");
 	else if (sort_by == "title") {
 		items = _.sortBy(items, function (item) {
@@ -499,11 +496,11 @@ async function list_cat(ids, access_token) {
 			if (res?.status == 'fulfilled') {
 				let data = res.value.data;
 				let name = data.name;
-				let id = data.ids.trakt;
+				let id = data.ids.trakt || data.ids.slug;
 				let username = data.user.ids.slug || data.user.username;
 				let sort = data.sort;
 				let url, header;
-				if (data.privacy == "private") url = `/users/${username}/lists/${id}/items`;
+				if (data.privacy !== 'public' || data.user.private) url = `/users/${username}/lists/${id}/items`;
 				else url = `/lists/${id}/items`;
 				if (access_token) header = { headers: { "Authorization": `Bearer ${access_token}` } }
 
