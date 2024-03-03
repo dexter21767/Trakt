@@ -3,7 +3,7 @@ const config = require('./config.js')();
 const tmdbMeta = require('./tmdb.js');
 const _ = require('underscore');
 
-const NodeCache = require("node-cache");
+const NodeCache = require('node-cache');
 const Cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
 
 const { sort_array, host, count, local: myurl } = config;
@@ -11,10 +11,10 @@ const { sort_array, host, count, local: myurl } = config;
 client = axios.create({
 	baseURL: host,
 	headers: {
-		"Content-type": "application/json",
-		"trakt-api-key": config.API_KEY,
-		"trakt-api-version": 2,
-		"Accept-Encoding": "*"
+		'Content-type': 'application/json',
+		'trakt-api-key': config.API_KEY,
+		'trakt-api-version': 2,
+		'Accept-Encoding': '*'
 	},
 	timeout: 50000,
 });
@@ -49,14 +49,14 @@ async function popular(user_data = {}) {
 
 		let url = `/${trakt_type}s/popular/?extended=full`;
 
-		if (!url) throw "error getting url";
+		if (!url) throw 'error getting url';
 		if (skip) url += `&page=${skip}`;
 		if (count) url += `&limit=${count}`;
 		if (genre) url += `&genres=${genre}`;
 
 		const data = await request(url);
 
-		if (!data || !data.data) throw "error getting data (recommended list)";
+		if (!data || !data.data) throw 'error getting data (recommended list)';
 
 		const items = await ConvertToStremio(NormalizeLists(data.data, trakt_type), RPDBkey);
 		return items;
@@ -71,7 +71,7 @@ async function trending(user_data = {}) {
 
 		let url = `/${trakt_type}s/trending/?extended=full`;
 
-		if (!url) throw "error getting url";
+		if (!url) throw 'error getting url';
 		if (skip) url += `&page=${skip}`;
 		if (count) url += `&limit=${count}`;
 
@@ -79,7 +79,7 @@ async function trending(user_data = {}) {
 
 		const data = await request(url);
 
-		if (!data || !data.data) throw "error getting data (recommended list)";
+		if (!data || !data.data) throw 'error getting data (recommended list)';
 
 		const items = await ConvertToStremio(NormalizeLists(data.data, trakt_type), RPDBkey);
 
@@ -95,10 +95,10 @@ async function watchlist(user_data = {}) {
 		console.log(user_data);
 		const { trakt_type, type, access_token, genre, skip, RPDBkey } = user_data;
 
-		if (!access_token) throw "access_token is required"
+		if (!access_token) throw 'access_token is required'
 		const header = {
 			headers: {
-				"Authorization": `Bearer ${access_token}`
+				'Authorization': `Bearer ${access_token}`
 			}
 		};
 		let url = `/sync/watchlist`;
@@ -107,7 +107,7 @@ async function watchlist(user_data = {}) {
 		url += '/?extended=full';
 		const data = await request(url, header);
 
-		if (!data || !data.data) throw "error getting data (recommended list)";
+		if (!data || !data.data) throw 'error getting data (recommended list)';
 
 		let items = NormalizeLists(data.data);
 
@@ -131,11 +131,11 @@ async function recomendations(user_data = {}) {
 		const { trakt_type, type, access_token, genre, skip, RPDBkey } = user_data;
 
 
-		if (!access_token) throw "access_token is required"
+		if (!access_token) throw 'access_token is required'
 
 		const header = {
 			headers: {
-				"Authorization": `Bearer ${access_token}`
+				'Authorization': `Bearer ${access_token}`
 			}
 		};
 
@@ -143,10 +143,10 @@ async function recomendations(user_data = {}) {
 		if (skip !== undefined) url += `&page=${skip}`;
 		if (genre !== undefined) url += `&genres=${genre}`;
 
-		//console.log("access_token", access_token)
+		//console.log('access_token', access_token)
 
 		const data = await request(url, header);
-		if (!data || !data.data) throw "error getting data (recommended list)";
+		if (!data || !data.data) throw 'error getting data (recommended list)';
 
 		const items = await ConvertToStremio(NormalizeLists(data.data, trakt_type), RPDBkey);
 		return items;
@@ -162,7 +162,7 @@ async function search(trakt_type = String, query = String, RPDBkey = {}) {
 		let url = `/search/${trakt_type}?query=${encodeURIComponent(query)}&extended=full`;
 
 		const data = await request(url);
-		if (!data || !data.data) throw "error getting data (search)";
+		if (!data || !data.data) throw 'error getting data (search)';
 		const items = await ConvertToStremio(NormalizeLists(data.data, trakt_type), RPDBkey);
 
 		return items;
@@ -191,7 +191,7 @@ async function list_catalog(list = {}) {
 				if (access_token) {
 					header = {
 						headers: {
-							"Authorization": `Bearer ${access_token}`
+							'Authorization': `Bearer ${access_token}`
 						}
 					}
 				}
@@ -200,7 +200,7 @@ async function list_catalog(list = {}) {
 			//console.log(url)
 
 			const data = await request(url, header);
-			if (!data || !data.data) throw "error getting data (recommended list)";
+			if (!data || !data.data) throw 'error getting data (recommended list)';
 
 
 
@@ -230,37 +230,85 @@ async function list_catalog(list = {}) {
 function SortList(items = [], sort = []) {
 	//console.log('sorting', sort)
 	if (!sort || !sort.length || sort[0] == ',') return items;
-
 	let [sort_by, sort_how] = sort;
-
-	if (sort_by == "added") {
+	//console.log(items[0]);
+	items.forEach(item=>{
+		//if(!item.votes||!item.rating) console.log(item);
+		//console.log(item)
+	})
+	switch (sort_by) {
+		case 'added':
+			items = _.sortBy(items, function (item) {
+				return new Date(item.listed_at)
+			});
+		  	break;
+		case 'released':
+			items = _.sortBy(items, function (item) {
+				return item.released ? new Date(item.released) : new Date(item.first_aired) 
+			});
+			break;
+		case 'popularity': 
+			items = _.sortBy(items, function (item) {
+				return item.votes*item.rating;
+			});
+		  	break;
+		case 'random':
+			items = _.shuffle(items);
+		  	break;
+		case 'rank':
+			items = _.sortBy(items, 'rank').reverse();
+		  	break;
+		case 'title':
+			items = _.sortBy(items, function (item) {
+				str = item.title.toLowerCase();
+				words = str.split(' ');
+				if (words.length <= 1) return str;
+				if (words[0] == 'a' || words[0] == 'the' || words[0] == 'an')
+					return words.splice(1).join(' ');
+				return str;
+			}).reverse();
+		  	break;
+		case 'runtime':
+			items = _.sortBy(items, function (item) {
+				return item.aired_episodes ? item.aired_episodes*item.runtime:item.runtime;
+			});
+			//items = items = _.sortBy(items, 'runtime');
+		  	break;
+		case 'votes':
+			items = items = _.sortBy(items, 'votes');
+		  	break;
+		case 'rating':
+			items = items = _.sortBy(items, 'rating');
+			break;
+	  }
+	  /*
+	if (sort_by == 'added') {
 		items = _.sortBy(items, function (item) {
 			return new Date(item['listed_at'])
 		});
 	}
-	else if (sort_by == "released") {
+	else if (sort_by == 'released') {
 		items = _.sortBy(items, function (item) {
 			return new Date(item['released'])
 		});
 	}
-	else if (sort_by == "popularity") {
-		items = _.sortBy(items, "votes");
-	}
-	else if (sort_by == "rank") items = _.sortBy(items, "rank");
-	else if (sort_by == "title") {
+	else if (sort_by == 'popularity') items = _.sortBy(items, 'comment_count');
+	else if (sort_by == 'random') items = _.shuffle(items);
+	else if (sort_by == 'rank') items = _.sortBy(items, 'rank');
+	else if (sort_by == 'title') {
 		items = _.sortBy(items, function (item) {
 			str = item.title.toLowerCase();
-			words = str.split(" ");
+			words = str.split(' ');
 			if (words.length <= 1) return str;
 			if (words[0] == 'a' || words[0] == 'the' || words[0] == 'an')
-				return words.splice(1).join(" ");
+				return words.splice(1).join(' ');
 			return str;
 		});
 	}
-	else if (sort_by == "runtime") items = items = _.sortBy(items, "runtime");
-	else if (sort_by == "votes") items = items = _.sortBy(items, "votes");
-	else if (sort_by == "rating") items = items = _.sortBy(items, "rating");
-
+	else if (sort_by == 'runtime') items = items = _.sortBy(items, 'runtime');
+	else if (sort_by == 'votes') items = items = _.sortBy(items, 'votes');
+	else if (sort_by == 'rating') items = items = _.sortBy(items, 'rating');
+	*/
 	if (sort_how == 'asc') {
 		items = items.reverse();
 	}
@@ -275,21 +323,21 @@ async function ConvertToStremio(items = [], RPDBkey = {}) {
 	for (let i = 0; i < items.length; i++) {
 		const item = items[i];
 
-		if (item.ids && item.type == "movie" || item.type == "show") {
-			const type = item.type == "movie" ? "movie" : "series";
+		if (item.ids && item.type == 'movie' || item.type == 'show') {
+			const type = item.type == 'movie' ? 'movie' : 'series';
 			const images = await getPoster(type, item.ids, RPDBkey);
 			let meta = {
-				"id": item.ids.imdb || ("trakt:" + item.ids.trakt),
-				"type": type,
-				"name": item.title,
-				"poster": images.poster || '',
-				"background": images.background || '',
-				"releaseInfo": item.year ? item.year.toString() : (item.released?.split('-')[0] ? item.released.split('-')[0] : "N/A"),
-				"description": item.overview || '',
-				"genres": item.genres || [],
-				"trailers": item.trailer ? [{ source: item.trailer.split('?v=')[1], type: "Trailer" }] : []
+				'id': item.ids.imdb || ('trakt:' + item.ids.trakt),
+				'type': type,
+				'name': item.title,
+				'poster': images.poster || '',
+				'background': images.background || '',
+				'releaseInfo': item.year ? item.year.toString() : (item.released?.split('-')[0] ? item.released.split('-')[0] : 'N/A'),
+				'description': item.overview || '',
+				'genres': item.genres || [],
+				'trailers': item.trailer ? [{ source: item.trailer.split('?v=')[1], type: 'Trailer' }] : []
 			}
-            if(meta.type =="movie") meta.behaviorHints={"defaultVideoId": meta.id}
+            if(meta.type =='movie') meta.behaviorHints={'defaultVideoId': meta.id}
 			metas.push(meta);
 		}
 	}
@@ -391,9 +439,9 @@ function NormalizeLists(list = [], type = String) {
 
 async function getToken({code ,refresh_token}) {
 	let data = {
-		"client_id": config['client_id'],
-		"client_secret": config['client_secret'],
-		"redirect_uri": myurl,
+		'client_id': config.client_id,
+		'client_secret': config.client_secret,
+		'redirect_uri': myurl,
 	};
 	if(code) {
 		data.code = code;
@@ -403,7 +451,7 @@ async function getToken({code ,refresh_token}) {
 		data.refresh_token = refresh_token;
 		data.grant_type = 'refresh_token';
 	}else{
-		throw "code or refresh_token is required";
+		throw 'code or refresh_token is required';
 	}
 
 	return client.post(`/oauth/token`, data)
@@ -417,7 +465,7 @@ async function listOfLists(query = String, token) {
 		else if (query == 'personal') {
 			if (token) {
 				url = `/users/me/lists`;
-				header = { headers: { "Authorization": `Bearer ${token}` } }
+				header = { headers: { 'Authorization': `Bearer ${token}` } }
 			}
 			else return;
 		}
@@ -425,10 +473,10 @@ async function listOfLists(query = String, token) {
 		console.log(url, header)
 
 		data = await request(url, header);
-		if (!data || !data.data) throw "error";
+		if (!data || !data.data) throw 'error';
 		for (let i = 0; i < data.data.length; i++) {
 			const list = data.data[i].list ? data.data[i].list : data.data[i];
-			if (list && ((list.privacy == "public") || token)) {
+			if (list && ((list.privacy == 'public') || token)) {
 				popular.push({
 					name: list.name,
 					id: list.ids.trakt,
@@ -437,7 +485,7 @@ async function listOfLists(query = String, token) {
 					likes: list.likes,
 					item_count: list.item_count,
 					description: list.description,
-					sort: list["sort_by"] + "," + list["sort_how"]
+					sort: list.sort_by + ',' + list.sort_how
 				});
 			}
 		}
@@ -450,14 +498,14 @@ async function listOfLists(query = String, token) {
 
 function list(list_ids = [], access_token) {
 	let header;
-	//console.log("list_ids", list_ids)
-	if (access_token) header = { headers: { "Authorization": `Bearer ${access_token}` } }
+	//console.log('list_ids', list_ids)
+	if (access_token) header = { headers: { 'Authorization': `Bearer ${access_token}` } }
 	const promises = [];
 
 	for (let i = 0; i < list_ids.length; i++) {
 		let id = list_ids[i];
-		if (id.startsWith("trakt_list:")) id = id.replace('trakt_list:', '')
-		//console.log("id", id)
+		if (id.startsWith('trakt_list:')) id = id.replace('trakt_list:', '')
+		//console.log('id', id)
 		const { url, sort } = idSplit(id);
 
 		if (url) promises.push(request(url, header).then(data => { if (sort) { data.data.sort = sort }; return data }));
@@ -502,7 +550,7 @@ async function list_cat(ids, access_token) {
 				let url, header;
 				if (data.privacy !== 'public' || data.user.private) url = `/users/${username}/lists/${id}/items`;
 				else url = `/lists/${id}/items`;
-				if (access_token) header = { headers: { "Authorization": `Bearer ${access_token}` } }
+				if (access_token) header = { headers: { 'Authorization': `Bearer ${access_token}` } }
 
 				promises.push(request(url, header).then(data => {
 					if (data && data.data && data.data.length) {
@@ -510,13 +558,13 @@ async function list_cat(ids, access_token) {
 						else list_id = (sort && sort.length) ? `trakt_list:${id}:${sort}` : `trakt_list:${id}`;
 
 						return {
-							"type": 'trakt',
+							'type': 'trakt',
 
-							"id": list_id,
+							'id': list_id,
 
-							"name": name,
+							'name': name,
 
-							"extra": [{ "name": "genre", "isRequired": false, "options": sort_array }, { "name": "skip", "isRequired": false }]
+							'extra': [{ 'name': 'genre', 'isRequired': false, 'options': sort_array }, { 'name': 'skip', 'isRequired': false }]
 						}
 					}
 				}));
@@ -527,7 +575,7 @@ async function list_cat(ids, access_token) {
 
 
 			catalogs.filter((element, index, arr) => {
-				//console.log("element",arr[index])
+				//console.log('element',arr[index])
 				if (element.status == 'fulfilled') el = element.value
 				else el = undefined
 				catalogs[index] = el;
@@ -543,12 +591,12 @@ async function getMeta(type = String, id = String) {
 	try {
 		console.log(type, id);
 		let url;
-		if (type == "movie") url = `/movies/${id}?extended=full`
-		if (type == "series") url = `/shows/${id}?extended=full`
-		if (!url) throw "error creating url";
+		if (type == 'movie') url = `/movies/${id}?extended=full`
+		if (type == 'series') url = `/shows/${id}?extended=full`
+		if (!url) throw 'error creating url';
 
 		const data = await request(url);
-		if (!data || !data.data) throw "error getting data (getMeta)";
+		if (!data || !data.data) throw 'error getting data (getMeta)';
 		const item = data.data;
 		let meta = {
 			id: id,
@@ -564,13 +612,13 @@ async function getMeta(type = String, id = String) {
 			website: item.homepage
 		}
 		const ids = item.ids;
-		if (type == "series") {
+		if (type == 'series') {
 			const videos = [];
 			const url = `/shows/${id}/seasons?extended=episodes`;
 			const data = await request(url);
-			if (!data || !data.data) throw "error getting data (getMeta)";
+			if (!data || !data.data) throw 'error getting data (getMeta)';
 			data.data.forEach(function (season, index, array) {
-				//console.log("element",season);
+				//console.log('element',season);
 				season.episodes.forEach(function (episode, index, array) {
 					videos.push({ id: `trakt:${id}:${episode.ids.trakt}:${episode.season}:${episode.number}`, title: episode.title, episode: episode.number, season: episode.season })
 				})

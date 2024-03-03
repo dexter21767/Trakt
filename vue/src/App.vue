@@ -343,12 +343,24 @@
                         </div>
                     </div>
                     <!-- Modal footer -->
-                    <div class="flex items-center p-6 space-x-2 rounded-b border-t border-gray-200 dark:border-gray-600">
-                        <a id="install_button" href="#"><button type="button"
-                                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Install
-                                Addon</button></a>
-                        <button type="button" @click="state.install.hide();"
-                            class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Cancel</button>
+                    <div class="footer-modal">
+                        <div class="flex items-center p-6 space-x-2 rounded-b border-t border-gray-200 dark:border-gray-600">
+                            <a id="install_button" href="#"><button type="button"
+                                    class="footer-button text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Install
+                                    Addon</button></a>
+                            <button @click="copyToClipboard();"
+                                class="footer-button inline-flex items-center py-2 px-3 text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                                <svg aria-hidden="true" class="w-2r" fill="currentColor"
+                                    viewBox="5 0 36 36" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M22.6,4H21.55a3.89,3.89,0,0,0-7.31,0H13.4A2.41,2.41,0,0,0,11,6.4V10H25V6.4A2.41,2.41,0,0,0,22.6,4ZM23,8H13V6.25A.25.25,0,0,1,13.25,6h2.69l.12-1.11A1.24,1.24,0,0,1,16.61,4a2,2,0,0,1,3.15,1.18l.09.84h2.9a.25.25,0,0,1,.25.25Z" class="clr-i-outline clr-i-outline-path-1"></path><path d="M33.25,18.06H21.33l2.84-2.83a1,1,0,1,0-1.42-1.42L17.5,19.06l5.25,5.25a1,1,0,0,0,.71.29,1,1,0,0,0,.71-1.7l-2.84-2.84H33.25a1,1,0,0,0,0-2Z" class="clr-i-outline clr-i-outline-path-2"></path><path d="M29,16h2V6.68A1.66,1.66,0,0,0,29.35,5H27.08V7H29Z" class="clr-i-outline clr-i-outline-path-3"></path><path d="M29,31H7V7H9V5H6.64A1.66,1.66,0,0,0,5,6.67V31.32A1.66,1.66,0,0,0,6.65,33H29.36A1.66,1.66,0,0,0,31,31.33V22.06H29Z" class="clr-i-outline clr-i-outline-path-4"></path>
+                                </svg>
+                                Copy to clipboard
+                            </button>
+                        </div>
+                        <div class="flex items-center p-6 space-x-2 rounded-b border-t border-gray-200 dark:border-gray-600">
+                            <button type="button" @click="state.install.hide();"
+                                class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Cancel</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -357,12 +369,11 @@
         <div class="bg-img relative min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 bg-gray-500 bg-no-repeat bg-cover bg-center relative items-center"
             :style="`background-image: url(${manifest.background});`">
             <div class="absolute bg-black opacity-60 inset-0 z-0"></div>
-            <div class="max-w-md w-full space-y-8 p-10 bg-white shadow-lg rounded-xl z-10">
-
-
-                <div class="grid gap-8 grid-cols-1">
-                    <div class="flex flex-col ">
-                        <div class="items-center header">
+            
+            <div class="flex flex-col rounded-xl bg-white shadow-lg z-10">
+            <div class="bg-gradient rounded-top max-w-md w-full space-y-8 p-10">
+                
+                <div class="items-center header">
                             <img class="logo" :src="manifest.logo">
                             <h1 class="font-semibold text-lg mr-auto">{{ manifest.name }}</h1>
                             <h2 class="font-semibold text-lg mr-auto" style="text-align: right;">Version: {{
@@ -370,6 +381,12 @@
                             }}</h2>
                             <p class="mt-5">{{ manifest.description }}</p>
                         </div>
+            </div>
+            <div class="max-w-md w-full space-y-8 p-10">
+
+
+                <div class="grid gap-8 grid-cols-1">
+                    <div class="flex flex-col">
 
                         <div class="flex items-center justify-center space-x-2 mt-5">
                             <span class="h-px w-full bg-gray-200"></span>
@@ -539,11 +556,18 @@
                                                 <VueToggles :value="element.value" @click="element.value = !element.value" uncheckedText="Disabled" checkedText="Enabled"/>
                                             </div>
                                         </div>
+                                        <div class="flex flex-even"> 
                                         <dropdown v-if="element.sortable" class="sorting-dropdown" :options="Consts.SortOptions"
                                             :selected="{ name: getSorting(element.sort), value: element.sort }"
                                             v-on:updateOption="updateSorting($event, element)"
-                                            :placeholder="'Select default sorting'" :closeOnOutsideClick="true">
+                                            :placeholder="'sort by'" :closeOnOutsideClick="true">
                                         </dropdown>
+                                        <dropdown v-if="element.sortable" class="sorting-dropdown" :options="Consts.SortDirections"
+                                            :selected="{ name: getDirection(element.sort, element.direction), value: element.direction }"
+                                            v-on:updateOption="updateSortingDirection($event, element)"
+                                            :placeholder="'sorting direction'" :closeOnOutsideClick="true">
+                                        </dropdown>
+                                        </div>
                                     </div>
                                 </template>
                             </draggable>
@@ -575,11 +599,18 @@
                                                 <span class="sr-only">Remove list</span>
                                             </button>
                                         </div>
+                                        <div class="flex flex-even"> 
                                         <dropdown class="sorting-dropdown" :options="Consts.SortOptions"
                                             :selected="{ name: getSorting(element.sort), value: element.sort }"
                                             v-on:updateOption="updateSorting($event, element)"
                                             :placeholder="'Select default sorting'" :closeOnOutsideClick="true">
                                         </dropdown>
+                                        <dropdown class="sorting-dropdown" :options="Consts.SortDirections"
+                                        :selected="{ name: getDirection(element.sort, element.direction), value: element.direction }"
+                                            v-on:updateOption="updateSortingDirection($event, element)"
+                                            :placeholder="'sorting direction'" :closeOnOutsideClick="true">
+                                        </dropdown>
+                                        </div>
                                     </div>
                                 </template>
                             </draggable>
@@ -614,6 +645,7 @@
                 </div>
             </div>
         </div>
+        </div>
 
 
         <!-- <SearchModal ref="searchModal" @addList="addList" :searchQuery="state.searchQuery"></SearchModal> -->
@@ -629,12 +661,13 @@ import Modal from 'flowbite/src/components/modal';
 import Dropdown from 'flowbite/src/components/dropdown';
 import { useHead } from "@vueuse/head";
 import * as manifest from '../../manifest.json';
+import * as sortOpts from '../../sortOpts.json';
 import dropdown from 'vue-dropdowns';
 import { VueToggles } from "vue-toggles";
 
 const stylizedTypes = manifest.types.map(t => t[0].toUpperCase() + t.slice(1));
-
-const Consts = {};
+console.log('sortOpts',sortOpts)
+const Consts = {...sortOpts};
 
 useHead({
     title: manifest.name + ' - Stremio Addon',
@@ -648,6 +681,7 @@ useHead({
 })
 
 const state = reactive({
+    url: '',
     searchResults: [],
     searchQuery: '',
     listUrl: '',
@@ -677,7 +711,9 @@ const popularModal = ref();
 const trendingModal = ref();
 const personalModal = ref();
 
-Consts.SortOptions = [{ name: "Added Ascendent", value: "added,asc" }, { name: "Added Descendent", value: "added,desc" }, { name: "Title Ascendent", value: "title,asc" }, { name: "Title Descendent", value: "title,desc" }, { name: "Released Ascendent", value: "released,asc" }, { name: "Released Descendent", value: "released,desc" }, { name: "Runtime Ascendent", value: "runtime,asc" }, { name: "Runtime Descendent", value: "runtime,desc" }, { name: "Votes Ascendent", value: "votes,asc" }, { name: "Votes Descendent", value: "votes,desc" }, { name: "Rating Ascendent", value: "rating,asc" }, { name: "Rating Descendent", value: "rating,desc" }, { name: "Rank Ascendent", value: "rank,asc" }, { name: "Rank Descendent", value: "rank,desc" }];
+//Consts.SortOptions = [{ name: "Added Ascendent", value: "added,asc" }, { name: "Added Descendent", value: "added,desc" }, { name: "Title Ascendent", value: "title,asc" }, { name: "Title Descendent", value: "title,desc" }, { name: "Released Ascendent", value: "released,asc" }, { name: "Released Descendent", value: "released,desc" }, { name: "Runtime Ascendent", value: "runtime,asc" }, { name: "Runtime Descendent", value: "runtime,desc" }, { name: "Votes Ascendent", value: "votes,asc" }, { name: "Votes Descendent", value: "votes,desc" }, { name: "Rating Ascendent", value: "rating,asc" }, { name: "Rating Descendent", value: "rating,desc" }, { name: "Rank Ascendent", value: "rank,asc" }, { name: "Rank Descendent", value: "rank,desc" }, { name: "Popularity Ascendent", value: "popularity,asc" }, { name: "Popularity Descendent", value: "popularity,desc" }];
+//Consts.SortOptions = [{ name: "Added Date", value: "added" }, { name: "Title", value: "title" }, { name: "Release Date", value: "released" }, { name: "Runtime", value: "runtime" }, { name: "Trakt votes", value: "votes" }, { name: "Rating", value: "rating" }, { name: "Rank", value: "rank" }, { name: "Popularity", value: "popularity" }, { name: "Random", value: "random" }];
+//Consts.SortDirections = [{ name: "Ascendant", value: "asc" },{ name: "Descendant", value: "des" }]
 
 Consts.currentUrl = (window.location.origin == "http://localhost:5173") ? 'http://127.0.0.1:63355' : window.location.origin;
 
@@ -718,12 +754,14 @@ function loadConfig() {
     for (let i = 0; i < ids.length; i++) {
 
         let id = ids[i];
-        let [username, slug, sort] = id.split(':');
+        let [username, slug, sortOpt] = id.split(':');
+        let [sort,direction] = sortOpt.split(',');
         state.lists.push({
             name: slug,
             slug: slug,
             username: username,
-            sort: sort
+            sort: sort || sortOpt,
+            direction: direction
         });
         //console.log("state.lists", state.lists)
     }
@@ -755,7 +793,18 @@ function loadConfig() {
     console.log("state.lists", JSON.stringify(state.lists));
 }
 
-function getSorting(sort) {
+function getDirection(sort = '',direction = '') {
+    sort = sort.split(',').length>1?sort.split(',')[1]:direction;
+    //console.log('getDirection', sort,direction)
+    for (let option in Consts.SortDirections) {
+        if (Consts.SortDirections[option].value == sort) return Consts.SortDirections[option].name;
+    }
+    return;
+}
+
+function getSorting(sort = '') {
+    sort = sort.split(',').length?sort.split(',')[0]:sort;
+    //console.log('getSorting', sort)
     for (let option in Consts.SortOptions) {
         if (Consts.SortOptions[option].value == sort) return Consts.SortOptions[option].name;
     }
@@ -772,7 +821,15 @@ function updateSorting(sort, list) {
         state.lists[index].sort = sort.value
     }
 }
-
+function updateSortingDirection(direction, list) {
+    if(list.id?.startsWith('trakt_')){
+        const index = state.genericLists.indexOf(list);
+        state.genericLists[index].direction = direction.value;
+    }else{
+        const index = state.lists.indexOf(list);
+        state.lists[index].direction = direction.value
+    }
+}
 async function getListsOflists() {
     try {
         state.lists_popular = (await client.get('/lists/popular'))?.data || [];
@@ -804,6 +861,11 @@ function updateAuthButton() {
         document.getElementById('Auth').parentNode.href = `https://trakt.tv/oauth/authorize?client_id=18bde7dcd858c86f9593addf9f66528f8c1443ec1bef9ecee501d1c5177ce281&redirect_uri=${encodeURIComponent(Consts.currentUrl)}&response_type=code`;
         document.getElementById('Auth').disabled = false;
     }
+}
+
+function copyToClipboard(){
+    navigator.clipboard.writeText(state.url);
+    alert("Copied the manifest url: " + state.url);
 }
 
 function generateInstallUrl() {
@@ -838,8 +900,11 @@ function generateInstallUrl() {
         if(list.separated)
             id +=`:separated`;
         
-        if(list.sort)
-            id +=`:${list.sort}`;
+        if(list.sort){
+            let sort = list.sort.split(',')[0] || list.sort;
+            let direction = list.direction || list.sort.split(',')[1] || 'asc';
+            id +=`:${sort},${direction}`;
+        }
         
         generic.push(id);
     })
@@ -848,8 +913,12 @@ function generateInstallUrl() {
         let list = state.lists[index];
         //console.log("list", list)
         if (list.username) {
-            if (list.sort) lists.push(`${list.username}:${list.slug}:${list.sort}`)
-            else lists.push(`${list.username}:${list.slug}`)
+            if (!list.sort) lists.push(`${list.username}:${list.slug}`)
+            else {
+                let sort = list.sort.split(',')[0] || list.sort;
+                let direction = list.direction || list.sort.split(',')[1] || 'asc';
+                lists.push(`${list.username}:${list.slug}:${sort},${direction}`)
+            }
         } else {
             lists.push(`${list.id}`)
         }
@@ -869,7 +938,7 @@ function generateInstallUrl() {
     const configuration = configurationValue && configurationValue.length ? '/' + Buffer.from(configurationValue).toString('base64') : '';
     const location = window.location.host + configuration + '/manifest.json'
     document.getElementById("install_button").href = 'stremio://' + location;
-
+    state.url = 'https://' + location;
     //console.log('state', state);
 }
 
@@ -953,6 +1022,17 @@ function RPDBposter(val) {
 
 
 <style scoped>
+
+.rounded-top {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+
+}
+.bg-gradient {
+    background-image: linear-gradient(rgb(26 86 219 / var(--tw-bg-opacity)), white);
+    padding-bottom: 0;
+}
+
 h1 {
     font-size: x-large;
     text-align: center;
@@ -960,9 +1040,24 @@ h1 {
     padding-top: 10px;
 }
 
+.footer-modal {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    display: flex;
+}
+.footer-button {
+    width: max-content;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 .logo {
     margin: auto;
     max-width: 200px;
+}
+
+.w-2r{
+    width: 2rem;
 }
 
 .grabbable {
@@ -1020,15 +1115,20 @@ h1 {
 }
 .sorting-dropdown {
   border-radius: 5px;
+    min-width: unset;
  
   :deep(.dropdown-toggle) {
     color: rgb(26 86 219 / var(--tw-bg-opacity));
     font-weight: bold;
+    min-width: 6rem;
     /*font-size: 25px;*/
   }
  
   :deep(.dropdown-toggle-placeholder) {
     color: #c4c4c4;
   }
+}
+.flex-even {
+    justify-content: space-evenly;
 }
 </style>

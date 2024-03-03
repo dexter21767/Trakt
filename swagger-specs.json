@@ -14,7 +14,8 @@
           }
         }
       }
-    },"/public/{file?}": {
+    },
+    "/public/{file?}": {
       "get": {
         "summary": "public files",
         "parameters": [

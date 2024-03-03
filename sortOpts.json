@@ -1,0 +1,4 @@
+{
+    "SortOptions": [{ "name": "Added Date", "value": "added" }, { "name": "Title", "value": "title" }, { "name": "Release Date", "value": "released" }, { "name": "Runtime", "value": "runtime" }, { "name": "Trakt votes", "value": "votes" }, { "name": "Trakt Percentage", "value": "rating" }, { "name": "Rank", "value": "rank" }, { "name": "Popularity", "value": "popularity" }, { "name": "Random", "value": "random" }],
+    "SortDirections": [{ "name": "Ascendant", "value": "asc" }, { "name": "Descendant", "value": "desc" }]
+}

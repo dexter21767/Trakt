@@ -7,7 +7,6 @@ const manifest = require("./manifest.json");
 const config = require('./config.js')();
 
 // create monitoring stats routes using swagger-stats
-
 const swStats = require('swagger-stats');
 const apiSpec = require('./swagger-specs.json')
 
@@ -248,10 +247,10 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 					sort = id.split('_')[3];
 
 				} else {
-					id.split('_')[2];
+					sort = id.split('_')[2];
 				}
-
-				if (genre == undefined && sort) {
+				console.log('id',id,'sort',sort);
+				if (!genre && sort) {
 					genre = sort.split(',');
 				}
 			} else {
