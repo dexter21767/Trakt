@@ -35,15 +35,17 @@ app.use('/public', express.static(path.join(__dirname, 'vue', 'public')));
 
 const { lists_array, genres, sort_array, host, count } = config;
 
-app.use(function (req, res, next) {
+function cacheHeaders(req, res, next) {
 	if (res.statusCode == 200) {
 		res.setHeader('Cache-Control', config.CacheControl);
-		res.setHeader('content-type', 'text/html');
+		//res.setHeader('content-type', 'text/html');
 	}
 	next();
-});
+}
 
-app.get('/manifest.json', (req, res) => {
+//app.use(cacheHeaders);
+
+app.get('/manifest.json',cacheHeaders, (req, res) => {
 
 	manifest.catalogs = [{
 		"type": "trakt",
@@ -95,12 +97,12 @@ app.get('/manifest.json', (req, res) => {
 		"extra": [{ name: "search", isRequired: true }]
 	}];
 
-	res.send(manifest);
+	res.json(manifest);
 	res.end();
 });
 
-app.get('/:configuration?/', (req, res) => {
-	console.log('req.query', req.query)
+app.get('/:configuration?/',cacheHeaders, (req, res) => {
+	//console.log('req.query', req.query)
 	if (req.query?.code || req.query?.refresh_token) {
 		getToken({ code: req.query.code, refresh_token: req.query.refresh_token }).then(data => {
 			let { access_token, refresh_token, created_at, expires_in } = data.data;
@@ -126,17 +128,17 @@ app.get('/:configuration?/', (req, res) => {
 	}
 });
 
-app.get('/:configuration?/configure', (req, res) => {
+app.get('/:configuration?/configure',cacheHeaders, (req, res) => {
 	res.sendFile(path.join(__dirname, 'vue', 'dist', 'index.html'));
 });
 
 app.get('/lists/:query', (req, res) => {
-	listOfLists(req.params.query, req.query.token).then(data => res.send(data)).catch(e => console.error(e));
+	listOfLists(req.params.query, req.query.token).then(data => res.json(data)).catch(e => {res.status(400).send(),console.error(e)});
 });
 
 app.get('/:configuration?/manifest.json', async (req, res) => {
 	try {
-		console.log(req.params);
+		//console.log(req.params);
 		const catalog = [];
 		let newManifest = JSON.parse(JSON.stringify(manifest));
 		let parsedConfig = {};
@@ -151,8 +153,8 @@ app.get('/:configuration?/manifest.json', async (req, res) => {
 			}
 			let { lists, ids, access_token, refresh_token, expires } = parsedConfig || {};
 
-			console.log("configuration", configuration)
-			console.log(lists, ids, access_token);
+			//console.log("configuration", configuration)
+			//console.log(lists, ids, access_token);
 
 			if (lists) {
 				lists.forEach(list => {
@@ -188,14 +190,14 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 	try {
 		let { configuration, type, id, extra } = req.params;
 
-		console.log('req.params', req.params);
+		//console.log('req.params', req.params);
 		if (type != "trakt") return res.json(updateAddon('catalog'));
 
 		let skip, genre, search_query, parsedConfig = {};
 		skip = 0;
 		if (extra) {
 			if (extra) params = Object.fromEntries(new URLSearchParams(extra));
-			console.log(params)
+			//console.log(params)
 			if (params) {
 				if (params.genre) genre = params.genre.split(' ');
 				if (params.skip) skip = Math.round(params.skip / 100);
@@ -204,8 +206,8 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 		}
 		skip++;
 
-		console.log(configuration, type, id);
-		console.log('extra: genre:', genre, 'skip:', skip);
+		//console.log(configuration, type, id);
+		//console.log('extra: genre:', genre, 'skip:', skip);
 
 		if (configuration) {
 			if (configuration.startsWith('lists')) return res.json(updateAddon('catalog'));
@@ -217,7 +219,7 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 			}
 		}
 		let { lists, ids, access_token, RPDBkey } = parsedConfig || {};
-		console.log(lists, ids, access_token, RPDBkey);
+		//console.log(lists, ids, access_token, RPDBkey);
 
 		let sort, username, trakt_type;
 		if (id.startsWith("trakt_list:")) {
@@ -229,11 +231,11 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 			if (genre == undefined && id.split(':').length == 4) {
 				genre = id.split(':')[2].split(',');
 			}
-			console.log('list_id:', list_id, 'username', username, 'sort', sort);
-			console.log(id);
+			//console.log('list_id:', list_id, 'username', username, 'sort', sort);
+			//console.log(id);
 			metas = await list_catalog({ id: list_id, username, access_token, genre, sort, skip, RPDBkey })
 			if (metas) metas = metas.filter(Boolean);
-			res.send(JSON.stringify({ metas: metas }));
+			res.json({ metas: metas });
 
 		} else if (id.startsWith("trakt")) {
 			list_id = id.split('_')[1];
@@ -249,7 +251,7 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 				} else {
 					sort = id.split('_')[2];
 				}
-				console.log('id',id,'sort',sort);
+				//console.log('id',id,'sort',sort);
 				if (!genre && sort) {
 					genre = sort.split(',');
 				}
@@ -261,17 +263,17 @@ app.get('/:configuration?/catalog/:type/:id/:extra?.json', async (req, res) => {
 				}
 			}
 
-			console.log("list_id", list_id);
+			//console.log("list_id", list_id);
 			const data = { trakt_type: trakt_type, type: type, access_token: access_token, genre: genre, skip: skip, RPDBkey }
 
 			if (list_id && generic_lists.hasOwnProperty(list_id)) {
 				metas = await generic_lists[list_id](data);
 				if (metas) metas = metas.filter(Boolean);
-				res.send(JSON.stringify({ metas: metas }));
+				res.json({ metas: metas });
 			} else if (list_id && list_id == "search" && search_query) {
 				metas = await search(trakt_type, search_query, RPDBkey);
 				if (metas) metas = metas.filter(Boolean);
-				res.send(JSON.stringify({ metas: metas }));
+				res.json({ metas: metas });
 			}
 		}
 		res.end();
@@ -286,11 +288,11 @@ app.get('/:configuration?/meta/:type/:id/:extra?.json', async (req, res) => {
 
 	let { configuration, type, id, extra } = req.params;
 
-	console.log('req.params', req.params);
+	//console.log('req.params', req.params);
 	if (id.startsWith("trakt:")) {
 		id = id.replace('trakt:', '');
 		meta = await getMeta(type, id)
-		if (meta) res.send(JSON.stringify({ meta: meta }));
+		if (meta) res.json({ meta: meta });
 		res.end();
 
 	} else {
