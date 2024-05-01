@@ -44,7 +44,7 @@ async function request(url = String, header = {}) {
 async function popular(user_data = {}) {
 	try {
 		
-		console.log('user_data',user_data);
+		//console.log('user_data',user_data);
 		const { trakt_type, type, access_token, genre, skip, RPDBkey } = user_data;
 
 		let url = `/${trakt_type}s/popular/?extended=full`;
@@ -92,7 +92,7 @@ async function trending(user_data = {}) {
 
 async function watchlist(user_data = {}) {
 	try {
-		console.log(user_data);
+		//console.log(user_data);
 		const { trakt_type, type, access_token, genre, skip, RPDBkey } = user_data;
 
 		if (!access_token) throw 'access_token is required'
@@ -319,7 +319,7 @@ function SortList(items = [], sort = []) {
 async function ConvertToStremio(items = [], RPDBkey = {}) {
 	if (RPDBkey) RPDBkey.valid = await checkRPDB(RPDBkey);
 	const metas = [];
-	console.log('ConvertToStremio', items.length)
+	//console.log('ConvertToStremio', items.length)
 	for (let i = 0; i < items.length; i++) {
 		const item = items[i];
 
@@ -470,7 +470,7 @@ async function listOfLists(query = String, token) {
 			else return;
 		}
 		else url = `/search/list/?query=${query}`;
-		console.log(url, header)
+		//console.log(url, header)
 
 		data = await request(url, header);
 		if (!data || !data.data) throw 'error';
@@ -589,7 +589,7 @@ async function list_cat(ids, access_token) {
 
 async function getMeta(type = String, id = String) {
 	try {
-		console.log(type, id);
+		//console.log(type, id);
 		let url;
 		if (type == 'movie') url = `/movies/${id}?extended=full`
 		if (type == 'series') url = `/shows/${id}?extended=full`

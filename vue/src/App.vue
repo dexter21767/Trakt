@@ -24,7 +24,7 @@
                                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                             </svg>
                                         </div>
-                                        <input v-model="state.searchQuery" type="search" id="searchInput"
+                                        <input v-model="state.searchQuery" type="search" id="searchModalInput"
                                             class="block p-4 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                             placeholder="Search Trakt lists" required>
                                         <button type="submit"
@@ -666,7 +666,7 @@ import dropdown from 'vue-dropdowns';
 import { VueToggles } from "vue-toggles";
 
 const stylizedTypes = manifest.types.map(t => t[0].toUpperCase() + t.slice(1));
-console.log('sortOpts',sortOpts)
+//console.log('sortOpts',sortOpts)
 const Consts = {...sortOpts};
 
 useHead({
@@ -844,13 +844,16 @@ async function getListsOflists() {
 }
 
 function updateAuthButton() {
+    if((state.expired || state.timeLeft < 604800)){
+        state.expired = true;
+    }
 
     if(state.accessToken && state.expires && !state.expired){
         document.getElementById('Auth').style.background = 'blue';
         document.getElementById('Auth').innerHTML = 'Authenticated';
         document.getElementById('Auth').parentNode.href = '';
         document.getElementById('Auth').disabled = true;
-    }else if((state.expired || state.timeLeft < 604800) && state.refreshToken){
+    }else if(state.expired && state.refreshToken){
         document.getElementById('Auth').style.background = 'red';
         document.getElementById('Auth').innerHTML = 'Re-authenticate';
         document.getElementById('Auth').parentNode.href = Consts.Config ? `${Consts.currentUrl}/${Consts.Config}/?refresh_token=${state.refreshToken}`:`${Consts.currentUrl}/?refresh_token=${state.refreshToken}`;
