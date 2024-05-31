@@ -789,8 +789,8 @@ function loadConfig() {
             state.genericLists[index] = list;
         })
     }
-    console.log("state.genericLists", JSON.stringify(state.genericLists));
-    console.log("state.lists", JSON.stringify(state.lists));
+    //console.log("state.genericLists", JSON.stringify(state.genericLists));
+    //console.log("state.lists", JSON.stringify(state.lists));
 }
 
 function getDirection(sort = '',direction = '') {
@@ -812,8 +812,9 @@ function getSorting(sort = '') {
 }
 
 function updateSorting(sort, list) {
-    console.log("sort", sort, "list", list.sort)
-    if(list.id?.startsWith('trakt_')){
+    //console.log("sort", sort, "list", list.sort)
+    //console.log("list", list,typeof list.id)
+    if(typeof list.id == 'string' && list.id.startsWith('trakt_')){
         const index = state.genericLists.indexOf(list);
         state.genericLists[index].sort = sort.value;
     }else{
@@ -877,7 +878,7 @@ function generateInstallUrl() {
     let generic = [];
     
     const searchParams = new URLSearchParams(window.location.search);
-    console.log(state.genericLists);
+    //console.log(state.lists,state.genericLists);
     if (searchParams.has('access_token')) {
         state.accessToken = searchParams.get('access_token');
     }
