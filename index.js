@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const path = require('path');
-const { getToken, generic_lists, list_catalog, list_cat, listOfLists, getMeta, search } = require('./trakt-api.js');
+const { getToken, generic_lists, list_catalog, list_cat, listOfLists, getMeta, search, getUserProfile } = require('./trakt-api.js');
 const manifest = require("./manifest.json");
 const config = require('./config.js')();
 
@@ -42,8 +42,6 @@ function cacheHeaders(req, res, next) {
 	}
 	next();
 }
-
-//app.use(cacheHeaders);
 
 app.get('/manifest.json',cacheHeaders, (req, res) => {
 
@@ -101,6 +99,25 @@ app.get('/manifest.json',cacheHeaders, (req, res) => {
 	res.end();
 });
 
+app.get('/getUserProfile', (req, res) => {
+	if(!req.query.access_token) return res.status(401).send('no access_token provided');
+	console.log('getUserProfile', req.query.access_token);
+	getUserProfile(req.query.access_token)
+		.then(response => res.json(response.data))
+		.catch(e => {
+			if(e.response?.status == 401) return res.status(401).send('invalid access_token');
+			else{
+				console.error(e);
+				res.status(400).send()
+			}
+		});
+	//req.params.query
+});
+
+app.get('/lists/:query', (req, res) => {
+	listOfLists(req.params.query, req.query.token).then(data => res.json(data)).catch(e => {res.status(400).send(),console.error(e)});
+});
+
 app.get('/:configuration?/',cacheHeaders, (req, res) => {
 	//console.log('req.query', req.query)
 	if (req.query?.code || req.query?.refresh_token) {
@@ -130,10 +147,6 @@ app.get('/:configuration?/',cacheHeaders, (req, res) => {
 
 app.get('/:configuration?/configure',cacheHeaders, (req, res) => {
 	res.sendFile(path.join(__dirname, 'vue', 'dist', 'index.html'));
-});
-
-app.get('/lists/:query', (req, res) => {
-	listOfLists(req.params.query, req.query.token).then(data => res.json(data)).catch(e => {res.status(400).send(),console.error(e)});
 });
 
 app.get('/:configuration?/manifest.json', async (req, res) => {

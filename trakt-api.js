@@ -31,7 +31,7 @@ async function request(url = String, header = {}) {
 	})
 		.catch(error => {
 
-			console.error(error);
+			//console.error(error);
 			if (error.response) {
 				console.error('error on trakt-api.js request:', error.response.status, error.response.statusText, error.config.url);
 			} else {
@@ -437,6 +437,10 @@ function NormalizeLists(list = [], type = String) {
 	return new_list;
 }
 
+function getUserProfile(access_token){
+	return client.get('/users/me',{ headers: { 'Authorization': `Bearer ${access_token}` } })
+	
+}
 async function getToken({code ,refresh_token}) {
 	let data = {
 		'client_id': config.client_id,
@@ -632,4 +636,4 @@ async function getMeta(type = String, id = String) {
 }
 
 
-module.exports = { getToken, generic_lists: { watchlist, rec: recomendations, popular, trending }, list_catalog, list_cat, listOfLists, getMeta, search };
+module.exports = { getToken, generic_lists: { watchlist, rec: recomendations, popular, trending }, list_catalog, list_cat, listOfLists, getMeta, search, getUserProfile };
